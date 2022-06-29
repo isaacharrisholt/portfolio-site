@@ -1,41 +1,32 @@
 <script lang="ts">
     import SocialIcon from "./SocialIcon.svelte";
 
-    let jobTitle = "Software Engineer";
-
     let socials = [
         {
-            name: 'github',
-            url: 'https://github.com/isaacharrisholt',
+            title: 'My blog',
+            url: 'https://isaacharrisholt.com',
+            isSignature: true,
         },
         {
-            name: 'github',
+            title: 'GitHub',
             url: 'https://github.com/isaacharrisholt',
+            faIcon: 'fa-brands fa-github'
         },
         {
-            name: 'github',
-            url: 'https://github.com/isaacharrisholt',
+            title: 'Twitter',
+            url: 'https://twitter.com/IsaacHarrisHolt',
+            faIcon: 'fa-brands fa-twitter'
         },
         {
-            name: 'github',
-            url: 'https://github.com/isaacharrisholt',
+            title: 'LinkedIn',
+            url: 'https://linkedin.com/in/isaac-harris-holt',
+            faIcon: 'fa-brands fa-linkedin'
         },
         {
-            name: 'github',
-            url: 'https://github.com/isaacharrisholt',
+            title: 'Medium',
+            url: 'https://medium.isaacharrisholt.com',
+            faIcon: 'fa-brands fa-medium'
         },
-        {
-            name: 'github',
-            url: 'https://github.com/isaacharrisholt',
-        },
-        {
-            name: 'github',
-            url: 'https://github.com/isaacharrisholt',
-        },
-        {
-            name: 'github',
-            url: 'https://github.com/isaacharrisholt',
-        }
     ]
 </script>
 
@@ -43,11 +34,11 @@
     <div class="mb-8">
         <h1 class="font-mono text-2xl font-bold">Hey, I'm</h1>
         <h2 class="text-3xl md:text-4xl font-bold">Isaac Harris-Holt</h2>
-        <h3 class="uppercase text-xl md:text-2xl font-light font-sans">{jobTitle}</h3>
+        <h3 class="uppercase text-xl md:text-2xl font-light font-sans">Software Engineer</h3>
     </div>
-    <div class="grid grid-cols-3 flex-wrap w-full gap-4">
+    <div class="grid gap-4 justify-start w-full" style="grid-template-columns: repeat(auto-fit, 4rem)">
         {#each socials as social}
-            <SocialIcon url={social.url} />
+            <SocialIcon {...social} />
         {/each}
     </div>
 </div>
