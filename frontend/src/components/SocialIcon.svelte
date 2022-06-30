@@ -8,11 +8,11 @@
 </script>
 
 <a href={url} target="_blank" {title}>
-    <div class="rounded-lg aspect-square text-center align-middle hover:drop-shadow-md hover:-translate-y-1 transition duration-200 transform">
+    <div class="text-center hover:drop-shadow-md hover:-translate-y-1 transition duration-200">
         {#if isSignature}
             <ShortSignature/>
         {:else}
-            <i class="{faIcon} text-5xl text-white w-full h-full align-middle"></i>
+            <i class="{faIcon} text-5xl text-white"></i>
         {/if}
     </div>
 </a>
