@@ -30,7 +30,7 @@
     ]
 </script>
 
-<div class="h-screen w-[80vw] mx-auto my-20 px-8">
+<div class="h-screen w-[80vw] mx-auto py-20 px-8">
     <div class="mb-8">
         <h1 class="font-mono text-2xl font-bold">Hey, I'm</h1>
         <h2 class="text-3xl md:text-4xl font-bold">Isaac Harris-Holt</h2>

@@ -13,8 +13,8 @@
 
 <div class="bg-gradient-to-br from-green-300 to-sky-400 w-full h-fit absolute">
     <Hero/>
-    <About/>
-    <WorkExperience/>
-    <Projects/>
+<!--    <About/>-->
+<!--    <WorkExperience/>-->
+<!--    <Projects/>-->
     <Contact/>
 </div>
