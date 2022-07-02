@@ -15,3 +15,6 @@
 # app.yaml files for App Engine. I have included example.app.yaml files in the
 # project for your reference.
 **/app.yaml
+
+# Local CockroachDB log files
+**/local_roach/
