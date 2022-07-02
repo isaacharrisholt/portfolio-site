@@ -1,7 +1,11 @@
-# for projects that use SCons for building: http://http://www.scons.org/
-.sconsign.dblite
+# IDEs
+**/.idea/
 
-# When configure fails, SCons outputs these
-config.log
-.sconf_temp
-.idea
+# Python virtual environments
+**/.local/
+
+# app.yaml files
+# Note: this is to protect secrets that I store as environment variables in my
+# app.yaml files for App Engine. I have included example.app.yaml files in the
+# project for your reference.
+**/app.yaml
