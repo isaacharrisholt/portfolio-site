@@ -4,6 +4,9 @@
 # Python virtual environments
 **/.local/
 
+# pycache
+**/__pycache__/
+
 # app.yaml files
 # Note: this is to protect secrets that I store as environment variables in my
 # app.yaml files for App Engine. I have included example.app.yaml files in the
