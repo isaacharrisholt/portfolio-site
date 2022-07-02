@@ -1,10 +1,8 @@
 import uuid
 
-from sqlalchemy import Column, Integer, String, TIMESTAMP
+from sqlalchemy import Column, String, TIMESTAMP, ARRAY, Date
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
-
-from modules import utils
 
 
 Base = declarative_base()
@@ -13,11 +11,7 @@ Base = declarative_base()
 class FormMessage(Base):
     __tablename__ = 'form_messages'
 
-    # Allow using SQLite for local development
-    if utils.get_service_mode() != 'local':
-        id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid1)
-    else:
-        id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid1)
     name = Column(String(320))
     email = Column(String(320))
     message = Column(String)
@@ -38,15 +32,11 @@ class FormMessage(Base):
 class WorkExperience(Base):
     __tablename__ = 'work_experience'
 
-    # Allow using SQLite for local development
-    if utils.get_service_mode() != 'local':
-        id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid1)
-    else:
-        id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid1)
     company = Column(String(255))
     position = Column(String(255))
-    start_date = Column(TIMESTAMP)
-    end_date = Column(TIMESTAMP, default=None)
+    start_date = Column(Date)
+    end_date = Column(Date, default=None)
     description = Column(String)
 
     def __repr__(self):
@@ -59,3 +49,13 @@ class WorkExperience(Base):
             f'description={repr(self.description)}'
             f')'
         )
+
+
+class PersonalProject(Base):
+    __tablename__ = 'personal_projects'
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid1)
+    name = Column(String(255))
+    description = Column(String)
+    skills = Column(ARRAY(String))
+    url = Column(String, default=None)
