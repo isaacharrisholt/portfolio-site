@@ -15,10 +15,11 @@ log = logging.getLogger(__name__)
 
 def _connection_string():
     mode = utils.get_service_mode()
+    local_db = 'cockroachdb://root@localhost:26257/defaultdb'
     if mode == 'local':
-        return 'sqlite:///local.db'
+        return local_db
     else:
-        return os.environ.get('DATABASE_URL', 'sqlite:///local.db')
+        return os.environ.get('DATABASE_URL', local_db)
 
 
 engine = create_engine(_connection_string())

@@ -1,0 +1,12 @@
+services:
+  local_roach:
+    image: cockroachdb/cockroach:latest
+    container_name: local_roach
+    ports:
+      - "8080:8080"
+      - "26257:26257"
+    volumes:
+      - ./backend/db/local_roach:/cockroach/cockroach-data
+    command:
+      - start-single-node
+      - --insecure
