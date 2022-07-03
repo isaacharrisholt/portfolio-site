@@ -6,11 +6,7 @@ from typing import List, Optional
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from modules.relational_model import (
-    FormMessage,
-    WorkExperience,
-    PersonalProject,
-)
+from modules import relational_model as rm
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +35,7 @@ def get_session():
 
 
 def get_form_messages(session: Session):
-    return session.query(FormMessage).all()
+    return session.query(rm.FormMessage).all()
 
 
 def store_form_message(
@@ -48,10 +44,10 @@ def store_form_message(
     email: str,
     message: str,
     created_at: dt.datetime = None,
-) -> FormMessage:
+) -> rm.FormMessage:
     if created_at is None:
         created_at = dt.datetime.now()
-    form_message = FormMessage(
+    form_message = rm.FormMessage(
         name=name,
         email=email,
         message=message,
@@ -64,7 +60,7 @@ def store_form_message(
 
 
 def get_work_experience(session: Session):
-    return session.query(WorkExperience).all()
+    return session.query(rm.WorkExperience).all()
 
 
 def store_work_experience(
@@ -74,8 +70,8 @@ def store_work_experience(
     description: str,
     start_date: dt.date,
     end_date: Optional[dt.date] = None,
-) -> WorkExperience:
-    work_experience = WorkExperience(
+) -> rm.WorkExperience:
+    work_experience = rm.WorkExperience(
         company=company,
         position=position,
         description=description,
@@ -89,7 +85,7 @@ def store_work_experience(
 
 
 def get_personal_projects(session: Session):
-    return session.query(PersonalProject).all()
+    return session.query(rm.PersonalProject).all()
 
 
 def store_personal_project(
@@ -98,13 +94,13 @@ def store_personal_project(
     description: str,
     skills: Optional[List[str]] = None,
     url: Optional[str] = None,
-) -> PersonalProject:
+) -> rm.PersonalProject:
     if not skills:
         skills = None
     elif not isinstance(skills, list):
         skills = [skills]
 
-    personal_project = PersonalProject(
+    personal_project = rm.PersonalProject(
         name=name,
         description=description,
         skills=skills,

@@ -2,14 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 from modules import db
-from modules.api_model import (
-    FormMessageCreate,
-    FormMessage,
-    WorkExperienceCreate,
-    WorkExperience,
-    PersonalProjectCreate,
-    PersonalProject,
-)
+from modules import api_model as api
 from sqlalchemy.orm import Session
 
 router = APIRouter()
@@ -20,14 +13,14 @@ def health():
     return {'message': 'OK!'}
 
 
-@router.get('/form-messages', response_model=List[FormMessage])
+@router.get('/form-messages', response_model=List[api.FormMessage])
 def get_form_messages(session: Session = Depends(db.get_session)):
     return db.get_form_messages(session)
 
 
-@router.post('/form-message', response_model=FormMessage)
+@router.post('/form-message', response_model=api.FormMessage)
 def post_form_message(
-    form_message: FormMessageCreate,
+    form_message: api.FormMessageCreate,
     session: Session = Depends(db.get_session)
 ):
     return db.store_form_message(
@@ -38,14 +31,14 @@ def post_form_message(
     )
 
 
-@router.get('/work-experience', response_model=List[WorkExperience])
+@router.get('/work-experience', response_model=List[api.WorkExperience])
 def get_work_experience(session: Session = Depends(db.get_session)):
     return db.get_work_experience(session)
 
 
-@router.post('/work-experience', response_model=WorkExperience)
+@router.post('/work-experience', response_model=api.WorkExperience)
 def post_work_experience(
-    work_experience: WorkExperienceCreate,
+    work_experience: api.WorkExperienceCreate,
     session: Session = Depends(db.get_session)
 ):
     return db.store_work_experience(
@@ -58,14 +51,14 @@ def post_work_experience(
     )
 
 
-@router.get('/personal-projects', response_model=List[PersonalProject])
+@router.get('/personal-projects', response_model=List[api.PersonalProject])
 def get_personal_projects(session: Session = Depends(db.get_session)):
     return db.get_personal_projects(session)
 
 
-@router.post('/personal-project', response_model=PersonalProject)
+@router.post('/personal-project', response_model=api.PersonalProject)
 def post_personal_project(
-    personal_project: PersonalProjectCreate,
+    personal_project: api.PersonalProjectCreate,
     session: Session = Depends(db.get_session)
 ):
     return db.store_personal_project(
