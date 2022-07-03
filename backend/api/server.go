@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 type server struct {
@@ -60,6 +62,46 @@ func (s *server) handleIndex() http.HandlerFunc {
 		err := json.NewEncoder(w).Encode(response{Message: "OK!"})
 		if err != nil {
 			log.Println("response failed: err")
+			return
+		}
+	}
+}
+
+// handleFormMessages handles GET requests to the form-messages endpoint
+func (s *server) handleFormMessagesGet() http.HandlerFunc {
+	type response struct {
+		Message []formMessage `json:"message"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		//resp, err := http.Get("https://db-dot-isaac-harris-holt-portfolio.nw.r.appspot.com/")
+		//dbResponse, err := http.Get("http://localhost:8000/form-messages")
+		url, ok := os.LookupEnv("DB_HOST")
+		if !ok {
+			url = "http://localhost:8000/form-messages"
+		}
+		dbResponse, err := http.Get(url)
+		if err != nil {
+			log.Println("error making GET request:", err)
+			respondHTTPErr(w, r, http.StatusInternalServerError)
+			return
+		}
+		dbData, err := ioutil.ReadAll(dbResponse.Body)
+		if err != nil {
+			log.Println("error reading DB response:", err)
+			respondHTTPErr(w, r, http.StatusInternalServerError)
+			return
+		}
+		messages := make([]formMessage, 0)
+		err = json.Unmarshal(dbData, &messages)
+		if err != nil {
+			log.Println("error unmarshalling data:", err)
+			respondHTTPErr(w, r, http.StatusInternalServerError)
+			return
+		}
+		err = json.NewEncoder(w).Encode(response{Message: messages})
+		if err != nil {
+			log.Println("error encoding API response:", err)
+			respondHTTPErr(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
