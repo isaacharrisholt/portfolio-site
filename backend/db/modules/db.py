@@ -1,15 +1,16 @@
+import datetime as dt
 import logging
 import os
-from datetime import datetime
 from typing import List, Optional
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 from modules.relational_model import (
     FormMessage,
     WorkExperience,
     PersonalProject,
 )
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 log = logging.getLogger(__name__)
 
@@ -20,8 +21,10 @@ def _connection_string():
 
     if mode in {'dev', 'stag', 'prod'}:
         return os.environ.get('DATABASE_URL', local_db)
-    else:
+    elif mode == 'local':
         return local_db
+    else:
+        raise ValueError(f'Unknown service mode: {mode}')
 
 
 engine = create_engine(_connection_string())
@@ -44,10 +47,10 @@ def store_form_message(
     name: str,
     email: str,
     message: str,
-    created_at: datetime = None,
+    created_at: dt.datetime = None,
 ) -> FormMessage:
     if created_at is None:
-        created_at = datetime.now()
+        created_at = dt.datetime.now()
     form_message = FormMessage(
         name=name,
         email=email,
@@ -69,11 +72,9 @@ def store_work_experience(
     company: str,
     position: str,
     description: str,
-    start_date: datetime,
-    end_date: Optional[datetime] = None,
+    start_date: dt.date,
+    end_date: Optional[dt.date] = None,
 ) -> WorkExperience:
-    if start_date is None:
-        start_date = datetime.now()
     work_experience = WorkExperience(
         company=company,
         position=position,
@@ -95,9 +96,14 @@ def store_personal_project(
     session: Session,
     name: str,
     description: str,
-    skills: List[str],
+    skills: Optional[List[str]] = None,
     url: Optional[str] = None,
 ) -> PersonalProject:
+    if not skills:
+        skills = None
+    elif not isinstance(skills, list):
+        skills = [skills]
+
     personal_project = PersonalProject(
         name=name,
         description=description,
