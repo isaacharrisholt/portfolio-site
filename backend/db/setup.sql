@@ -1,5 +1,7 @@
 /* This file contains the SQL statements required to create the tables used
-   by the application. */
+   by the application. This is just included for reference, as SQLAlchemy will
+   take care of doing this for us if the tables do not exist.
+   */
 CREATE TABLE form_messages (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
   name VARCHAR(320) NULL,
