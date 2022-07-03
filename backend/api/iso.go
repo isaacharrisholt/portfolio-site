@@ -35,6 +35,10 @@ func (t *isoTime) Format(s string) string {
 	return timeObj.Format(s)
 }
 
+func (t *isoTime) Unix() int64 {
+	return time.Time(*t).Unix()
+}
+
 func (t *isoTime) String() string {
 	return t.Format(time.RFC3339)
 }

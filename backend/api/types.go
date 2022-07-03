@@ -4,8 +4,8 @@ type formMessage struct {
 	Name      string  `json:"name"`
 	Email     string  `json:"email"`
 	Message   string  `json:"message"`
-	ID        string  `json:"id,omitempty"`
-	CreatedAt isoTime `json:"created_at,omitempty"`
+	ID        string  `json:"id"`
+	CreatedAt isoTime `json:"created_at"`
 }
 
 type workExperience struct {
@@ -13,13 +13,13 @@ type workExperience struct {
 	Position    string  `json:"position"`
 	Description string  `json:"description"`
 	StartDate   isoDate `json:"start_date"`
-	EndDate     isoDate `json:"end_date,omitempty"`
-	ID          string  `json:"id,omitempty"`
+	EndDate     isoDate `json:"end_date"`
+	ID          string  `json:"id"`
 }
 
 type personalProject struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	Skills      []string `json:"skills"`
-	Url         string   `json:"url,omitempty"`
+	Url         string   `json:"url"`
 }
