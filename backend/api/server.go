@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -47,8 +48,23 @@ func respondErr(w http.ResponseWriter, r *http.Request, status int, args ...inte
 	})
 }
 
-func respondHTTPErr(w http.ResponseWriter, r *http.Request, status int) {
-	respondErr(w, r, status, http.StatusText(status))
+func requestFromDB(endpoint string) ([]byte, error) {
+	urlBase, ok := os.LookupEnv("DB_HOST")
+	if !ok {
+		urlBase = "http://localhost:8000"
+	}
+	url := urlBase + endpoint
+	dbResponse, err := http.Get(url)
+	if err != nil || dbResponse.StatusCode != http.StatusOK {
+		log.Println("error making GET request:", err)
+		return nil, errors.New(fmt.Sprint("error making GET request:", err))
+	}
+	dbData, err := ioutil.ReadAll(dbResponse.Body)
+	if err != nil {
+		log.Println("error reading DB response:", err)
+		return nil, errors.New(fmt.Sprint("error reading DB response:", err))
+	}
+	return dbData, nil
 }
 
 // handleIndex returns an OK response as a health check
@@ -59,50 +75,75 @@ func (s *server) handleIndex() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Received health check")
 		w.WriteHeader(http.StatusOK)
-		err := json.NewEncoder(w).Encode(response{Message: "OK!"})
-		if err != nil {
-			log.Println("response failed: err")
-			return
-		}
+		respond(w, r, http.StatusOK, response{Message: "OK!"})
 	}
 }
 
 // handleFormMessages handles GET requests to the form-messages endpoint
-func (s *server) handleFormMessagesGet() http.HandlerFunc {
+func (s *server) handleFormMessages() http.HandlerFunc {
 	type response struct {
 		Message []formMessage `json:"message"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		//resp, err := http.Get("https://db-dot-isaac-harris-holt-portfolio.nw.r.appspot.com/")
-		//dbResponse, err := http.Get("http://localhost:8000/form-messages")
-		url, ok := os.LookupEnv("DB_HOST")
-		if !ok {
-			url = "http://localhost:8000/form-messages"
-		}
-		dbResponse, err := http.Get(url)
+		dbData, err := requestFromDB("/form-messages")
 		if err != nil {
-			log.Println("error making GET request:", err)
-			respondHTTPErr(w, r, http.StatusInternalServerError)
-			return
-		}
-		dbData, err := ioutil.ReadAll(dbResponse.Body)
-		if err != nil {
-			log.Println("error reading DB response:", err)
-			respondHTTPErr(w, r, http.StatusInternalServerError)
+			log.Println("error requesting from DB:", err)
+			respondErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
 		messages := make([]formMessage, 0)
 		err = json.Unmarshal(dbData, &messages)
 		if err != nil {
-			log.Println("error unmarshalling data:", err)
-			respondHTTPErr(w, r, http.StatusInternalServerError)
+			log.Println("error unmarshalling data:", err, dbData)
+			respondErr(w, r, http.StatusInternalServerError, err, dbData)
 			return
 		}
-		err = json.NewEncoder(w).Encode(response{Message: messages})
+		respond(w, r, http.StatusOK, response{Message: messages})
+	}
+}
+
+// handleWorkExperience handles GET requests for the work-experience endpoint
+func (s *server) handleWorkExperience() http.HandlerFunc {
+	type response struct {
+		Message []workExperience `json:"message"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		dbData, err := requestFromDB("/work-experience")
 		if err != nil {
-			log.Println("error encoding API response:", err)
-			respondHTTPErr(w, r, http.StatusInternalServerError)
+			log.Println("error requesting from DB:", err)
+			respondErr(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		messages := make([]workExperience, 0)
+		err = json.Unmarshal(dbData, &messages)
+		if err != nil {
+			log.Println("error unmarshalling data:", err, string(dbData))
+			respondErr(w, r, http.StatusInternalServerError, err, string(dbData))
+			return
+		}
+		respond(w, r, http.StatusOK, response{Message: messages})
+	}
+}
+
+// handlePersonalProjects handles GET requests for the personal-projects endpoint
+func (s *server) handlePersonalProjects() http.HandlerFunc {
+	type response struct {
+		Message []personalProject `json:"message"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		dbData, err := requestFromDB("/personal-projects")
+		if err != nil {
+			log.Println("error requesting from DB:", err)
+			respondErr(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		messages := make([]personalProject, 0)
+		err = json.Unmarshal(dbData, &messages)
+		if err != nil {
+			log.Println("error unmarshalling data:", err, string(dbData))
+			respondErr(w, r, http.StatusInternalServerError, err, string(dbData))
+			return
+		}
+		respond(w, r, http.StatusOK, response{Message: messages})
 	}
 }
