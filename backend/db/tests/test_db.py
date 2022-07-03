@@ -62,49 +62,42 @@ def local_db_session():
     test_engine.dispose()
 
 
-def test_connection_string_no_service_mode(monkeypatch):
-    monkeypatch.delenv('SERVICE_MODE', raising=False)
-    assert db._connection_string() == (
-        'cockroachdb://root@localhost:26257/defaultdb'
-    )
+def test_connection_string_no_service_mode():
+    with pytest.raises(TypeError):
+        db._connection_string()
 
 
-def test_connection_string_local_mode(monkeypatch):
-    monkeypatch.setenv('SERVICE_MODE', 'local')
-    assert db._connection_string() == (
+def test_connection_string_local_mode():
+    assert db._connection_string('local') == (
         'cockroachdb://root@localhost:26257/defaultdb'
     )
 
 
 def test_connection_string_dev_mode(monkeypatch):
-    monkeypatch.setenv('SERVICE_MODE', 'dev')
     monkeypatch.setenv('DATABASE_URL', 'not_the_real_url')
-    assert db._connection_string() == (
+    assert db._connection_string('dev') == (
         'not_the_real_url'
     )
 
 
 def test_connection_string_stag_mode(monkeypatch):
-    monkeypatch.setenv('SERVICE_MODE', 'stag')
     monkeypatch.setenv('DATABASE_URL', 'not_the_real_url')
-    assert db._connection_string() == (
+    assert db._connection_string('stag') == (
         'not_the_real_url'
     )
 
 
 def test_connection_string_prod_mode(monkeypatch):
-    monkeypatch.setenv('SERVICE_MODE', 'prod')
     monkeypatch.setenv('DATABASE_URL', 'not_the_real_url')
-    assert db._connection_string() == (
+    assert db._connection_string('prod') == (
         'not_the_real_url'
     )
 
 
 def test_connection_string_unknown_service_mode(monkeypatch):
-    monkeypatch.setenv('SERVICE_MODE', 'unknown')
-    monkeypatch.setenv('DATABASE_URL', 'not_the_real_url')
-    with pytest.raises(ValueError):
-        db._connection_string()
+    assert db._connection_string('unknown') == (
+        'cockroachdb://root@localhost:26257/defaultdb'
+    )
 
 
 def test_store_form_message(local_db_session):
