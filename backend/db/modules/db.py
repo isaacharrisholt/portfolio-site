@@ -7,27 +7,45 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from modules import relational_model as rm
+from modules import global_vars
 
 log = logging.getLogger(__name__)
 
 
-def _connection_string():
-    mode = os.environ.get('SERVICE_MODE', 'local')
+def _connection_string(mode):
     local_db = 'cockroachdb://root@localhost:26257/defaultdb'
 
     if mode in {'dev', 'stag', 'prod'}:
         return os.environ.get('DATABASE_URL', local_db)
-    elif mode == 'local':
-        return local_db
     else:
-        raise ValueError(f'Unknown service mode: {mode}')
+        return local_db
 
 
-engine = create_engine(_connection_string())
+def _get_engine():
+    mode = os.environ.get('SERVICE_MODE', 'local')
+    connection_string = _connection_string(mode)
+    if mode in {'dev', 'stag', 'prod'}:
+        # Path to the root certificate. This should be placed in the db folder.
+        # The /workspace folder is an App Engine folder.
+        connect_args = {'sslrootcert': '/workspace/root.crt'}
+        return create_engine(
+            connection_string,
+            connect_args=connect_args
+        )
+    elif mode == 'local':
+        return create_engine(connection_string)
+    else:
+        raise ValueError(f'Unknown mode: {mode}')
+
+
+def set_up_engine():
+    engine = _get_engine()
+    rm.Base.metadata.create_all(engine)
+    global_vars.ENGINE = engine
 
 
 def get_session():
-    session = Session(engine)
+    session = Session(global_vars.ENGINE)
     try:
         yield session
     finally:

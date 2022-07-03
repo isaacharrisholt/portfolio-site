@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from modules import routes
+from modules import routes, db
 
 app = FastAPI()
 app.include_router(routes.router)
@@ -18,3 +18,8 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+
+@app.on_event('startup')
+def startup():
+    db.set_up_engine()
