@@ -34,5 +34,11 @@
 		"tslib": "^2.3.1",
 		"typescript": "^4.7.2"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@google-cloud/recaptcha-enterprise": "^3.0.1",
+		"dotenv": "^16.0.1",
+		"isomorphic-dompurify": "^0.20.0",
+		"marked": "^4.0.18"
+	}
 }
