@@ -25,7 +25,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "3000"
+		port = "4000"
 		log.Printf("Defaulting to port %s", port)
 	}
 
