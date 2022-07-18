@@ -19,7 +19,7 @@ func main() {
 	s.routes()
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "4000"
+		port = "5000"
 		log.Printf("Defaulting to port %s", port)
 	}
 	log.Printf("Listening on port %s", port)
