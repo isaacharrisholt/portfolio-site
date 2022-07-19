@@ -56,7 +56,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		Message string `json:"message"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Received health check")
+		log.Println("received health check")
 		w.WriteHeader(http.StatusOK)
 		respond(w, http.StatusOK, response{Message: "OK!"})
 	}
@@ -68,8 +68,8 @@ func (s *server) handleEmailPost() http.HandlerFunc {
 		Message struct {
 			Attributes map[string]string `json:"attributes"`
 			// Data contains a list due to issues with the API service
-			Data []map[string]string `json:"data"`
-			ID   string              `json:"message_id"`
+			Data []byte `json:"data"`
+			ID   string `json:"message_id"`
 		} `json:"message"`
 		Subscription string `json:"subscription"`
 	}
@@ -79,24 +79,38 @@ func (s *server) handleEmailPost() http.HandlerFunc {
 			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 			return
 		}
+		log.Println("got email POST request")
 		msg := &request{}
-		if err := decodeBody(r, msg); err != nil {
+		if err := decodeBody(r, &msg); err != nil {
+			log.Printf("could not decode body: %v", err)
 			respondErr(w, http.StatusBadRequest, fmt.Sprintf("could not decode body: %v", err))
 			return
 		}
-		name := msg.Message.Data[0]["name"]
-		email := msg.Message.Data[0]["email"]
-		contactMessage := msg.Message.Data[0]["message"]
+		data := make(map[string]interface{})
+		if err := json.Unmarshal(msg.Message.Data, &data); err != nil {
+			log.Printf("could not decode data: %v", err)
+			respondErr(w, http.StatusBadRequest, fmt.Sprintf("could not decode data: %v", err))
+			return
+		}
+		name := data["name"].(string)
+		email := data["email"].(string)
+		contactMessage := data["message"].(string)
+		log.Println("sending notification email")
 		err := s.sendNotificationEmail(name, email, contactMessage)
 		if err != nil {
-			respondErr(w, http.StatusBadRequest, fmt.Sprintf("could not send notification email: %v", err))
+			log.Printf("could not send notification email: %v", err)
+			respondErr(w, http.StatusInternalServerError, fmt.Sprintf("could not send notification email: %v", err))
 			return
 		}
+		log.Println("done sending notification email")
+		log.Println("sending thank you email")
 		err = s.sendThankYouEmail(name, email)
 		if err != nil {
-			respondErr(w, http.StatusBadRequest, fmt.Sprintf("could not send thank you email: %v", err))
+			log.Printf("could not send thank you email: %v", err)
+			respondErr(w, http.StatusInternalServerError, fmt.Sprintf("could not send thank you email: %v", err))
 			return
 		}
+		log.Println("done sending thank you email")
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -116,7 +130,7 @@ func (s *server) sendThankYouEmail(toName, toEmail string) error {
 			To: &mailjet.RecipientsV31{
 				mailjet.RecipientV31{
 					Email: toEmail,
-					Name:  firstName,
+					Name:  toName,
 				},
 			},
 			TemplateID:       4082854,

@@ -110,7 +110,7 @@ func dbPostRequest(endpoint string, data interface{}) ([]byte, error) {
 }
 
 // publishPubSubRequest publishes a JSON message on the specified Pub/Sub topic
-func (s *server) publishPubSubRequest(topic string, message []byte) (string, error) {
+func (s *server) publishPubSubRequest(topic string, message interface{}) (string, error) {
 	ctx := context.Background()
 	jsonMessage, err := json.Marshal(message)
 	if err != nil {
@@ -132,7 +132,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		Message string `json:"message"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Received health check")
+		log.Println("received health check")
 		w.WriteHeader(http.StatusOK)
 		respond(w, http.StatusOK, response{Message: "OK!"})
 	}
@@ -164,6 +164,7 @@ func (s *server) handleFormMessagesGet() http.HandlerFunc {
 		Message []formMessage `json:"message"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("got form-messages GET request")
 		dbData, err := dbGetRequest("/form-messages")
 		if err != nil {
 			log.Println("error requesting from DB:", err)
@@ -190,6 +191,7 @@ func (s *server) handleFormMessagesPost() http.HandlerFunc {
 		Message []formMessage `json:"message"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("got form-messages POST request")
 		var requestMessage formMessage
 		err := decodeBody(r, &requestMessage)
 		if err != nil {
@@ -214,7 +216,7 @@ func (s *server) handleFormMessagesPost() http.HandlerFunc {
 		}
 
 		// DB response contains a valid formMessage, so we can just publish this
-		_, err = s.publishPubSubRequest("email-request", dbData)
+		_, err = s.publishPubSubRequest("email-request", responseMessage)
 		if err != nil {
 			log.Println("error publishing to Pub/Sub:", err)
 			respondErr(w, http.StatusInternalServerError, err)
@@ -230,6 +232,7 @@ func (s *server) handleWorkExperience() http.HandlerFunc {
 		Message []workExperience `json:"message"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("got work-experience GET request")
 		dbData, err := dbGetRequest("/work-experience")
 		if err != nil {
 			log.Println("error requesting from DB:", err)
@@ -253,6 +256,7 @@ func (s *server) handlePersonalProjects() http.HandlerFunc {
 		Message []personalProject `json:"message"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("got personal-projects GET request")
 		dbData, err := dbGetRequest("/personal-projects")
 		if err != nil {
 			log.Println("error requesting from DB:", err)
