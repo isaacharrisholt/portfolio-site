@@ -199,14 +199,12 @@ func (s *server) handleFormMessagesPost() http.HandlerFunc {
 			respondErr(w, http.StatusInternalServerError, err)
 			return
 		}
-
 		dbData, err := dbPostRequest("/form-message", requestMessage)
 		if err != nil {
 			log.Println("error POSTing to DB:", err)
 			respondErr(w, http.StatusInternalServerError, err)
 			return
 		}
-
 		var responseMessage formMessage
 		err = json.Unmarshal(dbData, &responseMessage)
 		if err != nil {
@@ -214,8 +212,6 @@ func (s *server) handleFormMessagesPost() http.HandlerFunc {
 			respondErr(w, http.StatusInternalServerError, err)
 			return
 		}
-
-		// DB response contains a valid formMessage, so we can just publish this
 		_, err = s.publishPubSubRequest("email-request", responseMessage)
 		if err != nil {
 			log.Println("error publishing to Pub/Sub:", err)
