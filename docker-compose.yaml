@@ -54,7 +54,7 @@ services:
     container_name: local_email
     hostname: local_email
     ports:
-      - "4000:4000"
+      - "5000:5000"
     volumes:
       - ~/.config/gcloud:/.config/gcloud  # Use gcloud application default credentials
     networks:
