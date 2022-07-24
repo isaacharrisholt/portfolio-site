@@ -62,41 +62,16 @@ def local_db_session():
     test_engine.dispose()
 
 
-def test_connection_string_no_service_mode():
-    with pytest.raises(TypeError):
-        db._connection_string()
-
-
-def test_connection_string_local_mode():
-    assert db._connection_string('local') == (
+def test_connection_string_no_mode():
+    assert db._connection_string() == (
         'cockroachdb://root@localhost:26257/defaultdb'
     )
 
 
-def test_connection_string_dev_mode(monkeypatch):
+def test_connection_string_with_mode(monkeypatch):
     monkeypatch.setenv('DATABASE_URL', 'not_the_real_url')
-    assert db._connection_string('dev') == (
+    assert db._connection_string() == (
         'not_the_real_url'
-    )
-
-
-def test_connection_string_stag_mode(monkeypatch):
-    monkeypatch.setenv('DATABASE_URL', 'not_the_real_url')
-    assert db._connection_string('stag') == (
-        'not_the_real_url'
-    )
-
-
-def test_connection_string_prod_mode(monkeypatch):
-    monkeypatch.setenv('DATABASE_URL', 'not_the_real_url')
-    assert db._connection_string('prod') == (
-        'not_the_real_url'
-    )
-
-
-def test_connection_string_unknown_service_mode(monkeypatch):
-    assert db._connection_string('unknown') == (
-        'cockroachdb://root@localhost:26257/defaultdb'
     )
 
 

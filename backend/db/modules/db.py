@@ -12,18 +12,14 @@ from modules import global_vars
 log = logging.getLogger(__name__)
 
 
-def _connection_string(mode):
+def _connection_string():
     local_db = 'cockroachdb://root@localhost:26257/defaultdb'
-
-    if mode in {'dev', 'stag', 'prod'}:
-        return os.environ.get('DATABASE_URL', local_db)
-    else:
-        return local_db
+    return os.environ.get('DATABASE_URL', local_db)
 
 
 def _get_engine():
     mode = os.environ.get('SERVICE_MODE', 'local')
-    connection_string = _connection_string(mode)
+    connection_string = _connection_string()
     if mode in {'dev', 'stag', 'prod'}:
         # Path to the root certificate. This should be placed in the db folder.
         # The /workspace folder is an App Engine folder.

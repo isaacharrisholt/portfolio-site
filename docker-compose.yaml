@@ -2,11 +2,65 @@ services:
   local_roach:
     image: cockroachdb/cockroach:latest
     container_name: local_roach
+    hostname: local_roach
     ports:
-      - "8080:8080"
-      - "26257:26257"
+      - "8080:8080"  # Cockroach console
+      - "26257:26257"  # DB
     volumes:
-      - ./backend/db/local_roach:/cockroach/cockroach-data
+      - ./local_roach:/cockroach/cockroach-data
     command:
       - start-single-node
       - --insecure
+    networks:
+      - portfolio_site_network
+  local_db:
+    build:
+      context: ./backend/db
+      dockerfile: ./db.Dockerfile
+    image: local_db
+    container_name: local_db
+    hostname: local_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/db/modules:/app/modules  # Allows for hot reload
+    networks:
+      - portfolio_site_network
+    environment:
+      - API_HOST=portfolio_site_network
+      - DATABASE_URL=cockroachdb://root@local_roach:26257/defaultdb
+    depends_on:
+      - local_roach
+  local_api:
+    build:
+      context: ./backend/api
+      dockerfile: ./api.Dockerfile
+    image: local_api
+    container_name: local_api
+    hostname: local_api
+    ports:
+      - "4000:4000"
+    volumes:
+      - ~/.config/gcloud:/.config/gcloud  # Use gcloud application default credentials
+    networks:
+      - portfolio_site_network
+    environment:
+      - DB_HOST=local_db:8000
+  local_email:
+    build:
+      context: ./backend/email
+      dockerfile: ./email.Dockerfile
+    image: local_email
+    container_name: local_email
+    hostname: local_email
+    ports:
+      - "4000:4000"
+    volumes:
+      - ~/.config/gcloud:/.config/gcloud  # Use gcloud application default credentials
+    networks:
+      - portfolio_site_network
+
+networks:
+  portfolio_site_network:
+    driver: bridge
+    name: portfolio_site_network
