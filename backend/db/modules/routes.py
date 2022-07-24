@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get('/')
 def health():
-    return {'message': 'OK!'}
+    return {'message': 'DB OK!'}
 
 
 @router.get('/form-messages', response_model=List[api.FormMessage])

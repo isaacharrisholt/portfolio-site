@@ -27,7 +27,7 @@ services:
     networks:
       - portfolio_site_network
     environment:
-      - API_HOST=portfolio_site_network
+      - API_HOST=localhost
       - DATABASE_URL=cockroachdb://root@local_roach:26257/defaultdb
     depends_on:
       - local_roach
@@ -45,7 +45,7 @@ services:
     networks:
       - portfolio_site_network
     environment:
-      - DB_HOST=local_db:8000
+      - DB_HOST=http://local_db:8000
   local_email:
     build:
       context: ./backend/email
@@ -59,6 +59,8 @@ services:
       - ~/.config/gcloud:/.config/gcloud  # Use gcloud application default credentials
     networks:
       - portfolio_site_network
+  # local_frontend:
+
 
 networks:
   portfolio_site_network:

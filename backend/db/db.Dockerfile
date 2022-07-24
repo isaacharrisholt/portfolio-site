@@ -8,4 +8,4 @@ RUN pip install -r requirements.txt
 COPY main.py .
 COPY modules .
 
-CMD [ "uvicorn", "main:app", "--reload" ]
+CMD [ "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000" ]

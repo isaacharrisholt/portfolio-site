@@ -8,14 +8,14 @@ import os
 app = FastAPI()
 app.include_router(routes.router)
 
-hosts = [
-    os.environ.get('API_HOST', 'localhost'),
-]
-
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=hosts,
-)
+if os.environ.get('USE_TRUSTED_HOSTS', False):
+    hosts = [
+        os.environ.get('API_HOST', 'localhost'),
+    ]
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=hosts,
+    )
 
 
 @app.on_event('startup')
