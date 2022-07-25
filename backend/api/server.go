@@ -126,6 +126,19 @@ func (s *server) publishPubSubRequest(topic string, message interface{}) (string
 	return result.Get(ctx)
 }
 
+// withCORS is middleware that adds CORS headers to the response
+func (s *server) withCORS(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Accept, X-Requested-With")
+		if r.Method == "OPTIONS" {
+			return
+		}
+		h(w, r)
+	}
+}
+
 // handleIndex returns an OK response as a health check
 func (s *server) handleIndex() http.HandlerFunc {
 	type response struct {
