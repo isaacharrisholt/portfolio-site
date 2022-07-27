@@ -22,7 +22,7 @@
     import About from "../components/About.svelte";
     import WorkExperience from "../components/WorkExperience.svelte";
     import Projects from "../components/Projects.svelte";
-    import Contact from "../components/Contact.svelte";
+    import ContactForm from "../components/ContactForm.svelte";
 
     export let workExperience: any;
     export let projects: any;
@@ -44,5 +44,5 @@
 <!--    <About/>-->
     <WorkExperience {workExperience}/>
     <Projects {projects}/>
-    <Contact/>
+    <ContactForm/>
 </div>

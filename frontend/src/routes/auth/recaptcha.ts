@@ -1,4 +1,32 @@
 import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterprise';
+import type { RequestEvent } from '@sveltejs/kit'
+
+export async function post({ request }: RequestEvent) {
+    const data = await request.json();
+    console.log(`Data: ${JSON.stringify(data)}`);
+    const { token, recaptchaAction } = data;
+    const score: number | null = await createAssessment(token, recaptchaAction);
+
+    if (!score) {
+        return {
+            status: 400,
+            body: {
+                error: 'Invalid token',
+            },
+        }
+    }
+
+    return {
+        status: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        body: {
+            score: score,
+        }
+    };
+}
 
 /**
  * Create an assessment to analyze the risk of an UI action. Note that
@@ -11,7 +39,7 @@ import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterp
  * recaptchaAction: Action name corresponding to the token.
  */
 export async function createAssessment(
-	token: string,
+    token: string,
 	recaptchaAction: string,
 	projectID: string = 'isaac-harris-holt-portfolio',
 	recaptchaSiteKey: string = '6LeOouUgAAAAAM0vGJymyJ9_PhbXgCx9DaYB3E_2'
@@ -45,7 +73,7 @@ export async function createAssessment(
 			'The CreateAssessment call failed because the token was: ' +
 				response.tokenProperties.invalidReason
 		);
-
+        client.close();
 		return null;
 	}
 
@@ -60,15 +88,15 @@ export async function createAssessment(
 
 		response.riskAnalysis.reasons.forEach((reason) => {
 			console.log(reason);
-		});
+		});	
+        client.close();
 		return response.riskAnalysis.score;
 	} else {
 		console.log(
 			'The action attribute in your reCAPTCHA tag ' +
 				'does not match the action you are expecting to score'
 		);
+        client.close();
 		return null;
 	}
-
-	client.close();
 }

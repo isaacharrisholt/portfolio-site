@@ -21,3 +21,6 @@
 
 # CockroachDB certificates
 **/root.crt
+
+# Service account key files
+**/service-account.json
