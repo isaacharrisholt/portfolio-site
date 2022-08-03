@@ -2,7 +2,6 @@ services:
   local_roach:
     image: cockroachdb/cockroach:latest
     container_name: local_roach
-    hostname: local_roach
     ports:
       - "8080:8080"  # Cockroach console
       - "26257:26257"  # DB
@@ -19,7 +18,6 @@ services:
       dockerfile: ./db.Dockerfile
     image: local_db
     container_name: local_db
-    hostname: local_db
     ports:
       - "8000:8000"
     volumes:
@@ -37,7 +35,6 @@ services:
       dockerfile: ./api.Dockerfile
     image: local_api
     container_name: local_api
-    hostname: local_api
     ports:
       - "4000:4000"
     volumes:
@@ -46,20 +43,36 @@ services:
       - portfolio_site_network
     environment:
       - DB_HOST=http://local_db:8000
+    depends_on:
+      - local_db
+      - local_email
   local_email:
     build:
       context: ./backend/email
       dockerfile: ./email.Dockerfile
     image: local_email
     container_name: local_email
-    hostname: local_email
     ports:
       - "5000:5000"
     volumes:
       - ~/.config/gcloud:/.config/gcloud  # Use gcloud application default credentials
     networks:
       - portfolio_site_network
-  # local_frontend:
+  local_frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./frontend.Dockerfile
+    image: local_frontend
+    container_name: local_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src  # Allows for hot reload
+    networks:
+      - portfolio_site_network
+    environment:
+      - API_URL=http://local_api:4000
+
 
 
 networks:

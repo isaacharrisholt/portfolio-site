@@ -1,22 +1,3 @@
-<script context="module">
-    export async function load({ fetch }) {
-        const [
-            workExperienceData,
-            projectsData,
-        ] = await Promise.all([
-            fetch("http://localhost:4000/work-experience").then(res => res.json()),
-            fetch("http://localhost:4000/personal-projects").then(res => res.json()),
-        ]);
-
-        return {
-            props: {
-                workExperience: workExperienceData.message,
-                projects: projectsData.message
-            }
-        };
-    }
-</script>
-
 <script lang="ts">
     import Hero from "../components/Hero.svelte";
     import About from "../components/About.svelte";
