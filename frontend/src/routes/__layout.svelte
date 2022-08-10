@@ -1,5 +1,11 @@
 <script>
     import "../app.css";
+    import DarkModeToggle from "../components/DarkModeToggle.svelte";
+
+    let dark = true;
 </script>
 
-<slot />
+<div class:dark>
+    <DarkModeToggle bind:dark />
+    <slot />
+</div>

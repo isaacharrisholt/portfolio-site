@@ -12,7 +12,7 @@
         {#if isSignature}
             <ShortSignature/>
         {:else}
-            <i class="{faIcon} text-5xl text-white"></i>
+            <i class="{faIcon} text-5xl text-black dark:text-white"></i>
         {/if}
     </div>
 </a>
