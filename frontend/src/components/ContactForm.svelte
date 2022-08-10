@@ -66,7 +66,7 @@
 	<div class="h-fit">
 		<form on:submit|preventDefault={handleSubmit}>
 			<div class="grid grid-cols-2 gap-4">
-				<div class="col-span-1">
+				<div class="lg:col-span-1 col-span-2">
 					<input 
 						type="text"
 						id="name"
@@ -76,7 +76,7 @@
 						on:keyup={() => (submittable = validate())}
 					/>
 				</div>
-				<div class="col-span-1">
+				<div class="lg:col-span-1 col-span-2">
 					<input
 						type="email"
 						id="email"
