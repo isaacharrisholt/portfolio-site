@@ -39,6 +39,7 @@
 		"@google-cloud/recaptcha-enterprise": "^3.0.1",
 		"dotenv": "^16.0.1",
 		"isomorphic-dompurify": "^0.20.0",
-		"marked": "^4.0.18"
+		"marked": "^4.0.18",
+		"moment": "^2.29.4"
 	}
 }

@@ -1,21 +1,55 @@
+<script context="module">
+    const closers = new Map();
+</script>
+
 <script lang="ts">
-  export let open: boolean = true;
+    import Chevron from "./Chevron.svelte";
+    import {slide} from 'svelte/transition';
+    import {onMount} from "svelte";
 
-  import { slide } from 'svelte/transition';
+    export let open: boolean;
+    export let accordionGroup: string;
 
-  const onClick = () => open = !open;
+    onMount(() => {
+        if (!closers.get(accordionGroup)) {
+            closers.set(accordionGroup, new Set());
+        }
+        closers.get(accordionGroup).add(close);
+        return () => {
+            closers.get(accordionGroup).delete(close);
+        }
+    });
+
+    function close() {
+        open = false;
+    }
+
+    function closeOthers() {
+        closers.get(accordionGroup).forEach(e => {
+            if (e !== close) {
+                e();
+            }
+        });
+    }
+
+    const onClick = () => {
+        open = !open;
+        closeOthers();
+    };
 </script>
 
 <section>
-  <button on:click={onClick}>
-    <slot name="title" />
-  </button>
+    <button on:click={onClick} class="w-full">
+        <div class="flex flex-row justify-start items-center">
+            <Chevron {open}/>
+            <slot name="title"/>
+        </div>
+    </button>
 
-  {#if open}
-  <div transition:slide={{ duration: 500 }}>
-    <p>Hey</p>
-    <slot name="content" />
-  </div>
-  {/if}
+    {#if open}
+        <div transition:slide={{ duration: 500 }}>
+            <slot name="content"/>
+        </div>
+    {/if}
 
 </section>

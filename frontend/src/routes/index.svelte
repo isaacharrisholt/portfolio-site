@@ -23,7 +23,11 @@
 <div class="bg-gradient-to-br from-green-300 to-sky-400 w-full h-fit absolute">
     <Hero/>
 <!--    <About/>-->
-    <WorkExperience {workExperience}/>
+
+    {#if workExperience.length > 0}
+        <WorkExperience {workExperience}/>
+    {/if}
+
     <Projects {projects}/>
     <ContactForm/>
 </div>

@@ -1,29 +1,49 @@
 <script>
     import DOMPurify from 'isomorphic-dompurify';
     import { marked } from 'marked';
-import About from './About.svelte';
+    import moment from 'moment';
 
     import Accordion from './Accordion.svelte';
 
     export let workExperience;
+
+    function reformatDate(date) {
+        return moment(date, 'YYYY-MM-DD').format('MMMM YYYY');
+    }
 </script>
 
-<div class="h-fit w-9/10 sm:w-4/5 md:w-7/10 lg:w-3/5 mx-auto p-4 flex flex-col justify-center border-4 rounded-xl border-white bg-white">
-    {#each workExperience as experience, index}
-    <Accordion open=false>
-        <div slot="title">
-            <h1 class="font-bold text-xl">{experience.company}</h1>
-            <h2 class="font-bold text-lg">{experience.position}</h2>
-        </div>
+<div class="h-screen flex flex-col justify-center">
+    <div class="accordion-box w-9/10 sm:w-4/5 md:w-7/10 lg:w-3/5">
+        <h1 class="text-left text-2xl font-bold pb-4">Work Experience</h1>
+        {#each workExperience as experience, index}
+            <Accordion open={index === 0} accordionGroup="workExperience">
+                <div slot="title" class="flex flex-row w-full justify-between h-fit">
+                    <div>
+                        <h1 class="font-bold text-xl text-left">{experience.company}</h1>
+                        <h2 class="font-bold text-lg text-left">{experience.position}</h2>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <h3 class="text-md text-right">
+                            {#if experience.end_date}
+                                {reformatDate(experience.start_date)} - {reformatDate(experience.end_date)}
+                            {:else}
+                                {reformatDate(experience.start_date)} - Present
+                            {/if}
+                        </h3>
+                    </div>
+                </div>
 
-        <div slot="content" class="experience-block">
-            {@html DOMPurify.sanitize(marked.parse(experience.description))}
-        </div>
-    </Accordion>
-    {#if index < workExperience.length-1}
-    <div class="h-4" />
-    {/if}
-    {/each}
+                <div slot="content" class="experience-block">
+                    {@html DOMPurify.sanitize(marked.parse(experience.description)).replace('<a', '<a target="_blank"')}
+                </div>
+            </Accordion>
+            {#if index < workExperience.length - 1}
+                <div class="flex flex-col justify-center h-4">
+                    <hr class="border-b border-gray-200 w-4/5 m-auto align-middle" />
+                </div>
+            {/if}
+        {/each}
+    </div>
 </div>
 
 <style>
