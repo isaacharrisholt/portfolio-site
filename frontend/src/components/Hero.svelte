@@ -42,13 +42,13 @@
     ]
 </script>
 
-<div class="h-screen w-9/10 md:w-[80vw] mx-auto py-20 px-8">
-    <div class="mb-8">
-        <h1 class="font-mono text-2xl font-bold text-black dark:text-white">Hey, I'm</h1>
-        <h2 class="text-3xl md:text-4xl font-bold text-black dark:text-white">Isaac Harris-Holt</h2>
-        <h3 class="uppercase text-xl md:text-2xl font-light font-sans text-black dark:text-white">Software Engineer</h3>
+<div class="h-screen w-9/10 md:w-[80vw] mx-auto py-20 px-8 flex flex-col justify-center">
+    <div class="mb-8 mx-auto">
+        <h1 class="font-mono text-4xl font-bold text-black dark:text-white text-center">Hey, I'm</h1>
+        <h2 class="text-3xl md:text-6xl font-bold text-black dark:text-white text-center">Isaac Harris-Holt</h2>
+        <h3 class="uppercase text-3xl md:text-4xl font-light font-sans text-black dark:text-white text-center">Software Engineer</h3>
     </div>
-    <div class="grid gap-4 justify-start w-full" style="grid-template-columns: repeat(auto-fit, 4rem)">
+    <div class="grid gap-4 justify-center w-full" style="grid-template-columns: repeat(auto-fit, 4rem)">
         {#each socials as social}
             <SocialIcon {...social} />
         {/each}
