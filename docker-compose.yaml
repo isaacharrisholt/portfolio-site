@@ -71,7 +71,7 @@ services:
     networks:
       - portfolio_site_network
     environment:
-      - API_URL=http://local_api:4000
+      - API_HOST=http://local_api:4000
 
 
 
