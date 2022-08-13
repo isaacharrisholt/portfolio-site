@@ -172,6 +172,7 @@ def test_store_work_experience(local_db_session):
         local_db_session,
         company='company',
         position='position',
+        skills=['skill', 'skill2'],
         start_date=start_date,
         end_date=end_date,
         description='description',
@@ -180,6 +181,7 @@ def test_store_work_experience(local_db_session):
     want = relational_model.WorkExperience(
         company='company',
         position='position',
+        skills=['skill', 'skill2'],
         start_date=start_date,
         end_date=end_date,
         description='description',
@@ -200,6 +202,7 @@ def test_store_work_experience_no_end_date(local_db_session):
         local_db_session,
         company='company',
         position='position',
+        skills=['skill', 'skill2'],
         start_date=start_date,
         description='description',
     )
@@ -207,6 +210,7 @@ def test_store_work_experience_no_end_date(local_db_session):
     want = relational_model.WorkExperience(
         company='company',
         position='position',
+        skills=['skill', 'skill2'],
         start_date=start_date,
         end_date=None,
         description='description',
@@ -228,6 +232,22 @@ def test_store_work_experience_no_company(local_db_session):
         db.store_work_experience(
             local_db_session,
             position='position',
+            skills=['skill', 'skill2'],
+            start_date=start_date,
+            end_date=end_date,
+            description='description',
+        )
+
+
+def test_store_work_experience_no_skills(local_db_session):
+    local_db_session.query(relational_model.WorkExperience).delete()
+    start_date = dt.date.today()
+    end_date = dt.date.today() + dt.timedelta(days=1)
+    with pytest.raises(TypeError):
+        db.store_work_experience(
+            local_db_session,
+            company='company',
+            position='position',
             start_date=start_date,
             end_date=end_date,
             description='description',
@@ -241,6 +261,7 @@ def test_store_work_experience_invalid_date(local_db_session):
             local_db_session,
             company='company',
             position='position',
+            skills=['skill', 'skill2'],
             start_date='invalid',
             end_date='invalid',
             description='description',
@@ -254,6 +275,7 @@ def test_get_work_experience(local_db_session):
     work_experience = relational_model.WorkExperience(
         company='company',
         position='position',
+        skills=['skill', 'skill2'],
         start_date=dt.date.today(),
         end_date=dt.date.today() + dt.timedelta(days=1),
         description='description',

@@ -23,6 +23,7 @@ class WorkExperienceCreate(BaseModel):
     company: str
     position: str
     description: str
+    skills: List[str]
     start_date: date
     end_date: date = None
 

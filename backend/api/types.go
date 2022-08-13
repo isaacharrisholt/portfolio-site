@@ -9,12 +9,13 @@ type formMessage struct {
 }
 
 type workExperience struct {
-	Company     string  `json:"company"`
-	Position    string  `json:"position"`
-	Description string  `json:"description"`
-	StartDate   isoDate `json:"start_date"`
-	EndDate     isoDate `json:"end_date"`
-	ID          string  `json:"id"`
+	Company     string   `json:"company"`
+	Position    string   `json:"position"`
+	Description string   `json:"description"`
+	Skills      []string `json:"skills"`
+	StartDate   isoDate  `json:"start_date"`
+	EndDate     isoDate  `json:"end_date"`
+	ID          string   `json:"id"`
 }
 
 type personalProject struct {

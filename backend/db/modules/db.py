@@ -82,6 +82,7 @@ def store_work_experience(
     company: str,
     position: str,
     description: str,
+    skills: List[str],
     start_date: dt.date,
     end_date: Optional[dt.date] = None,
 ) -> rm.WorkExperience:
@@ -89,6 +90,7 @@ def store_work_experience(
         company=company,
         position=position,
         description=description,
+        skills=skills,
         start_date=start_date,
         end_date=end_date,
     )

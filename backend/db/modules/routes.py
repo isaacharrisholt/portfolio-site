@@ -46,6 +46,7 @@ def post_work_experience(
         company=work_experience.company,
         position=work_experience.position,
         description=work_experience.description,
+        skills=work_experience.skills,
         start_date=work_experience.start_date,
         end_date=work_experience.end_date,
     )

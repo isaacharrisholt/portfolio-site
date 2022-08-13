@@ -4,6 +4,7 @@
     import moment from 'moment';
 
     import Accordion from './Accordion.svelte';
+    import Chip from "./Chip.svelte";
 
     export let workExperience;
 
@@ -22,14 +23,19 @@
                         <h1 class="font-bold text-xl text-left">{experience.company}</h1>
                         <h2 class="font-bold text-lg text-left">{experience.position}</h2>
                     </div>
-                    <div class="flex flex-col justify-center">
-                        <h3 class="text-md text-right">
+                    <div class="flex flex-col justify-between">
+                        <h3 class="text-md text-right font-bold">
                             {#if experience.end_date}
                                 {reformatDate(experience.start_date)} - {reformatDate(experience.end_date)}
                             {:else}
                                 {reformatDate(experience.start_date)} - Present
                             {/if}
                         </h3>
+                        <div class="flex flex-row gap-2 justify-end">
+                            {#each experience.skills as skill}
+                                <Chip content={skill} />
+                            {/each}
+                        </div>
                     </div>
                 </div>
 
@@ -50,5 +56,9 @@
     .experience-block :global(ul) {
         list-style-type: disc;
         padding-left: 2rem;
+    }
+
+    .experience-block :global(a) {
+        @apply text-gray-700 underline;
     }
 </style>

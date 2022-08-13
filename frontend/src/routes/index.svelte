@@ -28,6 +28,9 @@
         <WorkExperience {workExperience}/>
     {/if}
 
-    <Projects {projects}/>
+    {#if projects.length > 0}
+        <Projects {projects}/>
+    {/if}
+
     <ContactForm/>
 </div>

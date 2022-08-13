@@ -35,6 +35,7 @@ class WorkExperience(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid1)
     company = Column(String(255))
     position = Column(String(255))
+    skills = Column(ARRAY(String))
     start_date = Column(Date)
     end_date = Column(Date, default=None)
     description = Column(String)
@@ -43,7 +44,8 @@ class WorkExperience(Base):
         return (
             f'WorkExperience('
             f'company={repr(self.company)}, '
-            f'position={repr(self.position)},'
+            f'position={repr(self.position)}, '
+            f'skills={repr(self.skills)}, '
             f'start_date={repr(self.start_date.isoformat())}, '
             f'end_date={repr(self.end_date.isoformat())}, '
             f'description={repr(self.description)}'

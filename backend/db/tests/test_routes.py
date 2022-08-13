@@ -21,7 +21,7 @@ def test_client():
 def test_health(test_client):
     response = test_client.get('/')
     assert response.status_code == 200
-    assert response.json() == {'message': 'OK!'}
+    assert response.json() == {'message': 'DB OK!'}
 
 
 def test_get_form_messages(monkeypatch, test_client):
@@ -87,6 +87,7 @@ def test_get_work_experience(monkeypatch, test_client):
                 company='test',
                 position='test',
                 description='test',
+                skills=['test'],
                 start_date=start_date,
                 end_date=end_date,
             ),
@@ -99,6 +100,7 @@ def test_get_work_experience(monkeypatch, test_client):
             'company': 'test',
             'position': 'test',
             'description': 'test',
+            'skills': ['test'],
             'start_date': str(start_date),
             'end_date': str(end_date),
             'id': '1'
@@ -121,6 +123,7 @@ def test_post_work_experience(monkeypatch, test_client):
         'company': 'test',
         'position': 'test',
         'description': 'test',
+        'skills': ['test'],
         'start_date': '2020-01-01',
         'end_date': '2020-01-02',
     }
