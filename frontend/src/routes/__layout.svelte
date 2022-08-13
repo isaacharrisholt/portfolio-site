@@ -5,7 +5,9 @@
     let dark = true;
 </script>
 
-<div class:dark>
-    <DarkModeToggle bind:dark />
-    <slot />
-</div>
+<html lang="en" class="scroll-smooth">
+    <div class:dark>
+        <DarkModeToggle bind:dark />
+        <slot />
+    </div>
+</html>

@@ -22,7 +22,7 @@
 
 <div class="bg-gradient-to-br from-green-300 dark:from-slate-800 to-sky-400 dark:to-blue-800 w-full h-fit absolute">
     <Hero/>
-<!--    <About/>-->
+    <About/>
 
     {#if workExperience.length > 0}
         <WorkExperience {workExperience}/>

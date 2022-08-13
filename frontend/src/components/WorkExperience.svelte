@@ -14,17 +14,17 @@
     }
 </script>
 
-<Container>
-    <h1 class="text-left text-2xl font-bold pb-4">Work Experience</h1>
+<Container id="work-experience">
+    <h1 class="text-left text-3xl font-bold pb-4">Work experience</h1>
     {#each workExperience as experience, index}
         <Accordion open={index === 0} accordionGroup="workExperience">
-            <div slot="title" class="flex flex-row w-full justify-between h-fit">
+            <div slot="title" class="flex flex-row flex-wrap w-full justify-between h-fit gap-2">
                 <div>
                     <h1 class="font-bold text-xl text-left">{experience.company}</h1>
                     <h2 class="font-bold text-lg text-left">{experience.position}</h2>
                 </div>
                 <div class="flex flex-col justify-between">
-                    <h3 class="text-md text-right font-bold">
+                    <h3 class="text-md sm:text-right text-left font-bold">
                         {#if experience.end_date}
                             {reformatDate(experience.start_date)} - {reformatDate(experience.end_date)}
                         {:else}

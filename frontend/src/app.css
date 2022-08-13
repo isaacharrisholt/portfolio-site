@@ -8,9 +8,4 @@
         rounded-xl p-4 outline-none focus:bg-white transition
         placeholder-white font-bold focus:placeholder-black
     }
-
-    .accordion-box {
-        @apply h-fit mx-2 sm:mx-auto p-4 border-4 rounded-xl
-        border-white bg-white
-    }
 }
