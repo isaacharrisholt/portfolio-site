@@ -1,7 +1,7 @@
 export async function get() {
     const url_base: string | undefined = process.env.API_HOST;
     if (url_base === undefined) {
-        throw new Error('API_HSOT is not defined');
+        throw new Error('API_HOST is not defined');
     }
     const [
         workExperienceData,
