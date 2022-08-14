@@ -25,7 +25,7 @@
 
             <div slot="content" class="project-block">
                 <a href={project.url} target="_blank"><p class="text-gray-700 underline">{project.url}</p></a>
-                {@html sanitizeHtml(marked.parse(project.description)).replace('<a', '<a target="_blank"')}
+                {@html sanitizeHtml(marked.parse(project.description)).replaceAll('<a', '<a target="_blank"')}
             </div>
         </Accordion>
         {#if index < projects.length - 1}

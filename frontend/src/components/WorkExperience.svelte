@@ -40,7 +40,7 @@
             </div>
 
             <div slot="content" class="experience-block">
-                {@html sanitizeHtml(marked.parse(experience.description)).replace('<a', '<a target="_blank"')}
+                {@html sanitizeHtml(marked.parse(experience.description)).replaceAll('<a', '<a target="_blank"')}
             </div>
         </Accordion>
         {#if index < workExperience.length - 1}

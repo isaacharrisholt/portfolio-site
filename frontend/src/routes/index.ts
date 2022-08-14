@@ -16,17 +16,13 @@ export async function get() {
     // Sort work experience by start date descending
     workExperienceMessage.sort((a: { start_date: string; }, b: { start_date: string; }) => {
         if (a.start_date > b.start_date) {
-            console.log(`${a.start_date} > ${b.start_date}`);
             return -1;
         } else if (a.start_date < b.start_date) {
-            console.log(`${a.start_date} < ${b.start_date}`);
             return 1;
         } else {
-            console.log(`${a.start_date} = ${b.start_date}`);
             return 0;
         }
     });
-    console.log(workExperienceMessage);
 
     return {
         status: 200,

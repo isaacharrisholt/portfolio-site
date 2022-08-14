@@ -1,6 +1,22 @@
 import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterprise';
 import type { RequestEvent } from '@sveltejs/kit'
 
+const getAppEngineProjectID: () => string = () => {
+	const key = process.env.APPENGINE_PROJECT;
+	if (key === undefined) {
+		throw new Error('APPENGINE_PROJECT is not defined');
+	}
+	return key;
+};
+
+const getRecaptchaSiteKey: () => string = () => {
+	const key = process.env.RECAPTCHA_SITE_KEY;
+	if (key === undefined) {
+		throw new Error('RECAPTCHA_SITE_KEY is not defined');
+	}
+	return key;
+};
+
 export async function post({ request }: RequestEvent) {
     const data = await request.json();
     console.log(`Data: ${JSON.stringify(data)}`);
@@ -28,28 +44,13 @@ export async function post({ request }: RequestEvent) {
     };
 }
 
-/**
- * Create an assessment to analyze the risk of an UI action. Note that
- * this example does set error boundaries and returns `null` for
- * exceptions.
- *
- * projectID: GCloud Project ID
- * recaptchaSiteKey: Site key obtained by registering a domain/app to use recaptcha services.
- * token: The token obtained from the client on passing the recaptchaSiteKey.
- * recaptchaAction: Action name corresponding to the token.
- */
 export async function createAssessment(
     token: string,
 	recaptchaAction: string,
-	projectID: string = 'isaac-harris-holt-portfolio',
-	recaptchaSiteKey: string = '6LeOouUgAAAAAM0vGJymyJ9_PhbXgCx9DaYB3E_2'
+	projectID: string = getAppEngineProjectID(),
+	recaptchaSiteKey: string = getRecaptchaSiteKey()
 ) {
-	// Create the reCAPTCHA client & set the project path. There are multiple
-	// ways to authenticate your client. For more information see:
-	// https://cloud.google.com/docs/authentication
-	// TODO: To avoid memory issues, move this client generation outside
-	// of this example, and cache it (recommended) or call client.close()
-	// before exiting this method.
+	// Create the reCAPTCHA client & set the project path.
 	const client = new RecaptchaEnterpriseServiceClient();
 	const projectPath = client.projectPath(projectID);
 
@@ -82,8 +83,6 @@ export async function createAssessment(
 	// grecaptcha.enterprise.execute() method.
 	if (response.tokenProperties.action === recaptchaAction) {
 		// Get the risk score and the reason(s).
-		// For more information on interpreting the assessment,
-		// see: https://cloud.google.com/recaptcha-enterprise/docs/interpret-assessment
 		console.log('The reCAPTCHA score is: ' + response.riskAnalysis.score);
 
 		response.riskAnalysis.reasons.forEach((reason) => {

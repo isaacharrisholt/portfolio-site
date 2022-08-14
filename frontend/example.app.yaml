@@ -2,3 +2,5 @@ runtime: nodejs16
 
 env_variables:
   API_HOST: api.example.com
+  APPENGINE_PROJECT_ID: example-project
+  RECAPTCHA_SITE_KEY: example-key
