@@ -118,3 +118,9 @@
         </form>
     </div>
 </div>
+
+<style>
+    .form-input:not(:placeholder-shown) {
+        @apply bg-white;
+    }
+</style>
