@@ -1,5 +1,5 @@
 <script lang="ts">
-    import DOMPurify from 'isomorphic-dompurify';
+    import sanitizeHtml from 'sanitize-html';
     import {marked} from 'marked';
     import Accordion from "./Accordion.svelte";
     import Chip from "./Chip.svelte";
@@ -25,7 +25,7 @@
 
             <div slot="content" class="project-block">
                 <a href={project.url} target="_blank"><p class="text-gray-700 underline">{project.url}</p></a>
-                {@html DOMPurify.sanitize(marked.parse(project.description)).replace('<a', '<a target="_blank"')}
+                {@html sanitizeHtml(marked.parse(project.description)).replace('<a', '<a target="_blank"')}
             </div>
         </Accordion>
         {#if index < projects.length - 1}

@@ -1,5 +1,5 @@
 <script>
-    import DOMPurify from 'isomorphic-dompurify';
+    import sanitizeHtml from 'sanitize-html';
     import { marked } from 'marked';
     import moment from 'moment';
 
@@ -40,7 +40,7 @@
             </div>
 
             <div slot="content" class="experience-block">
-                {@html DOMPurify.sanitize(marked.parse(experience.description)).replace('<a', '<a target="_blank"')}
+                {@html sanitizeHtml(marked.parse(experience.description)).replace('<a', '<a target="_blank"')}
             </div>
         </Accordion>
         {#if index < workExperience.length - 1}

@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Portfolio Site",
+    "description_file": "portfolio_site.md",
+    "skills": [
+      "Python",
+      "Go",
+      "SvelteKit",
+      "App Engine"
+    ],
+    "url": "https://ihh.dev"
+  },
+  {
+    "name": "QIF File Interface Package",
+    "description_file": "quiffen.md",
+    "skills": [
+      "Python",
+      "OOP",
+      "TDD"
+    ],
+    "url": "https://github.com/isaacharrisholt/quiffen"
+  },
+  {
+    "name": "Web Scraper for Sports Arbitrage",
+    "description_file": "arbitrage.md",
+    "skills": [
+      "Python",
+      "Selenium"
+    ],
+    "url": "https://github.com/isaacharrisholt/vorn-surebet-finder"
+  },
+  {
+    "name": "Personal Finance Tracker",
+    "description_file": "finance_tracker.md",
+    "skills": [
+      "Python",
+      "pandas"
+    ],
+    "url": "https://github.com/isaacharrisholt/vorn-finance-tracker"
+  }
+]

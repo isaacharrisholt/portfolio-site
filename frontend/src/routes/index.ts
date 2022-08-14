@@ -11,6 +11,23 @@ export async function get() {
         fetch(`${url_base}/personal-projects`).then(res => res.json()),
     ]);
 
+    const workExperienceMessage = workExperienceData.message;
+
+    // Sort work experience by start date descending
+    workExperienceMessage.sort((a: { start_date: string; }, b: { start_date: string; }) => {
+        if (a.start_date > b.start_date) {
+            console.log(`${a.start_date} > ${b.start_date}`);
+            return -1;
+        } else if (a.start_date < b.start_date) {
+            console.log(`${a.start_date} < ${b.start_date}`);
+            return 1;
+        } else {
+            console.log(`${a.start_date} = ${b.start_date}`);
+            return 0;
+        }
+    });
+    console.log(workExperienceMessage);
+
     return {
         status: 200,
         headers: {
@@ -18,7 +35,7 @@ export async function get() {
             'Content-Type': 'application/json'
         },
         body: {
-            workExperience: workExperienceData.message,
+            workExperience: workExperienceMessage,
             projects: projectsData.message
         }
     };
