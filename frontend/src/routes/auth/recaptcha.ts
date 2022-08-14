@@ -2,11 +2,11 @@ import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterp
 import type { RequestEvent } from '@sveltejs/kit'
 
 const getAppEngineProjectID: () => string = () => {
-	const key = process.env.APPENGINE_PROJECT;
-	if (key === undefined) {
-		throw new Error('APPENGINE_PROJECT is not defined');
+	const id = process.env.APPENGINE_PROJECT_ID;
+	if (id === undefined) {
+		throw new Error('APPENGINE_PROJECT_ID is not defined');
 	}
-	return key;
+	return id;
 };
 
 const getRecaptchaSiteKey: () => string = () => {
@@ -17,6 +17,21 @@ const getRecaptchaSiteKey: () => string = () => {
 	return key;
 };
 
+// Returns the site key for the recaptcha service.
+export async function get() {
+	return {
+		status: 200,
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Content-Type': 'application/json'
+		},
+		body: {
+			key: getRecaptchaSiteKey(),
+		}
+	};
+}
+
+// Allows creation of assessments for the reCAPTCHA Enterprise API.
 export async function post({ request }: RequestEvent) {
     const data = await request.json();
     console.log(`Data: ${JSON.stringify(data)}`);
@@ -74,7 +89,7 @@ export async function createAssessment(
 			'The CreateAssessment call failed because the token was: ' +
 				response.tokenProperties.invalidReason
 		);
-        client.close();
+        await client.close();
 		return null;
 	}
 
@@ -87,15 +102,15 @@ export async function createAssessment(
 
 		response.riskAnalysis.reasons.forEach((reason) => {
 			console.log(reason);
-		});	
-        client.close();
+		});
+        await client.close();
 		return response.riskAnalysis.score;
 	} else {
 		console.log(
 			'The action attribute in your reCAPTCHA tag ' +
 				'does not match the action you are expecting to score'
 		);
-        client.close();
+        await client.close();
 		return null;
 	}
 }
