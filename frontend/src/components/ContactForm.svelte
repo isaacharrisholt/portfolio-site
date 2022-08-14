@@ -4,8 +4,12 @@
     let message: string = '';
     let submittable: boolean = false;
 
+    function validateEmail(value) {
+        return (value && !!value.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
+    }
+
     function validate() {
-        return name.length > 0 && email.length > 0 && message.length > 0;
+        return name.length > 0 && validateEmail(email) && message.length > 0;
     }
 
     function handleSubmit() {
