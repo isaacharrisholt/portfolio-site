@@ -1,0 +1,6 @@
+runtime: go116
+
+service: api
+
+env_variables:
+  DB_HOST: db.example.com

@@ -1,0 +1,4 @@
+runtime: nodejs16
+
+env_variables:
+  API_HOST: api.example.com
