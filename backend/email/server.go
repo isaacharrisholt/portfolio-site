@@ -150,7 +150,7 @@ func (s *server) sendNotificationEmail(fromName, fromEmail, message string) erro
 	messagesInfo := []mailjet.InfoMessagesV31{
 		{
 			From: &mailjet.RecipientV31{
-				Email: fromEmail,
+				Email: "isaac@harris-holt.com",  // Must use a valid sender email
 				Name:  fromName,
 			},
 			To: &mailjet.RecipientsV31{{
