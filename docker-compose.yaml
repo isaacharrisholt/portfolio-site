@@ -37,12 +37,11 @@ services:
     container_name: local_api
     ports:
       - "4000:4000"
-    volumes:
-      - ~/.config/gcloud:/.config/gcloud  # Use gcloud application default credentials
     networks:
       - portfolio_site_network
     environment:
       - DB_HOST=http://local_db:8000
+      - GOOGLE_APPLICATION_CREDENTIALS=/service-account.json
     depends_on:
       - local_db
       - local_email
@@ -72,6 +71,8 @@ services:
       - portfolio_site_network
     environment:
       - API_HOST=http://local_api:4000
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/src/lib/service-account.json
+      - IAP_AUDIENCE_ID=885358676606-0nn6c23i8m1nu8j831urkaq314e1up5e.apps.googleusercontent.com
 
 
 

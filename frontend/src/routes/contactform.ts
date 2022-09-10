@@ -1,4 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit'
+import { makeIAPPostRequest } from '$lib/iap';
 
 const getAPIHost: () => string = () => {
     const host = process.env.API_HOST;
@@ -15,18 +16,14 @@ export async function post({ request }: RequestEvent) {
 
     const url_base = getAPIHost();
 
-    const apiResponse = fetch(`${url_base}/form-messages`, {
-        method: 'POST',
-        body: JSON.stringify({
+    const apiResponse = makeIAPPostRequest(
+        `${url_base}/form-messages`,
+        JSON.stringify({
             name: name,
             email: email,
             message: message,
-        }),
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-    });
+        })
+    );
     const { status } = await apiResponse;
 
     return {

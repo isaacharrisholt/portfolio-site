@@ -38,6 +38,7 @@
 	"dependencies": {
 		"@google-cloud/recaptcha-enterprise": "^3.0.1",
 		"dotenv": "^16.0.1",
+		"google-auth-library": "^8.5.1",
 		"marked": "^4.0.18",
 		"moment": "^2.29.4",
 		"sanitize-html": "^2.7.1"

@@ -112,14 +112,20 @@ run the app locally. This is how I completed the majority of my development.
 It contains a service for each of the frontend and backend services, as well as
 a single-node CockroachDB cluster.
 
+### Security
+
+The backend services are all secured using Google Cloud Identity-Aware Proxy,
+which is configured in the `app.yaml` files. The frontend app is available to
+any user, but the backend is only accessible by the Node.js server that runs
+behind the SvelteKit frontend.
+
 ## Contributing
 
 If you find any bugs or have any suggestions for improvements, please feel free
 to open an issue or pull request. I'm always happy to receive feedback!
 
-I haven't had time to write a full suite of tests for the Go services, and
-there's some work to do on security, but please let me know if you spot
-anything that urgently needs doing!
+I haven't had time to write a full suite of tests for the Go services, but please
+let me know if you spot anything that urgently needs doing!
 
 ## License
 
