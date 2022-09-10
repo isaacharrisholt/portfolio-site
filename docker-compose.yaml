@@ -72,7 +72,6 @@ services:
     environment:
       - API_HOST=http://local_api:4000
       - GOOGLE_APPLICATION_CREDENTIALS=/app/src/lib/service-account.json
-      - IAP_AUDIENCE_ID=885358676606-0nn6c23i8m1nu8j831urkaq314e1up5e.apps.googleusercontent.com
 
 
 
