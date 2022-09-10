@@ -4,3 +4,4 @@ env_variables:
   API_HOST: api.example.com
   APPENGINE_PROJECT_ID: example-project
   RECAPTCHA_SITE_KEY: example-key
+  IAP_AUDIENCE_ID: audience-id.apps.googleusercontent.com

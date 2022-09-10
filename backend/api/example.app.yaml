@@ -4,3 +4,5 @@ service: api
 
 env_variables:
   DB_HOST: db.example.com
+  GOOGLE_APPLICATION_CREDENTIALS: /service-account.json
+  IAP_AUDIENCE_ID: audience-id.apps.googleusercontent.com

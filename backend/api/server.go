@@ -13,6 +13,7 @@ import (
 	"os"
 
 	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/idtoken"
 )
 
 type server struct {
@@ -45,6 +46,50 @@ func respond(w http.ResponseWriter, status int, data interface{}) {
 	}
 }
 
+// getIAPAudience returns the audience string for IAP access
+func getIAPAudience() string {
+	return os.Getenv("IAP_AUDIENCE_ID")
+}
+
+// makeIAPGetRequest makes a GET request with IAP verification
+func makeIAPGetRequest(url string) (*http.Response, error) {
+	ctx := context.Background()
+	client, err := idtoken.NewClient(ctx, getIAPAudience())
+	if err != nil {
+		return nil, fmt.Errorf("idtoken.NewClient: %v", err)
+	}
+
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("http.NewRequest: %v", err)
+	}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("client.Do: %v", err)
+	}
+	return response, nil
+}
+
+// makeIAPPostRequest makes a POST request with IAP verification
+func makeIAPPostRequest(url string, contentType string, body io.Reader) (*http.Response, error) {
+	ctx := context.Background()
+	client, err := idtoken.NewClient(ctx, getIAPAudience())
+	if err != nil {
+		return nil, fmt.Errorf("idtoken.NewClient: %v", err)
+	}
+
+	request, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return nil, fmt.Errorf("http.NewRequest: %v", err)
+	}
+	request.Header.Set("Content-Type", contentType)
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("client.Do: %v", err)
+	}
+	return response, nil
+}
+
 func respondErr(w http.ResponseWriter, status int, args ...interface{}) {
 	respond(w, status, map[string]interface{}{
 		"error": map[string]interface{}{
@@ -61,7 +106,7 @@ func dbGetRequest(endpoint string) ([]byte, error) {
 	}
 
 	url := urlBase + endpoint
-	dbResponse, err := http.Get(url)
+	dbResponse, err := makeIAPGetRequest(url)
 	if err != nil {
 		log.Println("error making GET request:", err)
 		return nil, errors.New(fmt.Sprint("error making GET request: ", err))
@@ -92,7 +137,7 @@ func dbPostRequest(endpoint string, data interface{}) ([]byte, error) {
 		return nil, errors.New(fmt.Sprint("error marshalling request body: ", err))
 	}
 
-	dbResponse, err := http.Post(url, "application/json", bytes.NewReader(reqBody))
+	dbResponse, err := makeIAPPostRequest(url, "application/json", bytes.NewReader(reqBody))
 	if err != nil {
 		log.Println("error making POST request:", err)
 		return nil, errors.New(fmt.Sprint("error making POST request: ", err))
