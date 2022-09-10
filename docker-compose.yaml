@@ -68,6 +68,7 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend/src:/app/src  # Allows for hot reload
+      - ~/.config/gcloud:/.config/gcloud  # Use gcloud application default credentials
     networks:
       - portfolio_site_network
     environment:

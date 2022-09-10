@@ -1,8 +1,8 @@
 <script lang="ts">
-    let name: string = '';
-    let email: string = '';
-    let message: string = '';
-    let submittable: boolean = false;
+    let name = '';
+    let email = '';
+    let message = '';
+    let submittable = false;
 
     function validateEmail(value) {
         return (value && !!value.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
@@ -17,7 +17,7 @@
 
         console.log('Submission received');
         grecaptcha.enterprise.ready(async () => {
-            const action: string = 'CONTACT_FORM';
+            const action = 'CONTACT_FORM';
 
             // Get the reCAPTCHA site key
             const recaptchaResponse = await fetch('/auth/recaptcha', {

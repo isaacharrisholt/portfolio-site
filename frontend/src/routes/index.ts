@@ -1,3 +1,5 @@
+import { makeIAPGetRequest } from '$lib/iap';
+
 export async function get() {
     const url_base: string | undefined = process.env.API_HOST;
     if (url_base === undefined) {
@@ -7,8 +9,8 @@ export async function get() {
         workExperienceData,
         projectsData,
     ] = await Promise.all([
-        fetch(`${url_base}/work-experience`).then(res => res.json()),
-        fetch(`${url_base}/personal-projects`).then(res => res.json()),
+        makeIAPGetRequest(`${url_base}/work-experience`).then((res: Response) => res.json()),
+        makeIAPGetRequest(`${url_base}/personal-projects`).then((res: Response) => res.json()),
     ]);
 
     const workExperienceMessage = workExperienceData.message;
