@@ -2,7 +2,7 @@
     import Container from './Container.svelte';
 </script>
 
-<Container>
+<Container id="about">
     <div class="grid md:grid-flow-col gap-8">
         <div class="flex flex-col justify-center">
             <img

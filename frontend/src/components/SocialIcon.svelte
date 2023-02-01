@@ -5,6 +5,7 @@
     export let url: string;
     export let faIcon: string;
     export let isSignature: boolean;
+    export let relMe: boolean;
 </script>
 
 <a href={url} target="_blank" {title}>
@@ -12,7 +13,10 @@
         {#if isSignature}
             <ShortSignature/>
         {:else}
-            <i class="{faIcon} text-5xl text-black dark:text-white"></i>
+            <i
+                class="{faIcon} text-5xl text-black dark:text-white"
+                rel={relMe ? "me" : null}
+            ></i>
         {/if}
     </div>
 </a>

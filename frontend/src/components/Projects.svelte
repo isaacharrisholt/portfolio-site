@@ -8,7 +8,7 @@
     export let projects: any;
 </script>
 
-<Container>
+<Container id="projects">
     <h1 class="text-left text-3xl font-bold pb-4">Personal projects</h1>
     {#each projects as project, index}
         <Accordion open={index === 0} accordionGroup="projects">

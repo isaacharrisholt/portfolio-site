@@ -6,14 +6,16 @@
             title: string,
             url: string,
             isSignature: boolean,
-            faIcon: string
+            faIcon: string,
+            relMe: boolean,
         }
     )[] = [
         {
             title: 'My blog',
             url: 'https://isaacharrisholt.com',
             isSignature: true,
-            faIcon: ''
+            faIcon: '',
+            relMe: false,
         },
         {
             title: 'GitHub',
@@ -25,19 +27,29 @@
             title: 'Twitter',
             url: 'https://twitter.com/IsaacHarrisHolt',
             faIcon: 'fa-brands fa-twitter',
-            isSignature: false
+            isSignature: false,
+            relMe: false,
         },
         {
             title: 'LinkedIn',
             url: 'https://linkedin.com/in/isaac-harris-holt',
             faIcon: 'fa-brands fa-linkedin',
-            isSignature: false
+            isSignature: false,
+            relMe: false,
         },
         {
             title: 'Medium',
             url: 'https://medium.isaacharrisholt.com',
             faIcon: 'fa-brands fa-medium',
-            isSignature: false
+            isSignature: false,
+            relMe: false,
+        },
+        {
+            title: 'Mastodon',
+            url: 'https://fosstodon.org/@isaacharrisholt',
+            faIcon: 'fa-brands fa-mastodon',
+            isSignature: false,
+            relMe: true,
         },
     ]
 </script>

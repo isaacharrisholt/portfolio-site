@@ -42,6 +42,7 @@ services:
     environment:
       - DB_HOST=http://local_db:8000
       - GOOGLE_APPLICATION_CREDENTIALS=/service-account.json
+      - IAP_AUDIENCE_ID=885358676606-0nn6c23i8m1nu8j831urkaq314e1up5e.apps.googleusercontent.com
     depends_on:
       - local_db
       - local_email
