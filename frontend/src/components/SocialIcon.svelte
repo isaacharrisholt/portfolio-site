@@ -8,15 +8,12 @@
     export let relMe: boolean;
 </script>
 
-<a href={url} target="_blank" {title}>
+<a href={url} target="_blank" {title} rel={relMe ? "me" : null}>
     <div class="text-center hover:drop-shadow-md hover:-translate-y-1 transition duration-200">
         {#if isSignature}
             <ShortSignature/>
         {:else}
-            <i
-                class="{faIcon} text-5xl text-black dark:text-white"
-                rel={relMe ? "me" : null}
-            ></i>
+            <i class="{faIcon} text-5xl text-black dark:text-white"></i>
         {/if}
     </div>
 </a>
