@@ -1,26 +1,21 @@
-# IDEs
-**/.idea/
+# build output
+dist/
 
-# Python virtual environments
-**/.local/
+# generated types
+.astro/
 
-# pycache
-**/__pycache__/
+# dependencies
+node_modules/
 
-# Svelte App Engine build
-**/.appengine_build_output/
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# app.yaml files
-# Note: this is to protect secrets that I store as environment variables in my
-# app.yaml files for App Engine. I have included example.app.yaml files in the
-# project for your reference.
-**/app.yaml
+# environment variables
+.env
+.env.production
 
-# Local CockroachDB log files
-**/local_roach/
-
-# CockroachDB certificates
-**/root.crt
-
-# Service account key files
-**/service-account.json
+# macOS-specific files
+.DS_Store
