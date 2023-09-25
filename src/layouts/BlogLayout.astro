@@ -1,0 +1,45 @@
+---
+import type { MarkdownLayoutProps } from "astro";
+
+type Props = MarkdownLayoutProps<{
+  title: string;
+  author: string;
+}>;
+
+const {
+  file,
+  frontmatter: { title, author },
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header>
+      <h1 class="text-xl font-bold text-blue">{title} by {author}</h1>
+      <h2>A thing</h2>
+      <p>
+        <a href="/">Home</a>
+      </p>
+    </header>
+    <slot />
+  </body>
+</html>
+
+<style>
+  h1::before {
+    content: "# ";
+  }
+
+  h2::before {
+    content: "## ";
+  }
+</style>

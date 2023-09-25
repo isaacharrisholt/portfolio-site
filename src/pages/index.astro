@@ -1,10 +1,12 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Card from "../components/Card.astro";
+import Layout from '../layouts/Layout.astro'
+import Card from '../components/Card.astro'
+import Hero from '../components/Hero.astro'
 ---
 
 <Layout title="Hi, I'm Isaac">
   <main>
+    <Hero text="Hi, I'm Isaac" />
     <svg
       class="astro-a"
       width="495"
@@ -35,10 +37,8 @@ import Card from "../components/Card.astro";
     </svg>
     <h1>Hi, I'm <span class="text-gradient">Isaac</span></h1>
     <p class="instructions">
-      To get started, open the directory <code>src/pages</code> in your project.<br
-      />
-      <strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message
-      above.
+      To get started, open the directory <code>src/pages</code> in your project.<br />
+      <strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
     </p>
     <ul role="list" class="link-card-grid">
       <Card

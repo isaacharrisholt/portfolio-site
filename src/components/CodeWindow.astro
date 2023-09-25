@@ -1,0 +1,14 @@
+---
+import * as fs from 'fs'
+
+interface Props {
+  file: string
+}
+
+const { file } = Astro.props
+
+// Read file
+const content = fs.readFileSync(file, 'utf8')
+---
+
+<pre class="bg-white text-red-500">{content}</pre>
