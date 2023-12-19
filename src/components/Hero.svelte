@@ -22,7 +22,7 @@
   }
 
   type Square = {
-    width: `w-${number}`
+    width: `w-${number} md:w-${number}`
     translateX?: `${'-' | ''}translate-x-${number}`
     translateY?: `${'-' | ''}translate-y-${number}`
     rotate?: `${'-' | ''}rotate-${number}`
@@ -31,46 +31,46 @@
   const squareDefinitions: [Square[], Square[]] = [
     [
       {
-        width: 'w-10',
+        width: 'w-10 md:w-20',
         translateX: '-translate-x-16',
         translateY: '-translate-y-8',
         rotate: '-rotate-6'
       },
       {
-        width: 'w-16',
+        width: 'w-16 md:w-32',
         translateX: '-translate-x-8',
         translateY: '-translate-y-6'
       },
       {
-        width: 'w-12',
+        width: 'w-12 md:w-24',
         translateX: 'translate-x-8',
         translateY: '-translate-y-6'
       },
       {
-        width: 'w-24',
+        width: 'w-24 md:w-48',
         translateX: 'translate-x-16',
         translateY: '-translate-y-6'
       }
     ],
     [
       {
-        width: 'w-16',
+        width: 'w-16 md:w-32',
         translateX: '-translate-x-16',
         translateY: 'translate-y-8',
         rotate: 'rotate-180'
       },
       {
-        width: 'w-32',
+        width: 'w-32 md:w-64',
         translateX: '-translate-x-16',
         translateY: 'translate-y-6'
       },
       {
-        width: 'w-8',
+        width: 'w-8 md:w-16',
         translateX: '-translate-x-16',
         translateY: 'translate-y-6'
       },
       {
-        width: 'w-24',
+        width: 'w-24 md:w-48',
         translateX: '-translate-x-16',
         translateY: 'translate-y-6'
       }
@@ -94,7 +94,7 @@
         class="flex flex-row items-end gap-4 [&>div]:transition-all [&>div]:duration-300 [&>div]:transform [&>div]:aspect-square"
       >
         {#each squareDefinitions[0] as s, i}
-          <div class="bg-yellow-500 {s.width}" bind:this={squares[i]} />
+          <div class="bg-accent-blue {s.width}" bind:this={squares[i]} />
         {/each}
       </div>
       <div
@@ -102,7 +102,7 @@
       >
         {#each squareDefinitions[1] as s, i}
           <div
-            class="bg-yellow-500 {s.width}"
+            class="bg-accent-blue {s.width}"
             bind:this={squares[i + squareDefinitions[0].length]}
           />
         {/each}
@@ -120,6 +120,7 @@
   .shaking {
     animation: shake 0.5s;
     animation-iteration-count: 1;
+    @apply bg-accent-red;
   }
 
   .group:hover .shaking {
