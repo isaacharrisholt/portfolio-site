@@ -1,14 +1,31 @@
 ---
-
+  const navLinks = [
+    {
+      name: 'Blog',
+      url: '/blog',
+    },
+    {
+      name: 'Contact',
+      url: '/contact',
+    },
+  ] as const
+  const path = new URL(Astro.request.url).pathname
 ---
 
-<nav class="grid grid-cols-middle-expand">
-  <a href="/">
-    <h1>Isaac Harris-Holt</h1>
+<nav class="grid md:grid-cols-middle-expand gap-4 md:gap-8 p-4 md:p-8 max-md:place-items-center w-full">
+  <a href="/" class="w-fit">
+    <p class="text-2xl font-bold">Isaac Harris-Holt</p>
   </a>
-  <ul class="flex flex-row items-center gap-16">
-    <li><a href="/blog">Blog</a></li>
-    <li><a href="/contact">Contact</a></li>
+  <ul class="flex flex-row items-center gap-4 md:gap-8 lg:gap-16 font-semibold">
+    {
+      navLinks.map((link) => 
+        <li>
+          <a class={`p-1 border-b-2 border-b-accent-blue ${path === link.url ? 'border-opacity-100' : 'border-opacity-0'} hover:border-opacity-100`} href={link.url}>
+            {link.name}
+          </a>
+        </li>)
+    }
   </ul>
-  <div class="justify-self-end">something else</div>
+  <div class="md:justify-self-end">socials</div>
 </nav>
+

@@ -1,5 +1,6 @@
 ---
 import type { MarkdownLayoutProps } from "astro";
+import Layout from "./Layout.astro";
 
 type Props = MarkdownLayoutProps<{
   title: string;
@@ -12,8 +13,7 @@ const {
 } = Astro.props;
 ---
 
-<!doctype html>
-<html lang="en">
+<Layout title={title}>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Astro description" />
@@ -32,7 +32,7 @@ const {
     </header>
     <slot />
   </body>
-</html>
+</Layout>
 
 <style>
   h1::before {

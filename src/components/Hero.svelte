@@ -5,17 +5,20 @@
 
   // Wait a random interval between 2 and 5 seconds, then add the shaking class to a random div
   function startShakes() {
-    setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * squares.length)
-      const randomSquare = squares[randomIndex]
-      if (randomSquare) {
-        randomSquare.classList.add('shaking')
-        setTimeout(() => {
-          randomSquare.classList.remove('shaking')
-        }, 250)
-      }
-      startShakes()
-    }, Math.floor(Math.random() * 3000) + 2000)
+    setTimeout(
+      () => {
+        const randomIndex = Math.floor(Math.random() * squares.length)
+        const randomSquare = squares[randomIndex]
+        if (randomSquare) {
+          randomSquare.classList.add('shaking')
+          setTimeout(() => {
+            randomSquare.classList.remove('shaking')
+          }, 250)
+        }
+        startShakes()
+      },
+      Math.floor(Math.random() * 3000) + 2000
+    )
   }
 
   type Square = {
@@ -84,7 +87,7 @@
 </script>
 
 <a href="/about" class="hidden" hidden bind:this={anchor}>.</a>
-<div class="h-screen grid place-items-center w-full">
+<div class="h-[80vh] grid place-items-center w-full">
   <button on:click={() => anchor.click()} class="grid max-w-screen-sm w-full group">
     <div class="row-start-1 col-start-1 z-10 flex flex-col gap-4 items-center">
       <div
