@@ -44,7 +44,8 @@
       'bg-accent-blue',
       'absolute',
       'rounded-full',
-      'z-50'
+      'z-50',
+      'pointer-events-none'
     )
 
     dot.style.left = `${x}px`
