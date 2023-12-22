@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import Hero from '../components/Hero.svelte'
+import Trail from '../components/Trail.svelte'
 ---
 
 <Layout title="Hi, I'm Isaac">
@@ -9,3 +10,5 @@ import Hero from '../components/Hero.svelte'
   </main>
 
 </Layout>
+
+<Trail client:load secondsVisible={1} />
