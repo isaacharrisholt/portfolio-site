@@ -73,7 +73,7 @@ services. Primarily, it interacts with the Python database service over HTTP,
 but it also publishes email form responses to Google Pub/Sub.
 
 I had to create a few custom types to properly marshal and unmarshal the
-timestamp objects from the Python API, as seen in the [`iso.go`](api/iso.go)
+timestamp objects from the Python API, as seen in the [`iso.go`](backend/api/iso.go)
 file, but otherwise it's a straightforward webserver.
 
 ### Database Service
