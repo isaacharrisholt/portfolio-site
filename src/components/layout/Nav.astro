@@ -50,12 +50,21 @@
     }
   }
 
+  @keyframes hasHovered {
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+
   .link::after() {
     content: '';
     display: block;
     width: 0;
     height: 2px;
-    animation: slideOut 0.3s ease-in-out 1 forwards;
+    animation: slideOut 0.3s ease-in-out 1 forwards, hasHovered 1ms paused;
     @apply bg-accent-blue;
   }
 
@@ -63,7 +72,7 @@
     content: '';
     display: block;
     height: 2px;
-    animation: slideIn 0.3s ease-in-out 1 forwards;
+    animation: slideIn 0.3s ease-in-out 1 forwards, hasHovered 1ms;
     @apply bg-accent-blue;
   }
 </style>
