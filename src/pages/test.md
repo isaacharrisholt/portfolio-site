@@ -17,10 +17,11 @@ This is some paragraph text or something
 `test`
 
 | Table | Heading |
-| --- | --- |
-| Test | test |
+| ----- | ------- |
+| Test  | test    |
 
 ## This is a smaller heading 2
+
 ### This is a smaller heading 2
 
 This is some paragraph text or something
@@ -34,6 +35,5 @@ This is some paragraph text or something
 `test`
 
 | Table | Heading |
-| --- | --- |
-| Test | test |
-
+| ----- | ------- |
+| Test  | test    |

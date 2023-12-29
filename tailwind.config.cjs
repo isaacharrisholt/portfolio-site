@@ -4,21 +4,22 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateColumns: {
-        'default-layout': '[full-start] 1fr [content-start] minmax(0, 768px) [content-end] 1fr [full-end]',
+        'default-layout':
+          '[full-start] 1fr [content-start] minmax(0, 768px) [content-end] 1fr [full-end]',
       },
       colors: {
         surface: {
-          50: "#E5E7EB",
-          100: "#CBCFD7",
-          200: "#989EAF",
-          300: "#666F84",
-          400: "#414653",
-          500: "#181A1F",
-          600: "#14161A",
-          700: "#0D0E11",
-          800: "#090A0B",
-          900: "#040506",
-          950: "#020203"
+          50: '#E5E7EB',
+          100: '#CBCFD7',
+          200: '#989EAF',
+          300: '#666F84',
+          400: '#414653',
+          500: '#181A1F',
+          600: '#14161A',
+          700: '#0D0E11',
+          800: '#090A0B',
+          900: '#040506',
+          950: '#020203',
         },
         primary: '#1a1c22',
         'accent-blue': '#50c5d9',
@@ -46,10 +47,13 @@ module.exports = {
             '--tw-prose-pre-bg': theme('colors.surface[600]'),
             '--tw-prose-th-borders': theme('colors.surface[400]'),
             '--tw-prose-td-borders': theme('colors.white'),
-          }
-        }
-      })
+          },
+        },
+      }),
     },
   },
-  plugins: [require('@savvywombat/tailwindcss-grid-named-lines'), require('@tailwindcss/typography')],
+  plugins: [
+    require('@savvywombat/tailwindcss-grid-named-lines'),
+    require('@tailwindcss/typography'),
+  ],
 }
