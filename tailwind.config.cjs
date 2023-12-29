@@ -7,6 +7,9 @@ module.exports = {
         'default-layout':
           '[full-start] 1fr [content-start] minmax(0, 768px) [content-end] 1fr [full-end]',
       },
+      gridTemplateRows: {
+        'default-layout': '[site-start] 1fr [site-end]',
+      },
       colors: {
         surface: {
           50: '#E5E7EB',

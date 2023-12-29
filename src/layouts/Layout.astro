@@ -1,6 +1,7 @@
 ---
 import Nav from '../components/layout/Nav.astro'
 import { ViewTransitions } from 'astro:transitions'
+import Trail from '../components/Trail.svelte'
 
 interface Props {
   title: string
@@ -24,7 +25,7 @@ const { title } = Astro.props
   <body class="text-white font-mono grid grid-cols-default-layout p-4 md:p-8 gap-4 md:gap-8">
     <Nav />
     <div></div>
-    <main class="w-full grid grid-cols-subgrid col-span-full prose prose-sm md:prose-base">
+    <main class="w-full col-start-full-start col-end-full-end md:col-start-content-start md:col-end-content-end prose prose-sm md:prose-base max-w-none">
       <slot />
     </main>
   </body>
