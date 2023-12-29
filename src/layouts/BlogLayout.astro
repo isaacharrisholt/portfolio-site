@@ -13,33 +13,59 @@ const {
 } = Astro.props;
 ---
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="Astro description" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+  <title>{title}</title>
+</head>
+
 <Layout title={title}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content="Astro description" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-  </head>
-  <body>
+  <article class="col-span-full col-start-full-start col-end-full-end md:col-start-content-start md:col-end-content-end hover:prose-headings:underline hover:prose-th:no-underline hover:prose-h1:no-underline">
     <header>
-      <h1 class="text-xl font-bold text-blue">{title} by {author}</h1>
+      <h1 class="text-accent-blue">{title} by <a href="/{author}">{author}</a></h1>
       <h2>A thing</h2>
       <p>
         <a href="/">Home</a>
       </p>
     </header>
     <slot />
-  </body>
+  </article>
 </Layout>
 
-<style>
+<style is:inline>
   h1::before {
     content: "# ";
   }
 
-  h2::before {
+  h2 a::before {
     content: "## ";
   }
+
+  h3 a::before {
+    content: "### ";
+  }
+
+  h4 a::before {
+    content: "#### ";
+  }
+
+  h5 a::before {
+    content: "##### ";
+  }
+
+  h6 a::before {
+    content: "###### ";
+  }
 </style>
+
+<script>
+  const headings = document.querySelectorAll("h2, h3, h4, h5, h6");
+  headings.forEach((heading) => {
+    const id = heading.textContent?.toLowerCase().replace(/\s/g, "-") || '';
+    heading.id = id;
+    heading.innerHTML = `<a href="#${id}" class="!no-underline !text-white">${heading.innerHTML}</a>`;
+  });
+</script>

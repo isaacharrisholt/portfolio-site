@@ -12,11 +12,11 @@
   const path = new URL(Astro.request.url).pathname
 ---
 
-<nav class="grid md:grid-cols-middle-expand gap-4 md:gap-8 p-4 md:p-8 max-md:place-items-center w-full">
-  <a href="/" class="w-fit">
-    <p class="text-2xl font-bold">Isaac Harris-Holt</p>
+<nav class="grid col-span-full grid-cols-subgrid max-md:place-items-center w-full">
+  <a href="/" class="w-fit text-2xl font-bold">
+    Isaac <span class="whitespace-nowrap">Harris-Holt</span>
   </a>
-  <ul class="flex flex-row items-center gap-4 md:gap-8 lg:gap-16 font-semibold">
+  <ul class="flex flex-row items-center gap-4 md:gap-8 lg:gap-16 font-semibold justify-center">
     {
       navLinks.map((link) => 
         <li class="link">
