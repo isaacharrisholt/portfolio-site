@@ -10,5 +10,5 @@ import svelte from '@astrojs/svelte'
 export default defineConfig({
   output: 'static',
   adapter: vercel(),
-  integrations: [tailwind(), mdx(), sitemap(), svelte()]
+  integrations: [tailwind(), mdx(), sitemap(), svelte()],
 })
