@@ -24,7 +24,7 @@ const { title } = Astro.props
   <body class="text-white font-mono grid grid-cols-default-layout p-4 md:p-8 gap-4 md:gap-8">
     <Nav />
     <div></div>
-    <main class="w-full grid grid-cols-subgrid col-span-full !prose">
+    <main class="w-full grid grid-cols-subgrid col-span-full prose prose-sm md:prose-base">
       <slot />
     </main>
   </body>
@@ -44,6 +44,10 @@ const { title } = Astro.props
 
     html {
       scroll-behavior: smooth;
+    }
+
+    .prose :where(pre):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+      @apply !bg-surface-600;
     }
   </style>
 </html>
