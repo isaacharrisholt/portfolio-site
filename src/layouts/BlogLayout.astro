@@ -1,21 +1,18 @@
 ---
-import type { MarkdownLayoutProps } from "astro";
+import type { CollectionEntry } from 'astro:content'
 import Layout from "./Layout.astro";
 
-type Props = MarkdownLayoutProps<{
-  title: string;
-  author: string;
-}>;
-
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
 const {
-  file,
-  frontmatter: { title, author },
+  post: { data: { title, date, description } },
 } = Astro.props;
 ---
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="description" content="Astro description" />
+  <meta name="description" content={description} />
   <meta name="viewport" content="width=device-width" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="generator" content={Astro.generator} />
@@ -25,11 +22,8 @@ const {
 <Layout title={title}>
   <article class="col-span-full col-start-full-start col-end-full-end md:col-start-content-start md:col-end-content-end hover:prose-headings:underline hover:prose-th:no-underline hover:prose-h1:no-underline">
     <header>
-      <h1 class="text-accent-blue">{title} by <a href="/{author}">{author}</a></h1>
-      <h2>A thing</h2>
-      <p>
-        <a href="/">Home</a>
-      </p>
+      <h1 class="text-accent-blue !m-0">{title}</h1>
+      <p class="!mt-0"><time datetime={date.toISOString()}>{date.toISOString().split('T')[0]}</time></p>
     </header>
     <slot />
   </article>

@@ -1,5 +1,6 @@
 ---
 import * as fs from 'fs'
+import { Code } from 'astro:components'
 
 interface Props {
   file: string
@@ -9,6 +10,9 @@ const { file } = Astro.props
 
 // Read file
 const content = fs.readFileSync(file, 'utf8')
+const lang = file.split('.').pop() as Lang
+
+type Lang = Parameters<typeof Code>[0]['lang']
 ---
 
-<pre class="bg-white text-red-500">{content}</pre>
+<Code code={content} lang={lang} />

@@ -1,9 +1,26 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import { getCollection } from 'astro:content';
+import BlogSummary from '../components/BlogSummary.astro'
+
+const allPosts = (await getCollection('posts')).sort((a, b) => {
+  return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
+});
 ---
 
 <Layout title="Blog">
-  <main>
-    Blog
-  </main>
+  <h1>Blog</h1>
+  <div class="flex flex-col">
+    {allPosts.map((post, i) => {
+      if (i < allPosts.length - 1) {
+        return (
+          <BlogSummary slug={post.slug} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
+          <hr />
+        )
+      }
+      return (
+        <BlogSummary slug={post.slug} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
+      )
+    })}
+  </div>
 </Layout>

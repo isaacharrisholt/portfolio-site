@@ -1,7 +1,7 @@
 ---
-layout: ../layouts/BlogLayout.astro
 title: A title
-author: '@isaacharrisholt'
+subtitle: A subtitle
+date: 2023-03-01
 ---
 
 ## This is a smaller heading
@@ -28,8 +28,8 @@ This is some paragraph text or something
 
 > Block
 
-```html
-<div></div>
+```ts
+type Split<S extends string> = S extends `${infer L},${infer R}` ? L | Split<R> : S
 ```
 
 `test`
