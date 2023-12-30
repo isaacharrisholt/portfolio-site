@@ -12,4 +12,7 @@ export default defineConfig({
   adapter: vercel(),
   integrations: [tailwind(), mdx(), sitemap(), svelte()],
   site: 'https://ihh.dev',
+  redirects: {
+    '/cv': '/resume.pdf'
+  }
 })

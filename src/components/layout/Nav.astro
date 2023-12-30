@@ -1,5 +1,9 @@
 ---
-  const navLinks = [
+  const navLinks: Array<{
+    name: string
+    url: string
+    target?: string
+  }> = [
     {
       name: 'Blog',
       url: '/blog',
@@ -8,7 +12,12 @@
     //   name: 'Contact',
     //   url: '/contact',
     // },
-  ] as const
+    {
+      name: 'CV',
+      url: '/cv',
+      target: '_blank',
+    }
+  ]
   const path = new URL(Astro.request.url).pathname
 ---
 
@@ -20,7 +29,7 @@
     {
       navLinks.map((link) => 
         <li class="link">
-          <a href={link.url}>
+          <a href={link.url} target={link.target}>
             {link.name}
           </a>
         </li>)
