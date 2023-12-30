@@ -68,7 +68,7 @@ const {
     heading.innerHTML = `<a href="#${id}" class="!no-underline !text-white">${heading.innerHTML}</a>`;
   });
 
-  const images = document.querySelectorAll("img");
+  const images = document.querySelectorAll("img, iframe");
   [...images].forEach((image) => {
     image.classList.add("!mx-auto");
   });
