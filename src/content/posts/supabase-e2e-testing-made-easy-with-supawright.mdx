@@ -1,10 +1,10 @@
 ---
-title: "Supabase E2E Testing Made Easy With Supawright"
-subtitle: "Finally, some peace of mind."
+title: 'Supabase E2E Testing Made Easy With Supawright'
+subtitle: 'Finally, some peace of mind.'
 date: 2023-09-16
 image: '../../assets/images/supabase-e2e-testing-made-easy-with-supawright/image-0.jpg'
 tags:
-- web
+  - web
 ---
 
 Photo by
@@ -74,7 +74,7 @@ TypeScript types (we need a `type` not an `interface`), so change the following 
 wherever you keep yours (typically `database.ts`):
 
 ```diff
-\- export interface Database {  
+\- export interface Database {
 \+ export type Database = {
 ```
 
@@ -82,9 +82,9 @@ I recommend setting up a `make` target (or similar) to automatically make this c
 for you whenever you update your types, e.g.:
 
 ```ts
-types:  
-  pnpm supabase gen types typescript --local | \\  
-  sed 's/export interface Database {/export type Database = {/' \\  
+types:
+  pnpm supabase gen types typescript --local | \\
+  sed 's/export interface Database {/export type Database = {/' \\
   > src/types/database.ts
 ```
 
@@ -92,13 +92,10 @@ Then, in your test file, create a test function using `withSupawright`. You’ll
 instead of the `test` function that Playwright provides.
 
 ```ts
-import { withSupawright } from 'supawright'  
+import { withSupawright } from 'supawright'
 import type { Database } from './database'
 
-const test = withSupawright<  
-  Database,  
-  'public' | 'other'  
->(['public', 'other'])
+const test = withSupawright<Database, 'public' | 'other'>(['public', 'other'])
 ```
 
 In the example above, we’re telling Supawright that we care about the `public` and
@@ -113,17 +110,17 @@ Assuming you have a `test` function as above, you can now write tests and use th
 structure:
 
 ```sql
-create table public."user" (  
-  id uuid primary key default uuid_generate_v4(),  
-  email text not null unique,  
-  password text not null  
+create table public."user" (
+  id uuid primary key default uuid_generate_v4(),
+  email text not null unique,
+  password text not null
 );
 
-create table public.session (  
-  id uuid primary key default uuid_generate_v4(),  
-  user_id uuid not null references public."user"(id),  
-  token text,  
-  created_at timestamp with time zone not null default now()  
+create table public.session (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references public."user"(id),
+  token text,
+  created_at timestamp with time zone not null default now()
 );
 ```
 
@@ -133,9 +130,9 @@ Supawright will also automatically generate fake data for any columns that are n
 nullable and do not have a default value.
 
 ```ts
-test('creates a user', async ({ supawright }) => {  
-  const session = await supawright.create('public', 'session')  
-  expect(session.user_id).toBeDefined()  
+test('creates a user', async ({ supawright }) => {
+  const session = await supawright.create('public', 'session')
+  expect(session.user_id).toBeDefined()
 })
 ```
 
@@ -146,18 +143,18 @@ column, Supawright will not create a record for that table.
 If your table is in the `public` schema, you can omit the schema name.
 
 ```ts
-test("doesn't create user", async ({ supawright }) => {  
-  const user = await supawright.create('user', {  
-    email: 'some-email@supawrightmail.com'  
-  })  
-  const session = await supawright.create('session', {  
-    user_id: user.id  
+test("doesn't create user", async ({ supawright }) => {
+  const user = await supawright.create('user', {
+    email: 'some-email@supawrightmail.com',
+  })
+  const session = await supawright.create('session', {
+    user_id: user.id,
   })
 
-  // Supawright will not create a user record, since we've passed in  
-  // a user_id.  
-  const { data: users } = await supawright.supabase().from('user').select()  
-  expect(users.length).toBe(1)  
+  // Supawright will not create a user record, since we've passed in
+  // a user_id.
+  const { data: users } = await supawright.supabase().from('user').select()
+  expect(users.length).toBe(1)
 })
 ```
 
@@ -172,27 +169,27 @@ with a record that was created by Supawright.
 This runs recursively. Consider the following example:
 
 ```ts
-test('setup', async ({ supawright }) => {  
+test('setup', async ({ supawright }) => {
   const user = await supawright.create('user')
 
-  // We're using the standard Supabase client here, so Supawright  
-  // is not automatically aware of the records we're creating.  
-  await supawright  
-    .supabase()  
-    .from('session')  
+  // We're using the standard Supabase client here, so Supawright
+  // is not automatically aware of the records we're creating.
+  await supawright
+    .supabase()
+    .from('session')
     .insert(\[{ user_id: user.id }, { user_id: user.id }\])
 
-  // However, Supawright will discover these records and delete  
-  // them when the test exits.  
+  // However, Supawright will discover these records and delete
+  // them when the test exits.
 })
 
-test('everything has been cleaned up', async ({ supawright }) => {  
-  const { data: sessions } = await supawright  
-    .supabase()  
-    .from('session')  
+test('everything has been cleaned up', async ({ supawright }) => {
+  const { data: sessions } = await supawright
+    .supabase()
+    .from('session')
     .select()
 
-  expect(sessions.length).toBe(0)  
+  expect(sessions.length).toBe(0)
 })
 ```
 
@@ -217,40 +214,36 @@ This is useful if you use a database trigger to populate certain tables and need
 custom code to activate the trigger.
 
 ```ts
-const test = withSupawright<  
-  Database,  
-  'public' | 'other',  
->(  
-  ['public', 'other'],  
-  {  
-    generators: {  
-      smallint: () => 123,  
-      text: (table: string, column: string) => `${table}.${column}`,  
-    },  
-    overrides: {  
-      public: {  
-        user: async ({ supawright, data, supabase, generators }) => {  
-          const { data: user } = await supabase  
-            .from('user')  
-            .insert({  
-              email: 'coolemail@supawrightmail.com',  
-              password: generators.text()  
-            })  
-            .select()  
-            .single()
+const test = withSupawright<Database, 'public' | 'other'>(['public', 'other'], {
+  generators: {
+    smallint: () => 123,
+    text: (table: string, column: string) => `${table}.${column}`,
+  },
+  overrides: {
+    public: {
+      user: async ({ supawright, data, supabase, generators }) => {
+        const { data: user } = await supabase
+          .from('user')
+          .insert({
+            email: 'coolemail@supawrightmail.com',
+            password: generators.text(),
+          })
+          .select()
+          .single()
 
-          // Things go here...
+        // Things go here...
 
-          return [{
-              schema: 'public',
-              table: 'user',
-              data: user,
-          }]
-        }
-      }
-    }
-  }
-)
+        return [
+          {
+            schema: 'public',
+            table: 'user',
+            data: user,
+          },
+        ]
+      },
+    },
+  },
+})
 ```
 
 ### Connection details
@@ -264,21 +257,18 @@ the default Supabase localhost database. If you’d like to override this, provi
 `database` key in the config object.
 
 ```ts
-const test = withSupawright<  
- Database,  
- 'public' | 'other'  
->(['public', 'other'], {  
-  supabase: {  
-    supabaseUrl: 'my-supabase-url.com',  
-    serviceRoleKey: 'my-service-role-key'  
-  },  
-  database: {  
-    host: 'localhost',  
-    port: 54322,  
-    user: 'me',  
-    password: 'password',  
-    database: 'my-database'  
-  }  
+const test = withSupawright<Database, 'public' | 'other'>(['public', 'other'], {
+  supabase: {
+    supabaseUrl: 'my-supabase-url.com',
+    serviceRoleKey: 'my-service-role-key',
+  },
+  database: {
+    host: 'localhost',
+    port: 54322,
+    user: 'me',
+    password: 'password',
+    database: 'my-database',
+  },
 })
 ```
 
@@ -295,4 +285,3 @@ directly on [X](https://twitter.com/IsaacHarrisHolt) or
 [LinkedIn](https://linkedin.com/in/isaac-harris-holt).
 
 That’s it for now though. Happy building!
-

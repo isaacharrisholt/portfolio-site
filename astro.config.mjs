@@ -13,6 +13,6 @@ export default defineConfig({
   integrations: [tailwind(), mdx(), sitemap(), svelte()],
   site: 'https://ihh.dev',
   redirects: {
-    '/cv': '/resume.pdf'
-  }
+    '/cv': '/resume.pdf',
+  },
 })

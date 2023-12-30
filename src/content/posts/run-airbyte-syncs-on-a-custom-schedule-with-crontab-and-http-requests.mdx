@@ -1,11 +1,11 @@
 ---
-title: "Run Airbyte Syncs On A Custom Schedule With Crontab And HTTP Requests"
-subtitle: "Leverage Airbyte’s simple REST API for complex configuration"
+title: 'Run Airbyte Syncs On A Custom Schedule With Crontab And HTTP Requests'
+subtitle: 'Leverage Airbyte’s simple REST API for complex configuration'
 date: 2022-04-23
 image: '../../assets/images/run-airbyte-syncs-on-a-custom-schedule-with-crontab-and-http-requests/image-0.jpg'
 tags:
-- python
-- data
+  - python
+  - data
 ---
 
 Photo by
@@ -148,10 +148,10 @@ def trigger_connection_sync(connection_id: str) -> dict:
 if __name__ == '__main__':
     workspaces = get_workspaces()
     connections = []
-    
+
     for workspace_id in workspaces:
         connections.extend(get_connections_for_workspace(workspace_id))
-       
+
     for connection_id in connections:
         trigger_connection_sync(connection_id)
 ```
@@ -186,4 +186,3 @@ with me on [**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)!
 
 **_That’s all for this one! I hope you enjoyed it, and any feedback is greatly
 appreciated!_**
-

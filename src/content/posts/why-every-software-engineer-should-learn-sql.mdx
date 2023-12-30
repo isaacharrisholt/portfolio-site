@@ -1,12 +1,13 @@
 ---
-title: "Why Every Software Engineer Should Learn SQL"
-subtitle: "Speed up your programs by properly utilising your database"
+title: 'Why Every Software Engineer Should Learn SQL'
+subtitle: 'Speed up your programs by properly utilising your database'
 date: 2022-10-08
 image: '../../assets/images/why-every-software-engineer-should-learn-sql/image-0.jpg'
 tags:
-- sql
-- python
+  - sql
+  - python
 ---
+
 import { Image } from 'astro:assets'
 import pythonAgainstNOrders from '../../assets/images/why-every-software-engineer-should-learn-sql/image-1.png'
 import sqlAgainstNOrders from '../../assets/images/why-every-software-engineer-should-learn-sql/image-2.png'
@@ -85,8 +86,8 @@ class Order(Base):
 
 ```sql
 create table users (
-  id integer not null, 
-  name varchar(50), 
+  id integer not null,
+  name varchar(50),
   primary key (id)
 );
 
@@ -120,7 +121,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - '3306:3306'
 ```
 
 The database will be preloaded with a number of users and orders generated using the
@@ -151,7 +152,7 @@ class User(Base):
 class Order(Base):
     ...
 
-    
+
 def get_users_with_failed_orders_python(session: Session) -> set[User]:
     """Get all users with failed orders using a naive Python implementation."""
     failed_orders = (
@@ -244,15 +245,15 @@ of each function scaled with the number of rows in the database.
 #### Benchmark output
 
 ```
-n_users: 10, n_orders: 10  
-Python: 5.97ms, SQL: 1.04msn_users: 10, n_orders: 100  
-Python: 46.22ms, SQL: 1.22msn_users: 10, n_orders: 1,000  
-Python: 458.49ms, SQL: 1.28msn_users: 100, n_orders: 10  
-Python: 4.85ms, SQL: 0.96msn_users: 100, n_orders: 100  
-Python: 48.08ms, SQL: 1.40msn_users: 100, n_orders: 1,000  
-Python: 441.89ms, SQL: 2.53msn_users: 1,000, n_orders: 10  
-Python: 4.97ms, SQL: 1.04msn_users: 1,000, n_orders: 100  
-Python: 46.54ms, SQL: 1.57msn_users: 1,000, n_orders: 1,000  
+n_users: 10, n_orders: 10
+Python: 5.97ms, SQL: 1.04msn_users: 10, n_orders: 100
+Python: 46.22ms, SQL: 1.22msn_users: 10, n_orders: 1,000
+Python: 458.49ms, SQL: 1.28msn_users: 100, n_orders: 10
+Python: 4.85ms, SQL: 0.96msn_users: 100, n_orders: 100
+Python: 48.08ms, SQL: 1.40msn_users: 100, n_orders: 1,000
+Python: 441.89ms, SQL: 2.53msn_users: 1,000, n_orders: 10
+Python: 4.97ms, SQL: 1.04msn_users: 1,000, n_orders: 100
+Python: 46.54ms, SQL: 1.57msn_users: 1,000, n_orders: 1,000
 Python: 451.37ms, SQL: 5.75ms
 ```
 
@@ -287,7 +288,6 @@ enormous.
 If you enjoyed this article, you might also enjoy
 [my article about my Python library, `quiffen`](/parsing-qif-files-to-retrieve-financial-data-with-python),
 which is used for parsing financial information from `QIF` files.
-
 
 I can also be found on [my blog](http://ihh.dev/blog), on
 [Twitter](https://twitter.com/IsaacHarrisHolt) and on

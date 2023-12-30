@@ -34,7 +34,11 @@ async function scrapeMedium(url) {
   })
 
   const prettierConfig = await prettier.resolveConfig('./.prettierrc')
-  const markdown = await prettier.format(turndownService.turndown(article), { ...prettierConfig, parser: 'markdown', proseWrap: 'always' })
+  const markdown = await prettier.format(turndownService.turndown(article), {
+    ...prettierConfig,
+    parser: 'markdown',
+    proseWrap: 'always',
+  })
 
   await browser.close()
 
@@ -56,7 +60,7 @@ async function createAssetsDirectory(slug) {
 async function downloadImage(url, slug, filename, extension) {
   const path = `./src/assets/images/${slug}/${filename}.${extension}`
   const file = fs.createWriteStream(path)
-  https.get(url, function(response) {
+  https.get(url, function (response) {
     response.pipe(file)
   })
   return path.replace('./src', '../..')

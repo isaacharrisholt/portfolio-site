@@ -1,12 +1,13 @@
 ---
-title: "How to Make Your Python Packages Really Fast with Rust"
-subtitle: "Goodbye, slow code"
+title: 'How to Make Your Python Packages Really Fast with Rust'
+subtitle: 'Goodbye, slow code'
 date: 2023-05-31
 image: '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-0.jpg'
 tags:
-- python
-- rust
+  - python
+  - rust
 ---
+
 import { Image } from 'astro:assets'
 import maturinInit from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-1.png'
 import maturinDevelop from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-2.png'
@@ -91,7 +92,10 @@ Next, create a directory for your package. I’ve called mine `fibbers`. The fin
 step is to run `maturin init` from your new directory. At this point, you’ll be prompted
 to select which Rust bindings to use. Select `pyo3`.
 
-<Image src={maturinInit} alt="A screenshot of a terminal showing the maturin init command." />
+<Image
+  src={maturinInit}
+  alt="A screenshot of a terminal showing the maturin init command."
+/>
 
 Image by author.
 
@@ -110,14 +114,14 @@ directory.
 Here’s an overview of the resulting file structure.
 
 ```
-fibbers/  
-├── .github/  
-│ └── workflows/  
-│ └── CI.yml  
-├── .gitignore  
-├── Cargo.toml  
-├── pyproject.toml  
-└── src/  
+fibbers/
+├── .github/
+│ └── workflows/
+│ └── CI.yml
+├── .gitignore
+├── Cargo.toml
+├── pyproject.toml
+└── src/
  └── lib.rs
 ```
 
@@ -185,7 +189,10 @@ To install our `fibbers` package, all we have to do is run `maturin develop`in o
 terminal. This will download and compile our Rust package and install it into our
 virtual environment.
 
-<Image src={maturinDevelop} alt="A screenshot of a terminal showing the maturin develop command." />
+<Image
+  src={maturinDevelop}
+  alt="A screenshot of a terminal showing the maturin develop command."
+/>
 
 Image by author.
 
@@ -251,12 +258,18 @@ running as fast as it could. If we head back into our `fibbers` directory and ru
 `maturin develop`again, but this time with the `--release` flag, we’ll get the optimised
 production-ready version of our binary.
 
-<Image src={maturinDevelopRelease} alt="A screenshot of a terminal showing the maturin develop --release command." />
+<Image
+  src={maturinDevelopRelease}
+  alt="A screenshot of a terminal showing the maturin develop --release command."
+/>
 
 If we now benchmark our 30th fib number, we see that Rust now gives us a whopping _40
 times_ speed improvement over Python!
 
-<Image src={thirtiethFibRelease} alt="Results for the 30th Fibonacci number, optimised." />
+<Image
+  src={thirtiethFibRelease}
+  alt="Results for the 30th Fibonacci number, optimised."
+/>
 
 30th fib number, optimised. Image by author.
 
@@ -266,7 +279,10 @@ However, we do have a problem with our Rust implementation. If we try to get the
 Fibonacci number using `fibbers.fib()`, you’ll see that we actually hit an overflow
 error and get a different answer to Python.
 
-<Image src={fiftiethFib} alt="Rust experiencing integer overflow on the 50th fib number." />
+<Image
+  src={fiftiethFib}
+  alt="Rust experiencing integer overflow on the 50th fib number."
+/>
 
 Rust experiences integer overflow. Image by author.
 
@@ -312,11 +328,18 @@ check out the following examples:
 This article was based on the script for this video of mine, so if you’re more of a
 visual learner, or would like quick reference material, feel free to check it out:
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlWhnrk8go0?si=eYrQEiICS2iMcg4-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube-nocookie.com/embed/jlWhnrk8go0?si=eYrQEiICS2iMcg4-"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+></iframe>
 
 Or check out the code on [GitHub](https://github.com/isaacharrisholt/youtube/tree/main/010-creating-python-packages-with-rust).
 
 Stay fast!
 
 Isaac
-

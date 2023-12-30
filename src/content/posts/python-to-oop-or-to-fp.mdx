@@ -1,10 +1,10 @@
 ---
-title: "Python: To OOP or to FP?"
-subtitle: "That is the question"
+title: 'Python: To OOP or to FP?'
+subtitle: 'That is the question'
 date: 2022-11-21
 image: '../../assets/images/python-to-oop-or-to-fp/image-0.jpg'
 tags:
-- python
+  - python
 ---
 
 Photo by
@@ -62,54 +62,54 @@ log to `stdout`, but they could obviously do a lot more.
 ```python
 from abc import ABC, abstractmethod
 
-class Logger(ABC):  
-    @abstractmethod  
-    def log(self, message: str):  
+class Logger(ABC):
+    @abstractmethod
+    def log(self, message: str):
         ...
 
-class MyLogger(Logger):  
-    def __init__(self, name: str):  
+class MyLogger(Logger):
+    def __init__(self, name: str):
         self.name = name
 
     def log(self, message: str):
         print(f'{self.name}: {message}')
 
-class Animal:  
-    def __init__(self, name: str, logger: Logger):  
-        self.name = name  
+class Animal:
+    def __init__(self, name: str, logger: Logger):
+        self.name = name
         self.logger = logger
 
     def speak(self):
         self.logger.log('Speaking')
         ...
 
-class Dog(Animal):  
-    def speak(self):  
-        self.logger.log('Woof!')  
+class Dog(Animal):
+    def speak(self):
+        self.logger.log('Woof!')
         ...
 
     def run(self):
         self.logger.log('Running')
         ...
 
-class Fish(Animal):  
+class Fish(Animal):
     ...
 
-class App:  
-    @staticmethod  
-    def run():  
-        fido = Dog(name='Fido', logger=MyLogger('Fido'))  
+class App:
+    @staticmethod
+    def run():
+        fido = Dog(name='Fido', logger=MyLogger('Fido'))
         goldie = Fish(name='Goldie', logger=MyLogger('Goldie'))
 
         fido.speak()
         fido.run()
         goldie.speak()
 
-if __name__ == '__main__':  
+if __name__ == '__main__':
     App.run()
 
-# Fido: Woof!  
-# Fido: Running  
+# Fido: Woof!
+# Fido: Running
 # Goldie: Speaking
 ```
 
@@ -141,35 +141,35 @@ Just a head’s up — I’m less familiar with FP than OOP, so this might not b
 FP-like way to implement this behaviour, but it’s what I’m going with.
 
 ```python
-import functools  
+import functools
 from typing import Callable
 
 Logger = Callable[[str], None]
 
-def log(message: str, name: str):  
+def log(message: str, name: str):
     print(f'{name}: {message}')
 
-def bark( name: str,  
-    log_fn: Logger,) -> (str, Logger):  
-    log_fn('Woof!')  
+def bark( name: str,
+    log_fn: Logger,) -> (str, Logger):
+    log_fn('Woof!')
     return name, log_fn
 
-def run( name: str,  
-    log_fn: Logger,) -> (str, Logger):  
-    log_fn('Running')  
+def run( name: str,
+    log_fn: Logger,) -> (str, Logger):
+    log_fn('Running')
     return name, log_fn
 
-def speak( name: str,  
-    log_fn: Logger,) -> (str, Logger):  
-    log_fn('Speaking')  
+def speak( name: str,
+    log_fn: Logger,) -> (str, Logger):
+    log_fn('Speaking')
     return name, log_fn
 
-def main():  
-    run(  
-        *bark(  
-            'Fido',  
-            functools.partial(log, name='Fido'),  
-        ),  
+def main():
+    run(
+        *bark(
+            'Fido',
+            functools.partial(log, name='Fido'),
+        ),
     )
 
     speak(
@@ -177,11 +177,11 @@ def main():
         functools.partial(log, name='Goldie'),
     )
 
-if __name__ == '__main__':  
+if __name__ == '__main__':
  main()
 
-# Fido: Woof!  
-# Fido: Running  
+# Fido: Woof!
+# Fido: Running
 # Goldie: Speaking
 ```
 
@@ -217,25 +217,25 @@ bring in a few more Pythonic bits and pieces to pull away from the traditional O
 FP paradigms, and hopefully make the code a little cleaner and easier to read.
 
 ```python
-from dataclasses import dataclass  
-from functools import partial  
+from dataclasses import dataclass
+from functools import partial
 from typing import Callable
 
 Logger = Callable[[str], None]
 
-def log(message: str, name: str):  
+def log(message: str, name: str):
     print(f'{name}: {message}')
 
-@dataclass  
-class Animal:  
-    name: str  
+@dataclass
+class Animal:
+    name: str
     log: Logger
 
     def speak(self):
         self.log('Speaking')
 
-@dataclass  
-class Dog(Animal):  
+@dataclass
+class Dog(Animal):
     breed: str = 'Labrador'
 
     def speak(self):
@@ -244,12 +244,12 @@ class Dog(Animal):
     def run(self):
         self.log('Running')
 
-@dataclass  
-class Fish(Animal):  
+@dataclass
+class Fish(Animal):
     ...
 
-def main():  
-    fido = Dog('Fido', partial(log, name='Fido'))  
+def main():
+    fido = Dog('Fido', partial(log, name='Fido'))
     goldie = Fish('Goldie', partial(log, name='Goldie'))
 
     fido.speak()
@@ -257,11 +257,11 @@ def main():
 
     goldie.speak()
 
-if __name__ == '__main__':  
+if __name__ == '__main__':
  main()
 
-# Fido: Woof!  
-# Fido: Running  
+# Fido: Woof!
+# Fido: Running
 # Goldie: Speaking
 ```
 
@@ -299,32 +299,32 @@ Below is an example of how this might be used. Again, it’s a simple example, b
 fairly representative of what you might see in production.
 
 ```python
-from fastapi import FastAPI  
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI()
 
-class Baz(BaseModel):  
+class Baz(BaseModel):
     qux: int
 
-class Foo(BaseModel):  
-    bar: str  
+class Foo(BaseModel):
+    bar: str
     baz: Baz
 
-@app.get('/foo')  
-async def get_foo(name: str, age: int) -> Foo:  
-    ...  # Some logic here  
-    return Foo(  
-        bar=name,  
-        baz=Baz(qux=age),  
+@app.get('/foo')
+async def get_foo(name: str, age: int) -> Foo:
+    ...  # Some logic here
+    return Foo(
+        bar=name,
+        baz=Baz(qux=age),
     )
 
-# GET /foo?name=John&age=42  
-# {  
-#   "bar": "John",  
-#   "baz": {  
-#     "qux": 42  
-#   }  
+# GET /foo?name=John&age=42
+# {
+#   "bar": "John",
+#   "baz": {
+#     "qux": 42
+#   }
 # }
 ```
 
@@ -348,4 +348,3 @@ too.
 I’m sure I’ll see you soon!
 
 \- Isaac
-
