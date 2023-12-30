@@ -1,29 +1,41 @@
 ---
-title: 'Parsing QIF Files to Retrieve Financial Data with Python'
-subtitle: 'A Basic Overview of the Quiffen Package and Why It’s So Useful'
+title: "Parsing QIF Files to Retrieve Financial Data with Python"
+subtitle: "A Basic Overview of the Quiffen Package and Why It’s So Useful"
 date: 2021-07-05
 ---
-
 import { Image } from 'astro:assets'
 import image0 from '../../assets/images/parsing-qif-files-to-retrieve-financial-data-with-python/image-0.jpg'
 
 <Image src={image0} alt="TODO" />
 
-Photo by [Agence Olloweb](https://unsplash.com/@olloweb?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
+Photo by
+[Agence Olloweb](https://unsplash.com/@olloweb?utm_source=medium&utm_medium=referral) on
+[Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
 
-If you’ve ever tried to complete a data science project that revolves around personal finances, you’re probably familiar with the joys of bank-exported CSV files for transaction data.
+If you’ve ever tried to complete a data science project that revolves around personal
+finances, you’re probably familiar with the joys of bank-exported CSV files for
+transaction data.
 
-Put short — they’re absolutely awful. Most banks will allow you to export your bank statement as a CSV, but what a lot of them don’t tell you is how terribly structured these CSV files are. Different banks use different header names for the amount, reference and so on, and hard coding every single bank is nigh on impossible.
+Put short — they’re absolutely awful. Most banks will allow you to export your bank
+statement as a CSV, but what a lot of them don’t tell you is how terribly structured
+these CSV files are. Different banks use different header names for the amount,
+reference and so on, and hard coding every single bank is nigh on impossible.
 
-This is where QIF files come in. QIF, or Quicken Interchange Format, is a file format developed by Intuit initially for use in their QuickBooks product. However, the format is very old now (older than OFX, even).
+This is where QIF files come in. QIF, or Quicken Interchange Format, is a file format
+developed by Intuit initially for use in their QuickBooks product. However, the format
+is very old now (older than OFX, even).
 
-Regardless of this, most banks and other financial institutions (stock brokers, etc.) will offer QIF as an option when exporting your data. Despite its age, the QIF file format is useful because:
+Regardless of this, most banks and other financial institutions (stock brokers, etc.)
+will offer QIF as an option when exporting your data. Despite its age, the QIF file
+format is useful because:
 
 - It’s standardised — no more hard coding different CSV schema for different banks
 - It’s widely used
 - It’s written in plain text, so it’s really easy to parse
 
-[Quiffen](https://pypi.org/project/quiffen/) is a Python package for parsing QIF files and exporting the data in more useful formats, such as dictionaries or pandas DataFrames. Quiffen can be installed from the command line by running:
+[Quiffen](https://pypi.org/project/quiffen/) is a Python package for parsing QIF files
+and exporting the data in more useful formats, such as dictionaries or pandas
+DataFrames. Quiffen can be installed from the command line by running:
 
 pip install quiffen
 
@@ -31,13 +43,18 @@ From there, you’re ready to start analysing your data!
 
 ## Parsing QIF Files
 
-Below is a code sample of how to parse a QIF file and export the transactions within into a DataFrame:
+Below is a code sample of how to parse a QIF file and export the transactions within
+into a DataFrame:
 
-You can choose different data to export, such as the categories (which are represented by trees) or the accounts stored in the `Qif` object. You can also export the data from to a CSV with headers which will be consistent every time with the `to_csv()` method.
+You can choose different data to export, such as the categories (which are represented
+by trees) or the accounts stored in the `Qif` object. You can also export the data from
+to a CSV with headers which will be consistent every time with the `to_csv()` method.
 
 ## Creating Your Own QIF Files
 
-Quiffen also supports QIF structure creation and export! You can create your own `Qif` objects and add accounts, transactions, categories, classes and more to it. An example of this is shown below, but a full API reference can be found on the Quiffen docs:
+Quiffen also supports QIF structure creation and export! You can create your own `Qif`
+objects and add accounts, transactions, categories, classes and more to it. An example
+of this is shown below, but a full API reference can be found on the Quiffen docs:
 
 [
 
@@ -49,7 +66,8 @@ quiffen.readthedocs.io
 
 ](https://quiffen.readthedocs.io/en/latest/?source=post_page-----f599cc0d8c03--------------------------------)
 
-You can view the full source code for the Quiffen package on GitHub. Any feedback or (constructive!) criticism is greatly appreciated!
+You can view the full source code for the Quiffen package on GitHub. Any feedback or
+(constructive!) criticism is greatly appreciated!
 
 [
 
@@ -61,9 +79,15 @@ github.com
 
 ](https://github.com/isaacharrisholt/quiffen?source=post_page-----f599cc0d8c03--------------------------------)
 
-I would highly recommend trying out Quiffen with your own transaction data, and if you also want to check out the program that got my financial ass into gear, please do that also!
+I would highly recommend trying out Quiffen with your own transaction data, and if you
+also want to check out the program that got my financial ass into gear, please do that
+also!
 
-Also, if you have any questions, please feel free to send them to me on [**GitHub**](https://github.com/isaacharrisholt/) or connect with me on [**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)! I love writing about my projects so you might like to follow me on [**Medium**](https://isaacharrisholt.medium.com/) too.
+Also, if you have any questions, please feel free to send them to me on
+[**GitHub**](https://github.com/isaacharrisholt/) or connect with me on
+[**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)! I love writing about my
+projects so you might like to follow me on
+[**Medium**](https://isaacharrisholt.medium.com/) too.
 
 [
 
@@ -75,4 +99,6 @@ towardsdatascience.com
 
 ](/beating-monzo-plus-with-python-and-pandas-83cb066c1b95?source=post_page-----f599cc0d8c03--------------------------------)
 
-**_That’s all for this one! I hope you enjoyed it, and any feedback is greatly appreciated!_**
+**_That’s all for this one! I hope you enjoyed it, and any feedback is greatly
+appreciated!_**
+

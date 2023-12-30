@@ -1,9 +1,8 @@
 ---
-title: 'PostgreSQL RLS Policies — A Friendly Introduction'
-subtitle: 'Sign up to discover human stories that deepen your understanding of the world.'
+title: "PostgreSQL RLS Policies — A Friendly Introduction"
+subtitle: "Sign up to discover human stories that deepen your understanding of the world."
 date: 2023-06-14
 ---
-
 import { Image } from 'astro:assets'
 import image0 from '../../assets/images/postgresql-rls-policies-a-friendly-introduction/image-0.jpg'
 
@@ -11,25 +10,45 @@ Securing your application: database style
 
 <Image src={image0} alt="TODO" />
 
-Photo by [Tim Evans](https://unsplash.com/@tjevans?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
+Photo by
+[Tim Evans](https://unsplash.com/@tjevans?utm_source=medium&utm_medium=referral) on
+[Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
 
 # The Problem
 
-When writing applications, one task you’ll face is preventing data leaks. How do you make sure your users only see what they’re supposed to? It wouldn’t be great if I logged into my email app and saw all my boss’ emails (or it might be if you’re good at your job 😉).
+When writing applications, one task you’ll face is preventing data leaks. How do you
+make sure your users only see what they’re supposed to? It wouldn’t be great if I logged
+into my email app and saw all my boss’ emails (or it might be if you’re good at your job
+😉).
 
-One common way of securing your data is having an _access control layer_ between your API and your database. This could be anything from access policies enforced by your ORM to a separate microservice that makes judicious use of `where`clauses when querying your database.
+One common way of securing your data is having an _access control layer_ between your
+API and your database. This could be anything from access policies enforced by your ORM
+to a separate microservice that makes judicious use of `where`clauses when querying your
+database.
 
-For the most part, this works. But what happens if one of your engineers forgets a `where` clause or access requirements change and you suddenly have to go and find a million different places to change your access levels? Having a separate access control layer can also add complexity to your code base — depending on how you implement it, you may now have to maintain an additional module with its own set of concerns, design patterns, idioms, and so on.
+For the most part, this works. But what happens if one of your engineers forgets a
+`where` clause or access requirements change and you suddenly have to go and find a
+million different places to change your access levels? Having a separate access control
+layer can also add complexity to your code base — depending on how you implement it, you
+may now have to maintain an additional module with its own set of concerns, design
+patterns, idioms, and so on.
 
-**Introducing Postgres’ row-level security, or RLS policies**. [RLS policies are access policies that you define at the database level](https://www.postgresql.org/docs/current/ddl-rowsecurity.html), removing the need for an external service and keeping latency to a minimum.
+**Introducing Postgres’ row-level security, or RLS policies**.
+[RLS policies are access policies that you define at the database level](https://www.postgresql.org/docs/current/ddl-rowsecurity.html),
+removing the need for an external service and keeping latency to a minimum.
 
 # How do RLS policies work?
 
-> In addition to the SQL-standard privilege system available through GRANT, tables can have _row security policies_ that restrict, on a per-user basis, which rows can be returned by normal queries or inserted, updated, or deleted by data modification commands
+> In addition to the SQL-standard privilege system available through GRANT, tables can
+> have _row security policies_ that restrict, on a per-user basis, which rows can be
+> returned by normal queries or inserted, updated, or deleted by data modification
+> commands
 
 — PostgreSQL documentation
 
-When you query a table protected by RLS policies, Postgres will validate each row the query returns against the policies on the table. Any rows that do not pass the check will be stripped from the response.
+When you query a table protected by RLS policies, Postgres will validate each row the
+query returns against the policies on the table. Any rows that do not pass the check
+will be stripped from the response.
 
 For example, if we had the following table:
 
@@ -62,57 +81,89 @@ id | species | name
 \----+---------+--------  
  1 | lion | Alex
 
-Great! We’ve managed to restrict the data I have access to. But that `create policy` statement is a little confusing. Let’s deconstruct it 🤓:
+Great! We’ve managed to restrict the data I have access to. But that `create policy`
+statement is a little confusing. Let’s deconstruct it 🤓:
 
 `create policy "allow anyone to read lions"`
 
-This one’s easy! We’re creating a new policy called `allow anyone to read lions`. You can call your policies whatever you like, but it’s worth being descriptive.
+This one’s easy! We’re creating a new policy called `allow anyone to read lions`. You
+can call your policies whatever you like, but it’s worth being descriptive.
 
 `on animal`
 
-Again, quite straightforward — this policy is for the `animal` table. **Each policy can apply to only one table.**
+Again, quite straightforward — this policy is for the `animal` table. **Each policy can
+apply to only one table.**
 
 `for select`
 
-This part of the query decides **when** the policy will run. In this case, we want records to be checked against the policy when we use a `select` statement.
+This part of the query decides **when** the policy will run. In this case, we want
+records to be checked against the policy when we use a `select` statement.
 
-The other available options are `insert`, `update`, `delete` and `all`. The first three cover their respective statements, and `all` will apply to all the CRUD operations against the table.
+The other available options are `insert`, `update`, `delete` and `all`. The first three
+cover their respective statements, and `all` will apply to all the CRUD operations
+against the table.
 
-If you use `merge` statements in your code, policies for any of the CRUD operations may be applied depending on what the `merge` statement is doing.
+If you use `merge` statements in your code, policies for any of the CRUD operations may
+be applied depending on what the `merge` statement is doing.
 
 `as permissive`
 
-This is where things get interesting. There are **two ways** a policy can be applied to a table — as a `permissive` policy or as a `restrictive` policy. **Policies are permissive by default**.
+This is where things get interesting. There are **two ways** a policy can be applied to
+a table — as a `permissive` policy or as a `restrictive` policy. **Policies are
+permissive by default**.
 
-Each does roughly as you’d expect — permissive policies define the set of records you’re _permitted_ to read, whereas restrictive policies will _restrict_ you from reading a particular record, even if there exists a permissive policy that grants you access to said record.
+Each does roughly as you’d expect — permissive policies define the set of records you’re
+_permitted_ to read, whereas restrictive policies will _restrict_ you from reading a
+particular record, even if there exists a permissive policy that grants you access to
+said record.
 
-You have to have at least one permissive policy to be able to query the table. A table with only restrictive policies will not allow any queries at all.
+You have to have at least one permissive policy to be able to query the table. A table
+with only restrictive policies will not allow any queries at all.
 
-Permissive policies are applied using a boolean “OR”, so you only need permission from one permissive policy to be able to query a certain row. Restrictive policies, on the other hand, are applied using a boolean “AND” — you have to pass _all_ restrictive policies for every row you want to be able to read.
+Permissive policies are applied using a boolean “OR”, so you only need permission from
+one permissive policy to be able to query a certain row. Restrictive policies, on the
+other hand, are applied using a boolean “AND” — you have to pass _all_ restrictive
+policies for every row you want to be able to read.
 
 The overall logic looks something like this:
 
 `(perm_pol_1 OR perm_pol_2 OR ... OR perm_pol_n) AND rest_pol_1 AND rest_pol_2 AND ... AND rest_pol_m`
 
-I don’t often find myself reaching for a restrictive policy, preferring to use use a slightly more complex permissive policy instead, as it keeps things closer together and easier to reason about (and faster, though that’s a topic for the next article 😉).
+I don’t often find myself reaching for a restrictive policy, preferring to use use a
+slightly more complex permissive policy instead, as it keeps things closer together and
+easier to reason about (and faster, though that’s a topic for the next article 😉).
 
 Moving on:
 
 `to authenticated`
 
-The `to` portion of `create policy` defines the **roles** the policy applies to. In this case, I’m using an example group called `authenticated`, but this could be any group you like, or one of the Postgres defaults: `PUBLIC`, `CURRENT_ROLE`, `CURRENT_USER`, `SESSION_USER`. These are based on the user _creating_ the RLS policy, not the user querying! It’s best to target a specific role.
+The `to` portion of `create policy` defines the **roles** the policy applies to. In this
+case, I’m using an example group called `authenticated`, but this could be any group you
+like, or one of the Postgres defaults: `PUBLIC`, `CURRENT_ROLE`, `CURRENT_USER`,
+`SESSION_USER`. These are based on the user _creating_ the RLS policy, not the user
+querying! It’s best to target a specific role.
 
-Beware, however, that any role with the `bypassrls` attribute will completely ignore any RLS policies you have defined!
+Beware, however, that any role with the `bypassrls` attribute will completely ignore any
+RLS policies you have defined!
 
 `using (species = 'lion');`
 
-Finally, the good part! This is where the action happens. The `using` clause contains a boolean expression that each of our rows is checked against.
+Finally, the good part! This is where the action happens. The `using` clause contains a
+boolean expression that each of our rows is checked against.
 
 There are **two available check clauses**: `using` and `with check`.
 
-`using` is used to determine which rows are _visible_ to the user when the operation is performed. It’s used in `select`, `update`and `delete` clauses. In the case of `update` or `delete`, if you use [Postgres triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) as part of your application, the using clause will be checked _after_ any `before` triggers have run against the relevant rows.
+`using` is used to determine which rows are _visible_ to the user when the operation is
+performed. It’s used in `select`, `update`and `delete` clauses. In the case of `update`
+or `delete`, if you use
+[Postgres triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) as
+part of your application, the using clause will be checked _after_ any `before` triggers
+have run against the relevant rows.
 
-`with check` is used to check that the results of `update` and `insert` statement are up to snuff. These policies will run _after_ the action, but will prevent the action being committed if they fail. In the case of `update`, you can use `with check` in combination with `using` to create some really powerful policies.
+`with check` is used to check that the results of `update` and `insert` statement are up
+to snuff. These policies will run _after_ the action, but will prevent the action being
+committed if they fail. In the case of `update`, you can use `with check` in combination
+with `using` to create some really powerful policies.
 
 You can think of the flow like this:
 
@@ -132,7 +183,9 @@ If \`with check\` clause check fails, ROLLBACK
 
 COMMIT
 
-You can use _any_ boolean expression in your `using` and `with check` clauses including function invocations. The only requirement is that the expression returns a boolean value.
+You can use _any_ boolean expression in your `using` and `with check` clauses including
+function invocations. The only requirement is that the expression returns a boolean
+value.
 
 For example, you could replace the above policy with the following:
 
@@ -239,3 +292,4 @@ Stay secure out there,
 
 Isaac
 $$
+

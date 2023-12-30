@@ -1,55 +1,98 @@
 ---
-title: 'Run Airbyte Syncs On A Custom Schedule With Crontab And HTTP Requests'
-subtitle: 'Leverage Airbyte’s simple REST API for complex configuration'
+title: "Run Airbyte Syncs On A Custom Schedule With Crontab And HTTP Requests"
+subtitle: "Leverage Airbyte’s simple REST API for complex configuration"
 date: 2022-04-23
 ---
-
 import { Image } from 'astro:assets'
 import image0 from '../../assets/images/run-airbyte-syncs-on-a-custom-schedule-with-crontab-and-http-requests/image-0.jpg'
 
 <Image src={image0} alt="TODO" />
 
-Photo by [insung yoon](https://unsplash.com/@insungyoon?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
+Photo by
+[insung yoon](https://unsplash.com/@insungyoon?utm_source=medium&utm_medium=referral) on
+[Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
 
-[Airbyte](https://airbyte.com/) is a fantastic tool that’s recently been making waves in the data engineering community. It’s an open-source tool for running ELT (extract, load and transform) processes. It’s a great replacement for expensive software such as Fivetran, and could save your company thousands each month.
+[Airbyte](https://airbyte.com/) is a fantastic tool that’s recently been making waves in
+the data engineering community. It’s an open-source tool for running ELT (extract, load
+and transform) processes. It’s a great replacement for expensive software such as
+Fivetran, and could save your company thousands each month.
 
-From here on, I’m going to assume you have a working knowledge of how Airbyte is structured and how you would use it in a production environment.
+From here on, I’m going to assume you have a working knowledge of how Airbyte is
+structured and how you would use it in a production environment.
 
-Airbyte is great, however, as it stands currently, Airbyte doesn’t have first class support for cron-style scheduling for connection syncs. This is coming very soon, but it’s not quite ready, and my company runs an older version of Airbyte, with no need to upgrade yet.
+Airbyte is great, however, as it stands currently, Airbyte doesn’t have first class
+support for cron-style scheduling for connection syncs. This is coming very soon, but
+it’s not quite ready, and my company runs an older version of Airbyte, with no need to
+upgrade yet.
 
-When it comes to scheduling currently, there are a few options, like having your sync run every minute, hour, day, etc., but if you want anything more specific, or if you want to orchestrate your syncs yourself, it’s not possible from within the UI, which is how most users will interact with Airbyte for the most part.
+When it comes to scheduling currently, there are a few options, like having your sync
+run every minute, hour, day, etc., but if you want anything more specific, or if you
+want to orchestrate your syncs yourself, it’s not possible from within the UI, which is
+how most users will interact with Airbyte for the most part.
 
-But fear not! Not only does Airbyte expose a great UI for managing your ELT processes, but it also exposes a HTTP REST API that allows you to use POST requests to trigger connections from an outside source.
+But fear not! Not only does Airbyte expose a great UI for managing your ELT processes,
+but it also exposes a HTTP REST API that allows you to use POST requests to trigger
+connections from an outside source.
 
-The full API documentation is [here](https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html), but if you read on, I’ll show you how you can use Crontab and Python to run your syncs on your own schedule. Of course, you’re welcome to use whatever tools and languages you like for this.
+The full API documentation is
+[here](https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html),
+but if you read on, I’ll show you how you can use Crontab and Python to run your syncs
+on your own schedule. Of course, you’re welcome to use whatever tools and languages you
+like for this.
 
 # ⚙️ Connecting to the API
 
-All of the endpoints that Airbyte exposes are POST endpoints, which makes it very easy to interact with. Since Airbyte is containerised, I’m going to assume that you’re using all the default ports that Airbyte ships with and that you’re going to be running your Python script on the same machine.
+All of the endpoints that Airbyte exposes are POST endpoints, which makes it very easy
+to interact with. Since Airbyte is containerised, I’m going to assume that you’re using
+all the default ports that Airbyte ships with and that you’re going to be running your
+Python script on the same machine.
 
-The following code is very simple and will use the API to trigger every enabled connection simultaneously, but it should give you reasonable familiarity with the endpoints you’ll need to hit.
+The following code is very simple and will use the API to trigger every enabled
+connection simultaneously, but it should give you reasonable familiarity with the
+endpoints you’ll need to hit.
 
-If you’re using Python, you’ll need to make sure you have the `requests` module installed, and then start by writing a function to get the Airbyte workspaces associated with your installation:
+If you’re using Python, you’ll need to make sure you have the `requests` module
+installed, and then start by writing a function to get the Airbyte workspaces associated
+with your installation:
 
-Each workspace in Airbyte will have a number of sources, a number of destinations and a number of connections that determine the flow of data from source to destination. In order to trigger a sync, we first have to get a list of the connections for each workspace, and then trigger each one individually. We can do that with the following two functions:
+Each workspace in Airbyte will have a number of sources, a number of destinations and a
+number of connections that determine the flow of data from source to destination. In
+order to trigger a sync, we first have to get a list of the connections for each
+workspace, and then trigger each one individually. We can do that with the following two
+functions:
 
-Then, all we have to do is wrap this up into a neat little package, which leaves the whole program looking like this:
+Then, all we have to do is wrap this up into a neat little package, which leaves the
+whole program looking like this:
 
-And that’s it for the Python side of things. All that’s left is to schedule this script to run!
+And that’s it for the Python side of things. All that’s left is to schedule this script
+to run!
 
 # 🕒 Scheduling Your Airbyte Syncs
 
-Once again, you can use whatever you like for this, but I like using Crontab because it’s easy and quick. It would be just as viable to adjust the above script to use the Python `schedule` package and run it in the background at all times.
+Once again, you can use whatever you like for this, but I like using Crontab because
+it’s easy and quick. It would be just as viable to adjust the above script to use the
+Python `schedule` package and run it in the background at all times.
 
-If you decide you just want to use Crontab, make sure it’s installed on your machine. I like to use Crontab.guru to make sure I’m going to get the schedule I want. I’m not going to give a full tutorial here, but if you wanted to run your Airbyte syncs between 6am and 6pm on the hour, you’d insert the following line into your Crontab using the `crontab -e` command:
+If you decide you just want to use Crontab, make sure it’s installed on your machine. I
+like to use Crontab.guru to make sure I’m going to get the schedule I want. I’m not
+going to give a full tutorial here, but if you wanted to run your Airbyte syncs between
+6am and 6pm on the hour, you’d insert the following line into your Crontab using the
+`crontab -e` command:
 
 `00 6-18 * * * python3 force_airbyte_sync.py`
 
-Save your Crontab, and make sure it’s inserted correctly with `crontab -l`. Then sit back, relax and enjoy spending 50% less on your ELT process!
+Save your Crontab, and make sure it’s inserted correctly with `crontab -l`. Then sit
+back, relax and enjoy spending 50% less on your ELT process!
 
-I hope this post has been useful to at least some of you! If you’ve got any questions feel free to comment on this post or email me at [isaac@isaacharrisholt.com](mailto:isaac@isaacharrisholt.com). I love to chat about data and all things engineering, so why not start a conversation!
+I hope this post has been useful to at least some of you! If you’ve got any questions
+feel free to comment on this post or email me at
+[isaac@isaacharrisholt.com](mailto:isaac@isaacharrisholt.com). I love to chat about data
+and all things engineering, so why not start a conversation!
 
-You can also find me on [**GitHub**](https://github.com/isaacharrisholt/) or connect with me on [**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)! I love writing about my projects so you might like to follow me on [**Medium**](https://isaacharrisholt.medium.com/) too.
+You can also find me on [**GitHub**](https://github.com/isaacharrisholt/) or connect
+with me on [**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)! I love
+writing about my projects so you might like to follow me on
+[**Medium**](https://isaacharrisholt.medium.com/) too.
 
 [
 
@@ -61,4 +104,6 @@ towardsdatascience.com
 
 ](/parsing-qif-files-to-retrieve-financial-data-with-python-f599cc0d8c03?source=post_page-----8d6fbb3ea112--------------------------------)
 
-**_That’s all for this one! I hope you enjoyed it, and any feedback is greatly appreciated!_**
+**_That’s all for this one! I hope you enjoyed it, and any feedback is greatly
+appreciated!_**
+
