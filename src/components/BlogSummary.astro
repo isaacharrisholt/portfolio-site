@@ -10,7 +10,7 @@ interface Props {
 const { slug, title, subtitle, date, description } = Astro.props;
 ---
 
-<div class="w-full flex flex-col gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white">
+<div class="w-full flex flex-col gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white" transition:name={`post-${slug}`}>
   <div class="flex flex-col">
     <h2 class="hover:underline"><a href={slug} class="not-prose">{title}</a></h2>
     {!!subtitle && <h3>{subtitle}</h3>}

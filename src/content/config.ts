@@ -1,5 +1,11 @@
-import { z, defineCollection } from 'astro:content'
-import mdx from '@astrojs/mdx'
+import { z, defineCollection, reference } from 'astro:content'
+
+const tags = defineCollection({
+  type: 'data',
+  schema: z.object({
+    name: z.string(),
+  }),
+})
 
 const posts = defineCollection({
   type: 'content',
@@ -8,9 +14,11 @@ const posts = defineCollection({
     subtitle: z.string().optional(),
     date: z.date(),
     description: z.string().optional(),
+    tags: z.array(reference('tags')).default([]),
   }),
 })
 
 export const collections = {
+  tags,
   posts,
 }

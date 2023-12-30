@@ -16,7 +16,7 @@
   <a href="/" class="w-fit text-2xl font-bold">
     Isaac <span class="whitespace-nowrap">Harris-Holt</span>
   </a>
-  <ul class="flex flex-row items-center gap-4 md:gap-8 lg:gap-16 font-semibold justify-center">
+  <ul class="flex flex-row items-center gap-4 md:gap-8 lg:gap-16 font-semibold justify-center" transition:name="nav-links">
     {
       navLinks.map((link) => 
         <li class="link">
@@ -26,7 +26,7 @@
         </li>)
     }
   </ul>
-  <div class="md:justify-self-end">&lt;Socials /&gt;</div>
+  <div class="md:justify-self-end" transition:name="nav-socials">&lt;Socials /&gt;</div>
 </nav>
 
 <style>
