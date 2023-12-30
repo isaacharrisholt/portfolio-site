@@ -4,13 +4,13 @@ subtitle: "Speed up your programs by properly utilising your database"
 date: 2022-10-08
 ---
 import { Image } from 'astro:assets'
-import image0 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-0.jpg'
-import image1 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-1.png'
-import image2 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-2.png'
-import image3 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-3.png'
-import image4 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-4.png'
+import library from '../../assets/images/why-every-software-engineer-should-learn-sql/image-0.jpg'
+import pythonAgainstNOrders from '../../assets/images/why-every-software-engineer-should-learn-sql/image-1.png'
+import sqlAgainstNOrders from '../../assets/images/why-every-software-engineer-should-learn-sql/image-2.png'
+import pythonAgainstNUsers from '../../assets/images/why-every-software-engineer-should-learn-sql/image-3.png'
+import sqlAgainstNUsers from '../../assets/images/why-every-software-engineer-should-learn-sql/image-4.png'
 
-<Image src={image0} alt="TODO" />
+<Image src={library} alt="" />
 
 Photo by
 [Tobias Fischer](https://unsplash.com/@tofi?utm_source=medium&utm_medium=referral) on
@@ -42,18 +42,64 @@ seen in production, so pay attention!
 
 TL;DR: the SQL `JOIN` implementation is _much_ faster.
 
-# The Example
+### The Example
 
 The example I will use is one of an online store. The database will contain a `users`
 table and an `orders` table, which will store information on the site’s users and any
 orders placed by those users. Each table has an ID column and the `orders` table
 contains a `user_id` column containing a foreign key that references the `users` table.
 
-## Python
+#### Python
 
-## SQL
+```python
+from sqlalchemy import (
+    Boolean,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+)
+from sqlalchemy.orm import declarative_base
 
-# The Test Setup
+Base = declarative_base()
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+
+
+class Order(Base):
+    __tablename__ = 'orders'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    description = Column(String(50))
+    payment_status = Column(Boolean, index=True)
+```
+
+#### SQL
+
+```sql
+create table users (
+  id integer not null, 
+  name varchar(50), 
+  primary key (id)
+);
+
+create table orders (
+  id integer not null,
+  user_id integer,
+  description varchar(50),
+  payment_status boolean,
+  primary key (id),
+  foreign key(user_id) references users (id)
+);
+```
+
+### The Test Setup
 
 As you can see, each `order` has a `payment_status` column, which contains a boolean for
 whether the order was paid successfully or not. The aim is to test a function that finds
@@ -62,6 +108,19 @@ describing those users.
 
 The test will be run against a local dockerised MySQL database, created using the
 following `docker-compose.yml` file:
+
+```yml
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: default
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+```
 
 The database will be preloaded with a number of users and orders generated using the
 Python `faker` library. The test will be run with every combination of 10, 100 and 1000
@@ -78,16 +137,87 @@ and `DISTINCT` to generate the same set of users in a single query.
 
 The code for the functions can be seen below.
 
-## Python
+#### Python
 
-## SQL
+```python
+from sqlalchemy.orm import Session
+
+...
+
+class User(Base):
+    ...
+
+class Order(Base):
+    ...
+
+    
+def get_users_with_failed_orders_python(session: Session) -> set[User]:
+    """Get all users with failed orders using a naive Python implementation."""
+    failed_orders = (
+        session
+        .query(Order)
+        .prefix_with('SQL_NO_CACHE')
+        .filter(Order.payment_status == False)
+        .all()
+    )
+
+    users = set()
+
+    for order in failed_orders:
+        user = (
+            session
+            .query(User)
+            .prefix_with('SQL_NO_CACHE')
+            .filter(User.id == order.user_id)
+            .one_or_none()
+        )
+        users.add(user)
+
+    return users
+
+
+def get_users_with_failed_orders_sql(session: Session) -> set[User]:
+    """Get all users with failed orders using a SQL implementation."""
+    return set(
+        session
+        .query(User)
+        .prefix_with('SQL_NO_CACHE')
+        .distinct()
+        .join(Order)
+        .filter(Order.payment_status == False)
+        .all()
+    )
+```
+
+#### SQL
+
+```sql
+/* Naive Python implementation */
+select *
+from orders
+where not payment_status
+
+-- Loop over the results from previous query
+-- and run this select each time
+select *
+from users
+where id = '{{ user_id }}'
+
+
+/* SQL implementation */
+select distinct users.*
+from users
+inner join orders
+  on users.id = orders.user_id
+where not orders.payment_status
+```
 
 It should be fairly clear from the code that the implementation using the SQL `JOIN`
 will make only one database query, whereas the more naive Python implementation will
 make a minimum of 1 and a maximum of N queries where N is the number of rows in the
 `orders` table.
 
-# The Results
+### The Results
 
 Unsurprisingly, the pure SQL implementation of the function is much, much faster than
 the implementation that relies on a Python `for` loop.
@@ -110,8 +240,9 @@ user by user.
 The full results can be seen below, along with some charts showing how the performance
 of each function scaled with the number of rows in the database.
 
-## Benchmark output
+#### Benchmark output
 
+```
 n_users: 10, n_orders: 10  
 Python: 5.97ms, SQL: 1.04msn_users: 10, n_orders: 100  
 Python: 46.22ms, SQL: 1.22msn_users: 10, n_orders: 1,000  
@@ -122,26 +253,27 @@ Python: 441.89ms, SQL: 2.53msn_users: 1,000, n_orders: 10
 Python: 4.97ms, SQL: 1.04msn_users: 1,000, n_orders: 100  
 Python: 46.54ms, SQL: 1.57msn_users: 1,000, n_orders: 1,000  
 Python: 451.37ms, SQL: 5.75ms
+```
 
-## Graphs
+#### Graphs
 
-<Image src={image1} alt="TODO" />
-
-Image by author.
-
-<Image src={image2} alt="TODO" />
+<Image src={pythonAgainstNOrders} alt="TODO" />
 
 Image by author.
 
-<Image src={image3} alt="TODO" />
+<Image src={sqlAgainstNOrders} alt="TODO" />
+
+Image by author.
+
+<Image src={pythonAgainstNUsers} alt="TODO" />
 
 Image by author
 
-<Image src={image4} alt="TODO" />
+<Image src={sqlAgainstNUsers} alt="TODO" />
 
 Image by author
 
-# Conclusion
+### Conclusion
 
 While both implementations above could certainly be optimised to squeeze out slightly
 more performance, the SQL implementation will win every single time. The best part is,
@@ -151,26 +283,235 @@ There are plenty of free resources online for learning SQL, so if you’re a sof
 engineer or an aspiring one, get out there and get studying! The benefits will be
 enormous.
 
-If you enjoyed this article, you might also enjoy my article about my Python library,
-`quiffen`, which is used for parsing financial information from `QIF` files:
+If you enjoyed this article, you might also enjoy
+[my article about my Python library, `quiffen`](/parsing-qif-files-to-retrieve-financial-data-with-python),
+which is used for parsing financial information from `QIF` files.
 
-[
 
-## Parsing QIF Files to Retrieve Financial Data with Python
-
-### A Basic Overview of the Quiffen Package and Why It’s So Useful
-
-towardsdatascience.com
-
-](/parsing-qif-files-to-retrieve-financial-data-with-python-f599cc0d8c03?source=post_page-----ae3d7192a8d9--------------------------------)
-
-I can also be found on [my blog](http://isaacharrisholt.com/newsletter), on
+I can also be found on [my blog](http://ihh.dev/blog), on
 [Twitter](https://twitter.com/IsaacHarrisHolt) and on
 [LinkedIn](https://www.linkedin.com/in/isaac-harris-holt/), so if you have any
 questions, feel free to get chatting!
 
-\-Isaac
+\- Isaac
 
 P.S., I’ve included the full code for the benchmarks I ran below, so have a go and play
 around with it all yourself!
 
+```python
+import timeit
+
+import faker
+import matplotlib.pyplot as plt
+import pandas as pd
+from cycler import cycler
+from sqlalchemy import (
+    Boolean,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    create_engine,
+)
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
+
+Base = declarative_base()
+plt.rcParams['axes.prop_cycle'] = cycler('color', plt.get_cmap('tab20').colors)
+
+NUM_REPEATS = 100
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+
+
+class Order(Base):
+    __tablename__ = 'orders'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    description = Column(String(50))
+    payment_status = Column(Boolean, index=True)
+
+
+def add_data(session: Session, n_users: int, n_orders: int):
+    f = faker.Faker()
+    users = [User(name=f.name()) for _ in range(n_users)]
+    session.add_all(users)
+    session.commit()
+
+    orders = [
+        Order(
+            user_id=f.random_int(1, n_users),
+            description=f.text(50),
+            payment_status=f.boolean(),
+        )
+        for _ in range(n_orders)
+    ]
+    session.add_all(orders)
+    session.commit()
+
+
+def empty_tables(session: Session):
+    session.query(Order).delete()
+    session.query(User).delete()
+    session.commit()
+
+
+def setup_db(session: Session):
+    Base.metadata.create_all(session.bind)
+
+
+def teardown_db(session: Session):
+    Base.metadata.drop_all(session.bind)
+
+
+def get_sessionmaker() -> sessionmaker:
+    engine = create_engine('mysql+pymysql://user:password@localhost/default')
+    return sessionmaker(bind=engine)
+
+
+def get_users_with_failed_orders_python(session: Session) -> set[User]:
+    """Get all users with failed orders using a naive Python implementation."""
+    failed_orders = (
+        session
+        .query(Order)
+        .prefix_with('SQL_NO_CACHE')
+        .filter(Order.payment_status == False)
+        .all()
+    )
+
+    users = set()
+
+    for order in failed_orders:
+        user = (
+            session
+            .query(User)
+            .prefix_with('SQL_NO_CACHE')
+            .filter(User.id == order.user_id)
+            .one_or_none()
+        )
+        users.add(user)
+
+    return users
+
+
+def get_users_with_failed_orders_sql(session: Session) -> set[User]:
+    """Get all users with failed orders using a SQL implementation."""
+    return set(
+        session
+        .query(User)
+        .prefix_with('SQL_NO_CACHE')
+        .distinct()
+        .join(Order)
+        .filter(Order.payment_status == False)
+        .all()
+    )
+
+
+def run_benchmark(
+    session: Session,
+    n_users: int,
+    n_orders: int,
+) -> tuple[float, float]:
+    try:
+        setup_db(session)
+        add_data(session, n_users, n_orders)
+        exit()
+        python = timeit.timeit(
+            lambda: get_users_with_failed_orders_python(session),
+            number=NUM_REPEATS,
+        )
+        sql = timeit.timeit(
+            lambda: get_users_with_failed_orders_sql(session),
+            number=NUM_REPEATS,
+        )
+        return python / NUM_REPEATS * 1000, sql / NUM_REPEATS * 1000
+    finally:
+        empty_tables(session)
+        teardown_db(session)
+
+
+def save_plot(
+    df: pd.DataFrame,
+    x: str,
+    y: str,
+    group: str,
+    title: str,
+    filename: str,
+):
+    plt.set_cmap('tab10')
+    fig, ax = plt.subplots()
+    df = df.set_index(x)
+    df.groupby(group)[y].plot(
+        title=title,
+        ax=ax,
+    )
+    ax.set_ylabel('Time (ms)')
+    ax.legend(title=group)
+    fig.savefig(filename)
+
+
+def main():
+    Session = get_sessionmaker()
+
+    results = []
+
+    with Session() as session:
+        teardown_db(session)
+        print('Starting benchmark...\n')
+        nums = (10, 100, 1000)
+        for n_users in nums:
+            for n_orders in nums:
+                print(f'n_users: {n_users:,}, n_orders: {n_orders:,}')
+                python, sql = run_benchmark(session, n_users, n_orders)
+                print(f'Python: {python:.2f}ms, SQL: {sql:.2f}ms\n')
+                results.append((n_users, n_orders, python, sql))
+
+    df = pd.DataFrame(
+        results,
+        columns=['n_users', 'n_orders', 'python', 'sql'],
+    )
+
+    df.to_csv('results.csv', index=False)
+
+    save_plot(
+        df,
+        'n_users',
+        'python',
+        'n_orders',
+        'Python query against n_users',
+        'python_n_users.png',
+    )
+    save_plot(
+        df,
+        'n_orders',
+        'python',
+        'n_users',
+        'Python query against n_orders',
+        'python_n_orders.png',
+    )
+    save_plot(
+        df,
+        'n_users',
+        'sql',
+        'n_orders',
+        'SQL query against n_users',
+        'sql_n_users.png',
+    )
+    save_plot(
+        df,
+        'n_orders',
+        'sql',
+        'n_users',
+        'SQL query against n_orders',
+        'sql_n_orders.png',
+    )
+
+
+if __name__ == '__main__':
+    main()
+```
