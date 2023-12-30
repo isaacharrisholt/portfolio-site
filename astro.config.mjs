@@ -11,4 +11,5 @@ export default defineConfig({
   output: 'static',
   adapter: vercel(),
   integrations: [tailwind(), mdx(), sitemap(), svelte()],
+  site: 'https://ihh.dev',
 })
