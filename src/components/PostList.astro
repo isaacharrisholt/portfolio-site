@@ -18,7 +18,7 @@ const { title, posts, tag: tagName } = Astro.props
   <a href="/blog" class="!no-underline" transition:name="blog-title">
     <h1 class="!mb-2">Blog</h1>
   </a>
-  <div class="flex flex-row gap-2 mb-8">
+  <div class="flex flex-row flex-wrap gap-2 mb-8">
     {tags.map((tag) => {
       const classes = ['bg-surface-400', 'text-white', 'hover:bg-surface-300', 'rounded-full', 'px-3', 'py-1', 'text-sm', 'font-semibold']
       if (tag.id === tagName) {
@@ -33,12 +33,12 @@ const { title, posts, tag: tagName } = Astro.props
     {posts.map((post, i) => {
       if (i < posts.length - 1) {
         return (
-          <BlogSummary slug={post.slug} image={post.data.image} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
+          <BlogSummary post={post} />
           <hr />
         )
       }
       return (
-        <BlogSummary slug={post.slug} image={post.data.image} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
+        <BlogSummary post={post} />
       )
     })}
   </div>

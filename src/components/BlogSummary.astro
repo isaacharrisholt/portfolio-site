@@ -1,20 +1,15 @@
 ---
 import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
+import type { CollectionEntry } from 'astro:content';
 
 interface Props {
-  slug: string;
-  title: string;
-  subtitle?: string;
-  image: ImageMetadata;
-  date: Date;
-  description?: string;
+  post: CollectionEntry<'posts'>
 }
 
-const { slug, title, subtitle, image, date, description } = Astro.props;
+const {post: {slug, data: { title, subtitle, image, date, description }}} = Astro.props;
 ---
 
-<div class="w-full flex flex-row items-start gap-4 justify-between no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white" transition:name={`post-${slug}`}>
+<div class="w-full flex flex-col-reverse sm:flex-row items-start gap-4 justify-between no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white" transition:name={`post-${slug}`}>
   <div class="flex flex-col gap-4">
     <div class="flex flex-col">
       <h2 class="hover:underline"><a href={`/${slug}`} class="not-prose" transition:name={`post-title-${slug}`}>{title}</a></h2>
@@ -24,5 +19,5 @@ const { slug, title, subtitle, image, date, description } = Astro.props;
     {!!description && <p>{description}</p>}
     <a href={`/${slug}`}>Read more...</a>
   </div>
-  <Image src={image} alt="" width={200} class="!m-0 rounded-lg" transition:name={`post-image-${slug}`}>
+  <Image src={image} alt="" width={200} class="!m-0 rounded-lg max-sm:self-center" transition:name={`post-image-${slug}`}>
 </div>
