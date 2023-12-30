@@ -1,0 +1,79 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Layout from "./Layout.astro";
+import { Image } from 'astro:assets'
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const {
+  post: { data: { title, subtitle, image, date, description }, slug },
+} = Astro.props;
+---
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content={description} />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+  <title>{title}</title>
+</head>
+
+<Layout title={title}>
+  <article class="col-span-full col-start-full-start col-end-full-end md:col-start-content-start md:col-end-content-end hover:prose-headings:underline hover:prose-th:no-underline hover:prose-h1:no-underline">
+    <header>
+      <h1 class="text-accent-blue !m-0" id="title" transition:name={`post-title-${slug}`}>{title}</h1>
+      {subtitle && <h2 class="!m-0 hover:!no-underline" id="subtitle" transition:name={`post-subtitle-${slug}`}>{subtitle}</h2>}
+      <p class="!mt-0" transition:name={`post-time-${slug}`}><time datetime={date.toISOString()}>{date.toISOString().split('T')[0]}</time></p>
+    </header>
+
+    <Image src={image} alt="" transition:name={`post-image-${slug}`}/>
+
+    <slot />
+  </article>
+</Layout>
+
+<style is:inline>
+  h1::before {
+    content: "# ";
+  }
+
+  #subtitle::before {
+    content: "## ";
+  }
+
+  h2 a::before {
+    content: "## ";
+  }
+
+  h3 a::before {
+    content: "### ";
+  }
+
+  h4 a::before {
+    content: "#### ";
+  }
+
+  h5 a::before {
+    content: "##### ";
+  }
+
+  h6 a::before {
+    content: "###### ";
+  }
+</style>
+
+<script>
+  const headings = document.querySelectorAll("h2, h3, h4, h5, h6");
+  [...headings].filter((heading) => !['title', 'subtitle'].includes(heading.id)).forEach((heading) => {
+    const id = heading.textContent?.toLowerCase().replace(/\s/g, "-") || '';
+    heading.id = id;
+    heading.innerHTML = `<a href="#${id}" class="!no-underline !text-white">${heading.innerHTML}</a>`;
+  });
+
+  const images = document.querySelectorAll("img, iframe");
+  [...images].forEach((image) => {
+    image.classList.add("!mx-auto");
+  });
+</script>

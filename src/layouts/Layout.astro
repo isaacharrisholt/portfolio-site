@@ -1,0 +1,54 @@
+---
+import Nav from '../components/layout/Nav.astro'
+import { ViewTransitions } from 'astro:transitions'
+import Trail from '../components/Trail.svelte'
+
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+---
+
+<!doctype html>
+<html lang="en" class="font-mono bg-surface-500">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <ViewTransitions />
+  </head>
+
+  <body class="text-white font-mono grid grid-cols-default-layout p-4 md:p-8 gap-4 md:gap-8">
+    <Nav />
+    <div></div>
+    <main class="w-full col-start-full-start col-end-full-end md:col-start-content-start md:col-end-content-end prose prose-sm md:prose-base max-w-none">
+      <slot />
+    </main>
+  </body>
+
+  <style is:global>
+    code {
+      font-family:
+        Menlo,
+        Monaco,
+        Lucida Console,
+        Liberation Mono,
+        DejaVu Sans Mono,
+        Bitstream Vera Sans Mono,
+        Courier New,
+        monospace;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .prose :where(pre):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+      @apply !bg-surface-600;
+    }
+  </style>
+</html>

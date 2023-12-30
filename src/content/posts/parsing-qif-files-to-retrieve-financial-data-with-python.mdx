@@ -1,0 +1,125 @@
+---
+title: 'Parsing QIF Files to Retrieve Financial Data with Python'
+subtitle: 'A Basic Overview of the Quiffen Package and Why It’s So Useful'
+date: 2021-07-05
+image: '../../assets/images/parsing-qif-files-to-retrieve-financial-data-with-python/image-0.jpg'
+tags:
+  - python
+  - finance
+---
+
+Photo by
+[Agence Olloweb](https://unsplash.com/@olloweb?utm_source=medium&utm_medium=referral) on
+[Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
+
+If you’ve ever tried to complete a data science project that revolves around personal
+finances, you’re probably familiar with the joys of bank-exported CSV files for
+transaction data.
+
+Put short — they’re absolutely awful. Most banks will allow you to export your bank
+statement as a CSV, but what a lot of them don’t tell you is how terribly structured
+these CSV files are. Different banks use different header names for the amount,
+reference and so on, and hard coding every single bank is nigh on impossible.
+
+This is where QIF files come in. QIF, or Quicken Interchange Format, is a file format
+developed by Intuit initially for use in their QuickBooks product. However, the format
+is very old now (older than OFX, even).
+
+Regardless of this, most banks and other financial institutions (stock brokers, etc.)
+will offer QIF as an option when exporting your data. Despite its age, the QIF file
+format is useful because:
+
+- It’s standardised — no more hard coding different CSV schema for different banks
+- It’s widely used
+- It’s written in plain text, so it’s really easy to parse
+
+[Quiffen](https://pypi.org/project/quiffen/) is a Python package for parsing QIF files
+and exporting the data in more useful formats, such as dictionaries or pandas
+DataFrames. Quiffen can be installed from the command line by running:
+
+```bash
+pip install quiffen
+```
+
+From there, you’re ready to start analysing your data!
+
+## Parsing QIF Files
+
+Below is a code sample of how to parse a QIF file and export the transactions within
+into a DataFrame:
+
+```python
+
+from quiffen import Qif
+qif = Qif.parse('test.qif')
+print(qif.accounts)
+# {'Quiffen Default Account': Account(name='Quiffen Default Account', desc='The default account created by Quiffen when no
+# other accounts were present')}
+acc = qif.accounts['Quiffen Default Account']
+print(acc.transactions)
+# {'Bank': TransactionList(Transaction(date=datetime.datetime(2021, 2, 14, 0 , 0), amount=150.0, ...), ...),
+# 'Invst': TransactionList(...)}
+tr = acc.transactions['Bank'][0]
+print(tr)
+# Transaction:
+#     Date: 2020-02-14 00:00:00
+#     Amount: 67.5
+#     Payee: T-Mobile
+#     Category: Cell Phone
+#     Split Categories: ['Bills']
+#     Splits: 2 total split(s)
+df = qif.to_dataframe(data='transactions')
+print(df.head())
+#         date  amount           payee  ...                           memo cleared check_number
+# 0 2020-02-14    67.5        T-Mobile  ...                            NaN     NaN          NaN
+# 1 2020-02-14    32.0  US Post Office  ...  money back for damaged parcel     NaN          NaN
+# 2 2020-12-02   -10.0          Target  ...        two transactions, equal     NaN          NaN
+# 3 2020-11-02   -25.0         Walmart  ...          non split transaction       X        123.0
+# 4 2020-10-02  -100.0      Amazon.com  ...                   test order 1       *          NaN
+```
+
+You can choose different data to export, such as the categories (which are represented
+by trees) or the accounts stored in the `Qif` object. You can also export the data from
+to a CSV with headers which will be consistent every time with the `to_csv()` method.
+
+## Creating Your Own QIF Files
+
+Quiffen also supports QIF structure creation and export! You can create your own `Qif`
+objects and add accounts, transactions, categories, classes and more to it. An example
+of this is shown below, but a full API reference can be found on the
+[Quiffen docs](https://quiffen.readthedocs.io/en/latest).
+
+```python
+import quiffen
+from datetime import datetime
+qif = quiffen.Qif()
+acc = quiffen.Account('Personal Bank Account', desc='My personal bank account with Barclays.')
+qif.add_account(acc)
+groceries = quiffen.Category('Groceries')
+essentials = quiffen.Category('Essentials')
+groceries.add_child(essentials)
+print(groceries.render_tree())
+# Groceries (root)
+# └─ Essentials
+qif.add_category(groceries)
+tr = quiffen.Transaction(date=datetime.now(), amount=150.0)
+acc.add_transaction(tr, header='Bank')
+print(qif.to_qif())  # If a path is provided, this will save the file too!
+# !Type:Cat\nNGroceries\nETrue\nIFalse\n^\nNGroceries:Essentials\nETrue\nIFalse\n^\n!Account\nNPersonal Bank Account\nDMy
+# personal bank account with Barclays.\n^\n!Type:Bank\nD02/07/2021\nT150.0\n^\n
+```
+
+You can view the full source code for the Quiffen package on
+[GitHub](https://github.com/isaacharrisholt/quiffen). Any feedback or
+(constructive!) criticism is greatly appreciated!
+
+I would highly recommend trying out Quiffen with your own transaction data, and if you
+also want to check out the program that got my financial ass into gear, please do that
+also!
+
+Also, if you have any questions, please feel free to send them to me on
+[**GitHub**](https://github.com/isaacharrisholt/) or connect with me on
+[**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)!
+
+**_That’s all for this one! I hope you enjoyed it, and any feedback is greatly
+appreciated!_**

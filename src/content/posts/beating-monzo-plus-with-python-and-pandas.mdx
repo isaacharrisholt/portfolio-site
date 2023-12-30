@@ -1,0 +1,121 @@
+---
+title: 'Beating Monzo Plus with Python and Pandas'
+subtitle: 'How I used programming to outdo the rising star of British banks'
+date: 2021-01-26
+image: '../../assets/images/beating-my-bank-with-python-pandas-and-financial-planning/image-0.jpg'
+tags:
+  - python
+  - finance
+---
+
+import { Image } from 'astro:assets'
+import monzoCategories from '../../assets/images/beating-my-bank-with-python-pandas-and-financial-planning/image-1.png'
+import spreadsheet from '../../assets/images/beating-my-bank-with-python-pandas-and-financial-planning/image-2.png'
+
+Photo by [Artsy Crafty](https://stocksnap.io/author/artsandcrafts) from
+[StockSnap](https://stocksnap.io)
+
+I started banking with Monzo about two years ago now, and back then I found it
+fascinating that there was this bank that was completely online — no high street
+locations in sight. Even now I’m impressed with how far these digital-only banks have
+come, boasting useful features like savings pots and transaction categorisation.
+
+I’ll be honest, but until recently I wasn’t too fussed by Monzo’s ability to
+automatically categorise transactions depending on the vendor, but since starting my
+university life, managing my finances has become vastly more important to me. I decided
+to take a closer look at this feature, and while it was cool, I was greatly disappointed
+by the lack of options.
+
+<Image src={monzoCategories} alt="A screenshot of Monzo categories." />
+
+Image by author
+
+Don’t get me wrong, Monzo’s selection of categories, is fine, but there was a distinct
+lack of some important options like ‘Rent’ or ‘Recurring Subscription’ or similar. Of
+course, these could both realistically come under ‘Bills’, but what about other things a
+scrounging student has to pay for on the regular, like laundry? There’s certainly no
+category for that, and ‘Expenses’ could be anything.
+
+Feeling a bit defeated, I settled for creating a spreadsheet and spending an hour or so
+looking through my transactions once a week, filling out cells and totting up how much
+I’d spent on different things each month. I ended up configuring my spreadsheet for my
+three main accounts — my Monzo account, my student bank account and my Help-to-Buy ISA —
+and setting up some Excel formulae to automatically deduct from one account if I made a
+transfer to the other, and so on.
+
+<Image src={spreadsheet} alt="A screenwho of a spreadsheet" />
+
+Image by author
+
+This worked fine for a time, and while I still wasn’t happy that Monzo didn’t offer a
+similar feature by default, I kept on using the bank anyway.
+
+However, everything changed in July of 2020 when Monzo introduced a new feature to their
+bank accounts, one that could simultaneously solve my problems and create a new one, and
+quite a large one at that.
+
+You see, on July 15th 2020, Monzo released Monzo Plus, a new type of account that
+offered numerous benefits, including virtual cards, more interest and, you guessed it,
+custom categories.
+
+The problem with Monzo Plus, of course, is that it’s a paid service. It’s not a lot —
+just £5 a month — but as a broke university undergraduate, paying that was not an
+option. I refused to stay silent any longer.
+
+In a fit of absolute rage, I rushed to my computer, set up a virtualenv, opened PyCharm
+and started typing away angrily at my keyboard. Soon after I had a basic program that
+would go through a CSV of transactions I downloaded from the Monzo app, ask me to
+categorise them and then, if I so desired, store a map of vendor names to categories so
+I wouldn’t have to go through every transaction every single time. I then used the
+openpyxl module to insert the totals for each category into the spreadsheet I was
+already using.
+
+It was great, and over time I updated it to store the transaction ID of any successfully
+parsed transaction so that it wouldn’t count the same transaction twice with multiple
+uses of the software.
+
+Realistically, all the program does is reads the CSV of transaction data into a pandas
+DataFrame, asks the user which category the transaction falls under, inserts that into
+the DataFrame and totals everything up. Naturally, there’s a lot of user input checking
+and fall-back nonsense, but that’s the general gist of it.
+
+```python
+# Creates copy slice of main DataFrame to pass to parser
+transaction = transaction_df.iloc[i].copy()
+
+# Checks if transaction IDs are being used
+if use_transaction_id:
+    transaction_id = transaction["Transaction IDs"]
+
+    # Checks that current transaction has not already been processed to avoid incorrect output to final spreadsheet
+    if transaction_id in transaction_history:
+        pprint("\n{BLUE}Transaction processed previously, skipping...{RESET}")
+        continue
+
+# Uses parser to get category
+category = parser.parse_category(transaction, categories, currency_symbol)
+# Update main DataFrame
+transaction_df.loc[i, "Categories"] = category
+
+if use_transaction_id:
+    # If transaction was processed successfully, stores it in transaction history
+    transaction_history.append(transaction_id)
+```
+
+However, the story doesn’t end there. One day I was speaking to a friend of mine about
+this who also banks with Monzo, and he mentioned that he would also find such a program
+useful, but would need it to work with different categories and insert data into
+different rows of the spreadsheet.
+
+So, I rewrote part of it to pull custom category names and spreadsheet rows from a TXT
+file, and thought “Well if he would find it useful, maybe someone else would too.”
+
+I ended up uploading the project to GitHub, and have since expanded support to all banks
+and added some more features to improve the user experience. if you’re interested in
+checking the project or perhaps using it for yourself, you can find it on GitHub
+[here](https://github.com/isaacharrisholt/vorn-finance-tracker).
+
+---
+
+**_Thanks for reading to the end! If you’ve enjoyed the article or found it useful,
+please do let me know. Any feedback is greatly appreciated!_**

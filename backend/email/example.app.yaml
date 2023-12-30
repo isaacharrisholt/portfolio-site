@@ -1,8 +1,0 @@
-runtime: go116
-
-service: email
-
-env_variables:
-  PUBSUB_VERIFICATION_TOKEN: example_verification_token
-  MJ_APIKEY_PUBLIC: example_public_api_key
-  MJ_APIKEY_PRIVATE: example_private_api_key

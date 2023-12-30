@@ -1,0 +1,87 @@
+---
+  const navLinks: Array<{
+    name: string
+    url: string
+    target?: string
+  }> = [
+    {
+      name: 'Blog',
+      url: '/blog',
+    },
+    // {
+    //   name: 'Contact',
+    //   url: '/contact',
+    // },
+    {
+      name: 'CV',
+      url: '/cv',
+      target: '_blank',
+    }
+  ]
+  const path = new URL(Astro.request.url).pathname
+---
+
+<nav class="grid col-span-full grid-cols-subgrid max-md:place-items-center w-full">
+  <a href="/" class="w-fit text-2xl font-bold">
+    Isaac <span class="whitespace-nowrap">Harris-Holt</span>
+  </a>
+  <ul class="flex flex-row items-center gap-4 md:gap-8 lg:gap-16 font-semibold justify-center" transition:name="nav-links">
+    {
+      navLinks.map((link) => 
+        <li class="link">
+          <a href={link.url} target={link.target}>
+            {link.name}
+          </a>
+        </li>)
+    }
+  </ul>
+  <div class="md:justify-self-end" transition:name="nav-socials">&lt;Socials /&gt;</div>
+</nav>
+
+<style>
+  @keyframes slideIn {
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+
+  @keyframes slideOut {
+    0% {
+      margin-left: 0;
+      width: 100%;
+    }
+    100% {
+      margin-left: 100%;
+      width: 0;
+    }
+  }
+
+  @keyframes hasHovered {
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+
+  .link::after() {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    animation: slideOut 0.3s ease-in-out 1 forwards, hasHovered 1ms paused;
+    @apply bg-accent-blue;
+  }
+
+  .link:hover::after() {
+    content: '';
+    display: block;
+    height: 2px;
+    animation: slideIn 0.3s ease-in-out 1 forwards, hasHovered 1ms;
+    @apply bg-accent-blue;
+  }
+</style>
