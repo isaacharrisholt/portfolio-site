@@ -28,7 +28,7 @@ const {
       <p class="!mt-0" transition:name={`post-time-${slug}`}><time datetime={date.toISOString()}>{date.toISOString().split('T')[0]}</time></p>
     </header>
 
-    <Image src={image} alt="" transition:name={`post-image-${slug}`} loading="eager" decoding="sync" />
+    <Image src={image} alt="" transition:name={`post-image-${slug}`} loading="eager" />
 
     <slot />
   </article>
