@@ -4,9 +4,9 @@ subtitle: "Leverage Airbyte’s simple REST API for complex configuration"
 date: 2022-04-23
 ---
 import { Image } from 'astro:assets'
-import image0 from '../../assets/images/run-airbyte-syncs-on-a-custom-schedule-with-crontab-and-http-requests/image-0.jpg'
+import clock from '../../assets/images/run-airbyte-syncs-on-a-custom-schedule-with-crontab-and-http-requests/image-0.jpg'
 
-<Image src={image0} alt="TODO" />
+<Image src={clock} alt="" />
 
 Photo by
 [insung yoon](https://unsplash.com/@insungyoon?utm_source=medium&utm_medium=referral) on
@@ -40,7 +40,7 @@ but if you read on, I’ll show you how you can use Crontab and Python to run yo
 on your own schedule. Of course, you’re welcome to use whatever tools and languages you
 like for this.
 
-# ⚙️ Connecting to the API
+### ⚙️ Connecting to the API
 
 All of the endpoints that Airbyte exposes are POST endpoints, which makes it very easy
 to interact with. Since Airbyte is containerised, I’m going to assume that you’re using
@@ -55,19 +55,111 @@ If you’re using Python, you’ll need to make sure you have the `requests` mod
 installed, and then start by writing a function to get the Airbyte workspaces associated
 with your installation:
 
+```python
+
+from typing import List
+
+import requests
+
+API_ROOT = 'http://localhost:8000/api/v1'  # This is the default for Airbyte
+
+
+def get_workspaces() -> List[str]:
+    response = requests.post(f'{API_ROOT}/workspaces/list')
+    response.raise_for_status()  # Either handle this yourself, or use a tool like Sentry for logging
+    return [
+        workspace['workspaceId']
+        for workspace in repsonse.json()['workspaces']
+    ]
+```
+
 Each workspace in Airbyte will have a number of sources, a number of destinations and a
 number of connections that determine the flow of data from source to destination. In
 order to trigger a sync, we first have to get a list of the connections for each
 workspace, and then trigger each one individually. We can do that with the following two
 functions:
 
+```python
+def get_connections_for_workspace(workspace_id: str) -> List[str]:
+    response = requests.post(
+        f'{API_ROOT}/connections/list',
+        json={'workspaceId': workspace_id},
+    )
+    response.raise_for_status()
+    return [
+        connection['connectionId']
+        for connection in response.json()['connections']
+        if connection['status'] == 'active'  # So we can still disable connections in the UI
+    ]
+
+
+def trigger_connection_sync(connection_id: str) -> dict:
+    response = requests.post(
+        f'{API_ROOT}/connections/sync',
+        json={'connectionId': connection_id},
+    )
+    response.raise_for_status()
+    return response.json()
+```
+
 Then, all we have to do is wrap this up into a neat little package, which leaves the
 whole program looking like this:
+
+```python
+
+from typing import List
+
+import requests
+
+API_ROOT = 'http://localhost:8000/api/v1'  # This is the default for Airbyte
+
+
+def get_workspaces() -> List[str]:
+    response = requests.post(f'{API_ROOT}/workspaces/list')
+    response.raise_for_status()  # Either handle this yourself, or use a tool like Sentry for logging
+    return [
+        workspace['workspaceId']
+        for workspace in repsonse.json()['workspaces']
+    ]
+
+
+def get_connections_for_workspace(workspace_id: str) -> List[str]:
+    response = requests.post(
+        f'{API_ROOT}/connections/list',
+        json={'workspaceId': workspace_id},
+    )
+    response.raise_for_status()
+    return [
+        connection['connectionId']
+        for connection in response.json()['connections']
+        if connection['status'] == 'active'  # So we can still disable connections in the UI
+    ]
+
+
+def trigger_connection_sync(connection_id: str) -> dict:
+    response = requests.post(
+        f'{API_ROOT}/connections/sync',
+        json={'connectionId': connection_id},
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+if __name__ == '__main__':
+    workspaces = get_workspaces()
+    connections = []
+    
+    for workspace_id in workspaces:
+        connections.extend(get_connections_for_workspace(workspace_id))
+       
+    for connection_id in connections:
+        trigger_connection_sync(connection_id)
+```
 
 And that’s it for the Python side of things. All that’s left is to schedule this script
 to run!
 
-# 🕒 Scheduling Your Airbyte Syncs
+### 🕒 Scheduling Your Airbyte Syncs
 
 Once again, you can use whatever you like for this, but I like using Crontab because
 it’s easy and quick. It would be just as viable to adjust the above script to use the
@@ -90,19 +182,7 @@ feel free to comment on this post or email me at
 and all things engineering, so why not start a conversation!
 
 You can also find me on [**GitHub**](https://github.com/isaacharrisholt/) or connect
-with me on [**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)! I love
-writing about my projects so you might like to follow me on
-[**Medium**](https://isaacharrisholt.medium.com/) too.
-
-[
-
-## Parsing QIF Files to Retrieve Financial Data with Python
-
-### A Basic Overview of the Quiffen Package and Why It’s So Useful
-
-towardsdatascience.com
-
-](/parsing-qif-files-to-retrieve-financial-data-with-python-f599cc0d8c03?source=post_page-----8d6fbb3ea112--------------------------------)
+with me on [**LinkedIn**](https://www.linkedin.com/in/isaac-harris-holt/)!
 
 **_That’s all for this one! I hope you enjoyed it, and any feedback is greatly
 appreciated!_**
