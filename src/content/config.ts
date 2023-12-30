@@ -1,4 +1,5 @@
 import { z, defineCollection } from 'astro:content'
+import mdx from '@astrojs/mdx'
 
 const posts = defineCollection({
   type: 'content',
@@ -7,7 +8,7 @@ const posts = defineCollection({
     subtitle: z.string().optional(),
     date: z.date(),
     description: z.string().optional(),
-  })
+  }),
 })
 
 export const collections = {

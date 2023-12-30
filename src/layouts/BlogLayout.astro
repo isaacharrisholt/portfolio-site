@@ -6,7 +6,7 @@ interface Props {
   post: CollectionEntry<'posts'>;
 }
 const {
-  post: { data: { title, date, description } },
+  post: { data: { title, subtitle, date, description } },
 } = Astro.props;
 ---
 
@@ -22,7 +22,8 @@ const {
 <Layout title={title}>
   <article class="col-span-full col-start-full-start col-end-full-end md:col-start-content-start md:col-end-content-end hover:prose-headings:underline hover:prose-th:no-underline hover:prose-h1:no-underline">
     <header>
-      <h1 class="text-accent-blue !m-0">{title}</h1>
+      <h1 class="text-accent-blue !m-0" id="title">{title}</h1>
+      {subtitle && <h2 class="!m-0 hover:!no-underline" id="subtitle">{subtitle}</h2>}
       <p class="!mt-0"><time datetime={date.toISOString()}>{date.toISOString().split('T')[0]}</time></p>
     </header>
     <slot />
@@ -32,6 +33,10 @@ const {
 <style is:inline>
   h1::before {
     content: "# ";
+  }
+
+  #subtitle::before {
+    content: "## ";
   }
 
   h2 a::before {
@@ -57,9 +62,14 @@ const {
 
 <script>
   const headings = document.querySelectorAll("h2, h3, h4, h5, h6");
-  headings.forEach((heading) => {
+  [...headings].filter((heading) => !['title', 'subtitle'].includes(heading.id)).forEach((heading) => {
     const id = heading.textContent?.toLowerCase().replace(/\s/g, "-") || '';
     heading.id = id;
     heading.innerHTML = `<a href="#${id}" class="!no-underline !text-white">${heading.innerHTML}</a>`;
+  });
+
+  const images = document.querySelectorAll("img");
+  [...images].forEach((image) => {
+    image.classList.add("!mx-auto");
   });
 </script>
