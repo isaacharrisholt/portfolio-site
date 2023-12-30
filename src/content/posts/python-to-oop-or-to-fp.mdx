@@ -4,9 +4,9 @@ subtitle: "That is the question"
 date: 2022-11-21
 ---
 import { Image } from 'astro:assets'
-import image0 from '../../assets/images/python-to-oop-or-to-fp/image-0.jpg'
+import blocks from '../../assets/images/python-to-oop-or-to-fp/image-0.jpg'
 
-<Image src={image0} alt="TODO" />
+<Image src={blocks} alt="TODO" />
 
 Photo by
 [Susan Holt Simpson](https://unsplash.com/@shs521?utm_source=medium&utm_medium=referral)
@@ -31,7 +31,7 @@ exact same output if given the same input.
 
 The most popular functional programming languages are Clojure, Elixir and Haskell.
 
-# But what about Python?
+### But what about Python?
 
 Python is an interesting case. It shares a lot of the common features of object-oriented
 languages, allowing you to create classes and inherit from superclasses, but it also has
@@ -52,66 +52,67 @@ Below are three examples of the same (very simple) program written in OOP, FP an
 Pythonic mixture of both. I’ll highlight the strengths and weaknesses of each one, which
 should give you a good base when architecting your next Python project.
 
-# The program
+### The program
 
 The program used to demonstrate is very simple — it creates two animals (a dog and a
 fish) and has them perform some very simple actions. In this example, the actions just
 log to `stdout`, but they could obviously do a lot more.
 
-## OOP example
+#### OOP example
 
+```python
 from abc import ABC, abstractmethod
 
 class Logger(ABC):  
- @abstractmethod  
- def log(self, message: str):  
- ...
+    @abstractmethod  
+    def log(self, message: str):  
+        ...
 
 class MyLogger(Logger):  
- def \_\_init\_\_(self, name: str):  
- self.name = name
+    def __init__(self, name: str):  
+        self.name = name
 
     def log(self, message: str):
         print(f'{self.name}: {message}')
 
 class Animal:  
- def \_\_init\_\_(self, name: str, logger: Logger):  
- self.name = name  
- self.logger = logger
+    def __init__(self, name: str, logger: Logger):  
+        self.name = name  
+        self.logger = logger
 
     def speak(self):
         self.logger.log('Speaking')
         ...
 
 class Dog(Animal):  
- def speak(self):  
- self.logger.log('Woof!')  
- ...
+    def speak(self):  
+        self.logger.log('Woof!')  
+        ...
 
     def run(self):
         self.logger.log('Running')
         ...
 
 class Fish(Animal):  
- ...
+    ...
 
 class App:  
- @staticmethod  
- def run():  
- fido = Dog(name='Fido', logger=MyLogger('Fido'))  
- goldie = Fish(name='Goldie', logger=MyLogger('Goldie'))
+    @staticmethod  
+    def run():  
+        fido = Dog(name='Fido', logger=MyLogger('Fido'))  
+        goldie = Fish(name='Goldie', logger=MyLogger('Goldie'))
 
         fido.speak()
         fido.run()
-
         goldie.speak()
 
-if \_\_name\_\_ == '\_\_main\_\_':  
- App.run()
+if __name__ == '__main__':  
+    App.run()
 
-\# Fido: Woof!  
-\# Fido: Running  
-\# Goldie: Speaking
+# Fido: Woof!  
+# Fido: Running  
+# Goldie: Speaking
+```
 
 As you can see, the code creates a `MyLogger` class for logging events to `stdout` , an
 `Animal` base class and then `Dog` and `Fish` classes for more specific animals.
@@ -135,53 +136,55 @@ We’ve also had to create a `Logger` abstract base class purely so that the cod
 properly type hinted and allow users of our API to pass in other loggers if they want to
 log to somewhere other than `stdout`, or if they wanted to log with a different format.
 
-## FP example
+#### FP example
 
 Just a head’s up — I’m less familiar with FP than OOP, so this might not be the most
 FP-like way to implement this behaviour, but it’s what I’m going with.
 
+```python
 import functools  
 from typing import Callable
 
-Logger = Callable\[\[str\], None\]
+Logger = Callable[[str], None]
 
 def log(message: str, name: str):  
- print(f'{name}: {message}')
+    print(f'{name}: {message}')
 
 def bark( name: str,  
- log_fn: Logger,) -> (str, Logger):  
- log_fn('Woof!')  
- return name, log_fn
+    log_fn: Logger,) -> (str, Logger):  
+    log_fn('Woof!')  
+    return name, log_fn
 
 def run( name: str,  
- log_fn: Logger,) -> (str, Logger):  
- log_fn('Running')  
- return name, log_fn
+    log_fn: Logger,) -> (str, Logger):  
+    log_fn('Running')  
+    return name, log_fn
 
 def speak( name: str,  
- log_fn: Logger,) -> (str, Logger):  
- log_fn('Speaking')  
- return name, log_fn
+    log_fn: Logger,) -> (str, Logger):  
+    log_fn('Speaking')  
+    return name, log_fn
 
 def main():  
- run(  
- \*bark(  
- 'Fido',  
- functools.partial(log, name='Fido'),  
- ),  
- )
+    run(  
+        *bark(  
+            'Fido',  
+            functools.partial(log, name='Fido'),  
+        ),  
+    )
 
     speak(
         'Goldie',
         functools.partial(log, name='Goldie'),
     )
 
-if \_\_name\_\_ == '\_\_main\_\_':  
+if __name__ == '__main__':  
  main()
 
-\# Fido: Woof!  
-\# Fido: Running  
-\# Goldie: Speaking
+# Fido: Woof!  
+# Fido: Running  
+# Goldie: Speaking
+```
 
 Off the bat, we can see that our `Logger` class has just become a handy type alias for
 `Callable[[str], None]`. We’ve also defined a `log` function to deal with our printing.
@@ -208,32 +211,33 @@ created incorrectly, and thus is missing a key that’s relied on in one of our 
 To get around _that_, we’d need to create initialiser functions for our animals, at
 which point the code gets messier and messier again.
 
-## A little bit of both
+#### A little bit of both
 
 So, what would happen if we were to combine a bit of OOP with a bit of FP? I’m going to
 bring in a few more Pythonic bits and pieces to pull away from the traditional OOP and
 FP paradigms, and hopefully make the code a little cleaner and easier to read.
 
+```python
 from dataclasses import dataclass  
 from functools import partial  
 from typing import Callable
 
-Logger = Callable\[\[str\], None\]
+Logger = Callable[[str], None]
 
 def log(message: str, name: str):  
- print(f'{name}: {message}')
+    print(f'{name}: {message}')
 
 @dataclass  
 class Animal:  
- name: str  
- log: Logger
+    name: str  
+    log: Logger
 
     def speak(self):
         self.log('Speaking')
 
 @dataclass  
 class Dog(Animal):  
- breed: str = 'Labrador'
+    breed: str = 'Labrador'
 
     def speak(self):
         self.log('Woof!')
@@ -243,23 +247,24 @@ class Dog(Animal):
 
 @dataclass  
 class Fish(Animal):  
- ...
+    ...
 
 def main():  
- fido = Dog('Fido', partial(log, name='Fido'))  
- goldie = Fish('Goldie', partial(log, name='Goldie'))
+    fido = Dog('Fido', partial(log, name='Fido'))  
+    goldie = Fish('Goldie', partial(log, name='Goldie'))
 
     fido.speak()
     fido.run()
 
     goldie.speak()
 
-if \_\_name\_\_ == '\_\_main\_\_':  
+if __name__ == '__main__':  
  main()
 
-\# Fido: Woof!  
-\# Fido: Running  
-\# Goldie: Speaking
+# Fido: Woof!  
+# Fido: Running  
+# Goldie: Speaking
+```
 
 In this example, I’m using Pythons `dataclasses` module to avoid having to write
 constructors for my classes. This not only reduces some of the code I need to write but
@@ -273,7 +278,7 @@ Python’s support for functions as first-class citizens.
 Also, the `main` function is just a function. I’ll never understand why Java is how Java
 is.
 
-# Mixing OOP and FP in production
+### Mixing OOP and FP in production
 
 Okay, so I’ll admit that this example was incredibly basic, and while it served as a
 good starting point for this discussion, I’d now like to give you an example of how
@@ -294,33 +299,35 @@ decorator (which is a very FP-like concept) to encapsulate your logic.
 Below is an example of how this might be used. Again, it’s a simple example, but it’s
 fairly representative of what you might see in production.
 
+```python
 from fastapi import FastAPI  
 from pydantic import BaseModel
 
 app = FastAPI()
 
 class Baz(BaseModel):  
- qux: int
+    qux: int
 
 class Foo(BaseModel):  
- bar: str  
- baz: Baz
+    bar: str  
+    baz: Baz
 
 @app.get('/foo')  
 async def get_foo(name: str, age: int) -> Foo:  
- ... \# Some logic here  
- return Foo(  
- bar=name,  
- baz=Baz(qux=age),  
- )
+    ...  # Some logic here  
+    return Foo(  
+        bar=name,  
+        baz=Baz(qux=age),  
+    )
 
-\# GET /foo?name=John&age=42  
-\# {  
-\# "bar": "John",  
-\# "baz": {  
-\# "qux": 42  
-\# }  
-\# }
+# GET /foo?name=John&age=42  
+# {  
+#   "bar": "John",  
+#   "baz": {  
+#     "qux": 42  
+#   }  
+# }
+```
 
 As you can see, FastAPI uses Pydantic’s ability to convert nested objects to JSON to
 create a JSON response for our endpoint. The `app.get` decorator has also registered our
@@ -334,13 +341,12 @@ Obviously, this isn’t the only way to combine FP and OOP in Python, and there 
 of design patterns that can be implemented and improved upon using this sort of
 combination.
 
-I’ll be writing about those in the future, and by following me on
-[Medium](https://medium.isaacharrisholt.com/), you won’t miss out. I also tweet about
+I’ll be writing about those in the future. I also tweet about
 Python and my current projects on [Twitter](https://twitter.com/IsaacHarrisHolt), and
 (more recently) post about them on [Mastodon](https://fosstodon.org/@isaacharrisholt)
 too.
 
 I’m sure I’ll see you soon!
 
-\-Isaac
+\- Isaac
 
