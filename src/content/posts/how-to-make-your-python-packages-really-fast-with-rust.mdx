@@ -4,18 +4,18 @@ subtitle: "Goodbye, slow code"
 date: 2023-05-31
 ---
 import { Image } from 'astro:assets'
-import image0 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-0.jpg'
-import image1 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-1.png'
-import image2 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-2.png'
-import image3 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-3.png'
-import image4 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-4.png'
-import image5 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-5.png'
-import image6 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-6.png'
-import image7 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-7.png'
-import image8 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-8.png'
-import image9 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-9.png'
+import carDash from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-0.jpg'
+import maturinInit from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-1.png'
+import maturinDevelop from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-2.png'
+import tenthFib from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-3.png'
+import twentiethFib from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-4.png'
+import thirtiethFib from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-5.png'
+import maturinDevelopRelease from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-6.png'
+import thirtiethFibRelease from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-7.png'
+import fiftiethFib from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-8.png'
+import firstFib from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-9.png'
 
-<Image src={image0} alt="TODO" />
+<Image src={carDash} alt="" />
 
 Photo by
 [Chris Liverani](https://unsplash.com/@chrisliverani?utm_source=medium&utm_medium=referral)
@@ -38,23 +38,49 @@ Rust step-by-step. And if you don’t know any Rust, don’t worry — we’re n
 doing anything too crazy, so you should still be able to follow along. Are you ready?
 Let’s oxidise this snake.
 
-## Pre-requisites
+### Pre-requisites
 
 Before we get started, you’re going to need to install Rust on your machine. You can do
 that by heading to [rustup.rs](https://rustup.rs/) and following the instructions there.
 I would also recommend creating a virtual environment that you can use for testing your
 Rust package.
 
-## Script overview
+### Script overview
 
 Here’s a script that, given a number n, will calculate the nth Fibonacci number 100
 times and time how long it takes to do so.
+
+```python
+import sys
+from timeit import timeit
+
+RUNS = 100
+
+
+def fibonacci(n: int) -> int:
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+
+def main():
+    n = int(sys.argv[1])
+    print(f"{fibonacci(n) = }")
+
+    python_time_per_call = timeit(lambda: fibonacci(n), number=RUNS) / RUNS
+    print(f"\nPython μs per call: {python_time_per_call * 1_000_000:.2f} μs")
+    print(f"Python ms per call: {python_time_per_call * 1_000:.2f} ms")
+
+
+if __name__ == "__main__":
+    main()
+```
 
 This is a very naive, totally unoptimised function, and there are plenty of ways to make
 this faster using Python alone, but I’m not going to be going into those today. Instead,
 we’re going to take this code and use it to create a Python package in Rust
 
-## Maturin setup
+### Maturin setup
 
 The first step is to install [maturin](https://www.maturin.rs/), which is a build system
 for building and publishing Rust crates as Python packages. You can do that with
@@ -64,7 +90,7 @@ Next, create a directory for your package. I’ve called mine `fibbers`. The fin
 step is to run `maturin init` from your new directory. At this point, you’ll be prompted
 to select which Rust bindings to use. Select `pyo3`.
 
-<Image src={image1} alt="TODO" />
+<Image src={maturinInit} alt="A screenshot of a terminal showing the maturin init command." />
 
 Image by author.
 
@@ -82,6 +108,7 @@ directory.
 
 Here’s an overview of the resulting file structure.
 
+```
 fibbers/  
 ├── .github/  
 │ └── workflows/  
@@ -91,11 +118,29 @@ fibbers/
 ├── pyproject.toml  
 └── src/  
  └── lib.rs
+```
 
-## Writing the Rust
+### Writing the Rust
 
 Maturin has already created the scaffold of a Python module for us using the PyO3
 bindings we mentioned earlier.
+
+```rust
+use pyo3::prelude::*;
+
+/// Formats the sum of two numbers as string.
+#[pyfunction]
+fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
+    Ok((a + b).to_string())
+}
+
+/// A Python module implemented in Rust.
+#[pymodule]
+fn fibbers(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+    Ok(())
+}
+```
 
 The main parts of this code are this `sum_as_string` function, which is marked with the
 `pyfunction` attribute, and the `fibbers` function, which represents our Python module.
@@ -108,39 +153,92 @@ and it would all work as expected.
 However, what I’m going to do first is replace the `sum_as_string` function with our
 `fib` function.
 
+```rust
+use pyo3::prelude::*;
+
+/// Calculate the nth Fibonacci number.
+#[pyfunction]
+fn fib(n: u32) -> u32 {
+    if n <= 1 {
+        return n;
+    }
+    fib(n - 1) + fib(n - 2)
+}
+
+
+/// Fast Fibonacci number calculation.
+#[pymodule]
+fn fibbers(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(fib, m)?)?;
+    Ok(())
+}
+```
+
 This has exactly the same implementation as the Python we wrote earlier — it takes in a
 positive unsigned integer n and returns the nth Fibonacci number. I’ve also registered
 our new function with the `fibbers` module, so we’re good to go!
 
-## Benchmarking our function
+### Benchmarking our function
 
 To install our `fibbers` package, all we have to do is run `maturin develop`in our
 terminal. This will download and compile our Rust package and install it into our
 virtual environment.
 
-<Image src={image2} alt="TODO" />
+<Image src={maturinDevelop} alt="A screenshot of a terminal showing the maturin develop command." />
 
 Image by author.
 
 Now, back in our `fib.py` file, we can import `fibbers`, print out the result of
 `fibbers.fib()` and then add a `timeit` case for our Rust implementation.
 
+```python
+from timeit import timeit
+
+import fibbers
+
+RUNS = 100
+
+
+def fibonacci(n: int) -> int:
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+
+def main():
+    n = int(sys.argv[1])
+    print(f"{fibonacci(n) = }")
+    print(f"{fibbers.fib(n) = }")
+
+    python_time_per_call = timeit(lambda: fibonacci(n), number=RUNS) / RUNS
+    print(f"\nPython μs per call: {python_time_per_call * 1_000_000:.2f} μs")
+    print(f"Python ms per call: {python_time_per_call * 1_000:.2f} ms")
+
+    rust_time_per_call = timeit(lambda: fibbers.fib(n), number=RUNS) / RUNS
+    print(f"\nRust μs per call: {rust_time_per_call * 1_000_000:.2f} μs")
+    print(f"Rust ms per call: {rust_time_per_call * 1_000:.2f} ms")
+
+
+if __name__ == "__main__":
+    main()
+```
+
 If we run this now for the 10th Fibonacci number, you can see that our Rust function is
 about 5 times faster than Python, despite the fact we’re using an identical
 implementation!
 
-<Image src={image3} alt="TODO" />
+<Image src={tenthFib} alt="Results for the 10th Fibonacci number." />
 
 Image by author.
 
 If we run for the 20th and 30th fib numbers, we can see that Rust gets up to being about
 15 times faster than Python.
 
-<Image src={image4} alt="TODO" />
+<Image src={twentiethFib} alt="Results for the 20th Fibonacci number." />
 
 20th fib number results. Image by author.
 
-<Image src={image5} alt="TODO" />
+<Image src={thirtiethFib} alt="Results for the 30th Fibonacci number." />
 
 30th fib number results. Image by author.
 
@@ -152,22 +250,22 @@ running as fast as it could. If we head back into our `fibbers` directory and ru
 `maturin develop`again, but this time with the `--release` flag, we’ll get the optimised
 production-ready version of our binary.
 
-<Image src={image6} alt="TODO" />
+<Image src={maturinDevelopRelease} alt="A screenshot of a terminal showing the maturin develop --release command." />
 
 If we now benchmark our 30th fib number, we see that Rust now gives us a whopping _40
 times_ speed improvement over Python!
 
-<Image src={image7} alt="TODO" />
+<Image src={thirtiethFibRelease} alt="Results for the 30th Fibonacci number, optimised." />
 
 30th fib number, optimised. Image by author.
 
-## Rust limitations
+### Rust limitations
 
 However, we do have a problem with our Rust implementation. If we try to get the 50th
 Fibonacci number using `fibbers.fib()`, you’ll see that we actually hit an overflow
 error and get a different answer to Python.
 
-<Image src={image8} alt="TODO" />
+<Image src={fiftiethFib} alt="Rust experiencing integer overflow on the 50th fib number." />
 
 Rust experiences integer overflow. Image by author.
 
@@ -184,16 +282,18 @@ Another small limitation is that there’s some overhead to using the PyO3 bindi
 can see that here where I’m just getting the 1st Fibonacci number, and Python is
 actually faster than Rust thanks to this overhead.
 
-<Image src={image9} alt="TODO" />
+<Image src={firstFib} alt="Results for the 1st Fibonacci number." />
 
 Python is faster for n=1. Image by author.
 
-## Things to remember
+### Things to remember
 
 The numbers in this article were not recorded on a perfect machine. The benchmarks were
 run on my personal machine, and may not reflect real-world problems. Please take care
 with micro-benchmarks like this one in general, as they are often imperfect and emulate
 many aspects of real world programs.
+
+---
 
 I hope you’ve found this article helpful, and that it’s encouraged you to try rewriting
 performance-critical parts of your Python code in Rust. Be wary that while Rust can
@@ -211,17 +311,9 @@ check out the following examples:
 This article was based on the script for this video of mine, so if you’re more of a
 visual learner, or would like quick reference material, feel free to check it out:
 
-Or check out the code on GitHub:
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlWhnrk8go0?si=eYrQEiICS2iMcg4-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-[
-
-## youtube/010-creating-python-packages-with-rust at main · isaacharrisholt/youtube
-
-### Everyone knows that program speed isn't Python's strong point. That's why so many number-crunching data science…
-
-github.com
-
-](https://github.com/isaacharrisholt/youtube/tree/main/010-creating-python-packages-with-rust?source=post_page-----91a9bebacbc2--------------------------------)
+Or check out the code on [GitHub](https://github.com/isaacharrisholt/youtube/tree/main/010-creating-python-packages-with-rust).
 
 Stay fast!
 
