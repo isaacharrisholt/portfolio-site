@@ -1,0 +1,82 @@
+---
+title: "Simplifying Dagster Codebases with Dagstd"
+subtitle: "Parsing QIF Files to Retrieve Financial Data with Python"
+date: 2022-06-19
+---
+import { Image } from 'astro:assets'
+import image0 from '../../assets/images/simplifying-dagster-codebases-with-dagstd/image-0.jpg'
+
+Boilerplate no more.
+
+<Image src={image0} alt="TODO" />
+
+Photo by [Diane Picchiottino](https://unsplash.com/@diane_soko?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
+
+If you’ve worked in the data engineering space for any amount of time, you’ve probably needed to use some sort of orchestration or pipelining to create fully automatic, reliable workflows. The vast majority of companies achieve this using Apache Airflow. Airflow is incredibly powerful and well-supported, but has a steep learning curve and a fair amount of complexity.
+
+For this reason, many have recently been turning to more modern Airflow alternatives such as Prefect and Dagster to build their data pipelines quickly and efficiently. They offer much simpler APIs and powerful web UIs to manage and monitor your automations, and a reasonable number of integrations to simplify common data tasks.
+
+Personally, when leading the data orchestration project at my company and after evaluating a few of the different alternatives, we chose Dagster, and it now manages all of our data automation both internally and for external reporting. Dagster is a great tool, but there are occasions where you just need to pass in a simple integer or string as input to an op, but in Dagster, inputs to ops can only be outputs of other ops. This results in a lot of boilerplate functions being written that just return a formatted string or even just an integer. This is why Dagstd was created.
+
+Dagstd is a set of common ops and functions for use with Dagster, and it also includes a Sphinx Autodoc extension to allow ops to be picked up and documented automatically, which has saved me so much time in the long run.
+
+# Dagstd Ops
+
+At the moment (as of v0.1.1), Dagstd contains:
+
+*   Simple ops for returning common numbers
+*   Constant value ops
+*   Helper ops for mathematical and string operations
+*   Ops for retrieving environment variables
+*   Sphinx autodoc support for Dagster ops
+
+Dagstd is, of course, installable via `pip`:
+
+pip install dagstd
+
+It was built with `dagster==0.14.17`, but should work with later versions too.
+
+Here’s an example of a pure-Dagster graph that downloads a daily ZIP file and extracts a known file name. Note: the `download_large_file` op has been omitted for brevity.
+
+And here’s the same graph, with the same functionality, but with Dagstd ops.
+
+This is a small example, so the savings probably aren’t huge, but it serves how much boilerplate can be avoided when using Dagstd.
+
+# Sphinx Autodoc Plugin
+
+Dagstd includes a Sphinx autodoc plugin that can be used to generate documentation for Dagster ops. To use the autodoc plugin, add the following to your `conf.py` file:
+
+extensions = \[  
+    ...  
+    'dagstd.sphinx.parser',  
+\]
+
+By default, this will prefix all op documentation with `(op)`. To change this, add the following to your `conf.py` file:
+
+dagstd\_op\_prefix = 'My Op'
+
+You can see an example of this in action in the [Dagstd documentation](https://dagstd.readthedocs.io/en/latest/readme.html).
+
+# Contribute
+
+Dagstd is brand new, and I’m not an expert in Dagster either, so there are definitely some more common ops that I could include in the library! If you’ve got any that you find yourself having to write a lot in your Dagster codebases, let me know and I’ll add them when I can. The next additions are likely to be ops for working with dates, so please tell me what you would want either by commenting here, or opening an issue or pull request on GitHub.
+
+*   Issue Tracker: [https://github.com/isaacharrisholt/dagstd/issues](https://github.com/isaacharrisholt/dagstd/issues)
+*   Source Code: [https://github.com/isaacharrisholt/dagstd](https://github.com/isaacharrisholt/dagstd)
+*   Documentation: [https://dagstd.readthedocs.io/en/latest/readme.html](https://dagstd.readthedocs.io/en/latest/readme.html)
+
+I hope that at least a few of you will find this package useful, and I’d love to hear your feedback! In the meantime, why not simplify your financial data workflows even further by taking a look at my other open-source Python package, Quiffen? It’s a great tool for working with Quicken Interchange Format (QIF) files. You can read more about it here:
+
+[
+
+## Parsing QIF Files to Retrieve Financial Data with Python
+
+### A Basic Overview of the Quiffen Package and Why It’s So Useful
+
+towardsdatascience.com
+
+
+
+](https://towardsdatascience.com/parsing-qif-files-to-retrieve-financial-data-with-python-f599cc0d8c03?source=post_page-----b1c271f0aed5--------------------------------)
+
+If you want to get in touch, you can either email me at [isaac@isaacharrisholt.com](mailto:isaac@isaacharrisholt.com) or via [LinkedIn](https://www.linkedin.com/in/isaac-harris-holt/) or [Twitter](https://twitter.com/IsaacHarrisHolt). Happy engineering!

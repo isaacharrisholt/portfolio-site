@@ -1,0 +1,124 @@
+---
+title: "Why Every Software Engineer Should Learn SQL"
+subtitle: "Speed up your programs by properly utilising your database"
+date: 2022-10-08
+---
+import { Image } from 'astro:assets'
+import image0 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-0.jpg'
+import image1 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-1.png'
+import image2 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-2.png'
+import image3 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-3.png'
+import image4 from '../../assets/images/why-every-software-engineer-should-learn-sql/image-4.png'
+
+<Image src={image0} alt="TODO" />
+
+Photo by [Tobias Fischer](https://unsplash.com/@tofi?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
+
+Almost every single software application relies on storing data somewhere accessible. For small scripts and programs, this is often in the computer’s memory, or sometimes just as plain text or binary files on the local disk.
+
+Larger applications, however, will almost certainly use a database that exists externally to the program itself, and the most popular technology of choice for databases these days is the relational database. Most relational databases can be queried using Structured Query Language (SQL), so it’s imperative for a software engineer to have more than just a basic understanding of SQL to write efficient code for interacting with databases.
+
+If you’re thinking “oh, but I already know how to select data from my database, surely it’s not much harder than that”, think again! I’ve seen plenty of code that will use a `for` loop to accomplish a task that would be achieved much quicker and more simply with a SQL `JOIN` clause.
+
+This article will use a very basic example to demonstrate just how powerful using SQL properly can be. The code for the article is written in Python using the [SQLAlchemy](https://www.sqlalchemy.org/) ORM library, but I will include the raw SQL that the program intends to emulate to be more language-agnostic.
+
+While the example and tests will seem simple, this is adapted from real code that I have seen in production, so pay attention!
+
+TL;DR: the SQL `JOIN` implementation is _much_ faster.
+
+# The Example
+
+The example I will use is one of an online store. The database will contain a `users` table and an `orders` table, which will store information on the site’s users and any orders placed by those users. Each table has an ID column and the `orders` table contains a `user_id` column containing a foreign key that references the `users` table.
+
+## Python
+
+## SQL
+
+# The Test Setup
+
+As you can see, each `order` has a `payment_status` column, which contains a boolean for whether the order was paid successfully or not. The aim is to test a function that finds the users that have had at least one failed order and returns a set of `User` objects describing those users.
+
+The test will be run against a local dockerised MySQL database, created using the following `docker-compose.yml` file:
+
+The database will be preloaded with a number of users and orders generated using the Python `faker` library. The test will be run with every combination of 10, 100 and 1000 users and orders, and timed over 100 iterations using the Python `timeit` library.
+
+In order to avoid inconsistencies used by database caching, each query will be prefixed with the `SQL_NO_CACHE` flag.
+
+There will be two test functions. One will use a naive Python implementation that involves querying for failed orders, then looping over the results and running a select statement against the `users` table on each iteration to generate a set of `User` objects with at least one failed order. The second implementation will use SQL `JOIN` and `DISTINCT` to generate the same set of users in a single query.
+
+The code for the functions can be seen below.
+
+## Python
+
+## SQL
+
+It should be fairly clear from the code that the implementation using the SQL `JOIN` will make only one database query, whereas the more naive Python implementation will make a minimum of 1 and a maximum of N queries where N is the number of rows in the `orders` table.
+
+# The Results
+
+Unsurprisingly, the pure SQL implementation of the function is much, much faster than the implementation that relies on a Python `for` loop.
+
+At 10 users and 10 orders, the Python function completed in 5.97ms, while the SQL implementation took only 1.04ms. As the number of rows in the `orders` table increased, and so did the runtimes, but things started looking a lot worse for Python.
+
+At 10 users and 1000 orders, the SQL implementation was still sitting pretty at 1.28ms, while the Python implementation took 458.49ms per test! This is, of course, because the SQL implementation made only one database call whereas the Python implementation will have made ~500 calls.
+
+Interestingly, the number of rows in the `users` column had very little impact on the Python implementation in terms of runtime but had a larger impact on the SQL implementation. This is likely due to the MySQL server having to do more work to find `DISTINCT` users in a larger list, whereas the Python version built the `set` object user by user.
+
+The full results can be seen below, along with some charts showing how the performance of each function scaled with the number of rows in the database.
+
+## Benchmark output
+
+n\_users: 10, n\_orders: 10  
+Python: 5.97ms, SQL: 1.04msn\_users: 10, n\_orders: 100  
+Python: 46.22ms, SQL: 1.22msn\_users: 10, n\_orders: 1,000  
+Python: 458.49ms, SQL: 1.28msn\_users: 100, n\_orders: 10  
+Python: 4.85ms, SQL: 0.96msn\_users: 100, n\_orders: 100  
+Python: 48.08ms, SQL: 1.40msn\_users: 100, n\_orders: 1,000  
+Python: 441.89ms, SQL: 2.53msn\_users: 1,000, n\_orders: 10  
+Python: 4.97ms, SQL: 1.04msn\_users: 1,000, n\_orders: 100  
+Python: 46.54ms, SQL: 1.57msn\_users: 1,000, n\_orders: 1,000  
+Python: 451.37ms, SQL: 5.75ms
+
+## Graphs
+
+<Image src={image1} alt="TODO" />
+
+Image by author.
+
+<Image src={image2} alt="TODO" />
+
+Image by author.
+
+<Image src={image3} alt="TODO" />
+
+Image by author
+
+<Image src={image4} alt="TODO" />
+
+Image by author
+
+# Conclusion
+
+While both implementations above could certainly be optimised to squeeze out slightly more performance, the SQL implementation will win every single time. The best part is, the SQL used is actually very simple, and anyone can learn it!
+
+There are plenty of free resources online for learning SQL, so if you’re a software engineer or an aspiring one, get out there and get studying! The benefits will be enormous.
+
+If you enjoyed this article, you might also enjoy my article about my Python library, `quiffen`, which is used for parsing financial information from `QIF` files:
+
+[
+
+## Parsing QIF Files to Retrieve Financial Data with Python
+
+### A Basic Overview of the Quiffen Package and Why It’s So Useful
+
+towardsdatascience.com
+
+
+
+](/parsing-qif-files-to-retrieve-financial-data-with-python-f599cc0d8c03?source=post_page-----ae3d7192a8d9--------------------------------)
+
+I can also be found on [my blog](http://isaacharrisholt.com/newsletter), on [Twitter](https://twitter.com/IsaacHarrisHolt) and on [LinkedIn](https://www.linkedin.com/in/isaac-harris-holt/), so if you have any questions, feel free to get chatting!
+
+\-Isaac
+
+P.S., I’ve included the full code for the benchmarks I ran below, so have a go and play around with it all yourself!

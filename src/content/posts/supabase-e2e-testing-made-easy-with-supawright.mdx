@@ -1,0 +1,218 @@
+---
+title: "Supabase E2E Testing Made Easy With Supawright"
+subtitle: "Getting set up"
+date: 2023-09-16
+---
+import { Image } from 'astro:assets'
+import image0 from '../../assets/images/supabase-e2e-testing-made-easy-with-supawright/image-0.jpg'
+
+Finally, some peace of mind.
+
+<Image src={image0} alt="TODO" />
+
+Photo by [Lidia Nemiroff](https://unsplash.com/@lidianemiroff?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
+
+End-to-end testing is a nightmare. No, seriously, it’s one of my least favourite things to work on when I’m doing frontend or full-stack work. But they’re so. Darn. Useful. I’m not going to go into the benefits of end-to-end testing, but most of the time it’s the only type of testing I really do.
+
+However, one of the trickiest parts of E2E testing a full-stack web app is managing database records. Tests will often need dummy data such as user accounts, transaction records, etc. etc., and can also create records during the test runs themselves.
+
+It’s good practice to make sure these records are cleaned up at the end of the test cycle to avoid cluttering local databases and to allow you to run your tests repeatedly against long-running remote databases if needs be.
+
+Creating the records you need is generally quite easy, though you can end up with a lot of boilerplate if you have to create lots of records in foreign tables (e.g. you need to create an `order` but you need a load of `product`s first).
+
+The real challenge comes when tracking the records that the test creates along the way. As your database grows, you might introduce new tables that get automatically populated (think: `event` tables) and suddenly you’re adding more code to _every_ test do clean up these new records.
+
+Sounds like my idea of hell.
+
+Anyway, I got fed up of doing this all the time in code on my own projects and at work, so I wrote a little library — Supawright — that automates this process for my normal tech stack: Supabase for the backend and Playwright for E2E testing.
+
+Supabase is a backend-as-a-service tool that competes with the likes of Firebase and AWS Amplify, but with the key benefit of being _open source_. Supabase is awesome, and I use it all the time. If you’re interested in why I use it both at work and for personal projects, check out [this article](https://blog.withpluto.com/the-pluto-stack-b28c5e008b74) about the tech stack I use at the early-stage startup I’m currently building.
+
+Playwright is a brilliant open-source test suite that I’m sure I don’t need to gush about now. Long story short, I use it for the majority of my testing.
+
+That’s enough rambling. Let’s get to the good stuff.
+
+# The good stuff
+
+[Supawright](https://github.com/isaacharrisholt/supawright) is a Playwright test harness for E2E testing with Supabase.
+
+Supawright can create database tables and records for you, and will clean up after itself when the test exits. It will create records recursively based on foreign key constraints, and will automatically discover any related records that were not created by Supawright and delete them as well.
+
+## Getting set up
+
+To get setup, install Supawright with your favourite package manager:
+
+pnpm i -D supawright
+
+You’ll then have to (unfortunately) make some alterations to Supabase’s generated TypeScript types (we need a `type` not an `interface`), so change the following line wherever you keep yours (typically `database.ts`):
+
+\- export interface Database {  
+\+ export type Database = {
+
+I recommend setting up a `make` target (or similar) to automatically make this change for you whenever you update your types, e.g.:
+
+types:  
+    pnpm supabase gen types typescript --local | \\  
+    sed 's/export interface Database {/export type Database = {/' \\  
+    > src/types/database.ts
+
+Then, in your test file, create a test function using `withSupawright`. You’ll use this instead of the `test` function that Playwright provides.
+
+import { withSupawright } from 'supawright'  
+import type { Database } from './database'  
+  
+const test = withSupawright<  
+  Database,  
+  'public' | 'other'  
+\>(\['public', 'other'\])
+
+In the example above, we’re telling Supawright that we care about the `public` and `other` schemas in the database. Make sure you [expose these schemas](https://supabase.com/docs/guides/api/using-custom-schemas) so the Supabase client can access them.
+
+## The first test
+
+Assuming you have a `test` function as above, you can now write tests and use the `supawright` fixture to recursively create database tables. Consider the following table structure:
+
+create table public."user" (  
+    id uuid primary key default uuid\_generate\_v4(),  
+    email text not null unique,  
+    password text not null  
+);  
+  
+create table public.session (  
+    id uuid primary key default uuid\_generate\_v4(),  
+    user\_id uuid not null references public."user"(id),  
+    token text,  
+    created\_at timestamp with time zone not null default now()  
+);
+
+If you use Supawright to create a `session`, it will automatically create a `user` for you, and you can access the `user`’s `id` in the `session`’s `user_id` column. Supawright will also automatically generate fake data for any columns that are not nullable and do not have a default value.
+
+test('creates a user', async ({ supawright }) => {  
+  const session = await supawright.create('public', 'session')  
+  expect(session.user\_id).toBeDefined()  
+})
+
+You can optionally pass a `data` object as the second argument to the `create` function to override the fake data that is generated. If you pass in data for a foreign key column, Supawright will not create a record for that table.
+
+If your table is in the `public` schema, you can omit the schema name.
+
+test("doesn't create user", async ({ supawright }) => {  
+  const user = await supawright.create('user', {  
+    email: 'some-email@supawrightmail.com'  
+  })  
+  const session = await supawright.create('session', {  
+    user\_id: user.id  
+  })  
+  
+  // Supawright will not create a user record, since we've passed in  
+  // a user\_id.  
+  const { data: users } = await supawright.supabase().from('user').select()  
+  expect(users.length).toBe(1)  
+})
+
+When the test exits, Supawright will automatically clean up all the records it has created, and will inspect foreign key constraints to delete records in the correct order.
+
+It will also discover any additional records in the database that were not created by Supawright, and will delete them as well, provided they have a foreign key relationship with a record that was created by Supawright.
+
+This runs recursively. Consider the following example:
+
+test('setup', async ({ supawright }) => {  
+  const user = await supawright.create('user')  
+  
+  // We're using the standard Supabase client here, so Supawright  
+  // is not automatically aware of the records we're creating.  
+  await supawright  
+    .supabase()  
+    .from('session')  
+    .insert(\[{ user\_id: user.id }, { user\_id: user.id }\])  
+  
+  // However, Supawright will discover these records and delete  
+  // them when the test exits.  
+})  
+  
+test('everything has been cleaned up', async ({ supawright }) => {  
+ const { data: sessions } = await supawright  
+  .supabase()  
+  .from('session')  
+  .select()  
+  
+ expect(sessions.length).toBe(0)  
+})
+
+## Overrides
+
+If you have custom functions you wish to use to generate fake data or create records, you can pass optional config as the second argument to the `withSupawright` function.
+
+The \`generators\` object is a record of Postgres types to functions that return a value of that type. Supawright will use these functions to generate fake data for any columns that are not nullable and do not have a default value.
+
+If you’re using user-defined types, specify the `USER-DEFINED` type name in the `generators` object. This will be used for enums, for example.
+
+The `overrides` object is a record of schema names to a record of table names to functions that return a record of column names to values. Supawright will use these functions to create records in the database. These return an array of `Fixture`s which Supawright will use to record the records it has created.
+
+This is useful if you use a database trigger to populate certain tables and need to run custom code to activate the trigger.
+
+const test = withSupawright<  
+    Database,  
+    'public' | 'other',  
+\>(  
+    \['public', 'other'\],  
+    {  
+        generators: {  
+            smallint: () => 123,  
+            text: (table: string, column: string) => \`${table}.${column}\`,  
+        },  
+        overrides: {  
+            public: {  
+                user: async ({ supawright, data, supabase, generators }) => {  
+                    const { data: user } = await supabase  
+                        .from('user')  
+                        .insert({  
+                         email: 'coolemail@supawrightmail.com',  
+                         password: generators.text()  
+                        })  
+                        .select()  
+                        .single()  
+  
+                    // Things go here...  
+       
+                    return \[{  
+                        schema: 'public',  
+                        table: 'user',  
+                        data: user,  
+                    }\]  
+                }  
+            }  
+        }  
+    }  
+)
+
+## Connection details
+
+By default, Supawright will look for the `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` environment variables to connect to your Supabase instance. You can override these using the `supabase` key in the config object.
+
+Supawright also needs access to a Supabase database for schema inspection, and will use the default Supabase localhost database. If you’d like to override this, provide a `database` key in the config object.
+
+const test = withSupawright<  
+  Database,  
+  'public' | 'other'  
+\>(\['public', 'other'\], {  
+  supabase: {  
+    supabaseUrl: 'my-supabase-url.com',  
+    serviceRoleKey: 'my-service-role-key'  
+  },  
+  database: {  
+    host: 'localhost',  
+    port: 54322,  
+    user: 'me',  
+    password: 'password',  
+    database: 'my-database'  
+  }  
+})
+
+## What’s next?
+
+There are a few more things I’d like to be able to add to Supawright, such as automatically creating generators for custom enum and composite types, fixing the slightly janky typings and (maybe) convincing Supabase to make the generated interface a type 😉
+
+I really hope you find Supawright useful. I’m very open to suggestions and contributions, so please feel free to create an issue on GitHub or get in touch with me directly on [X](https://twitter.com/IsaacHarrisHolt) or [LinkedIn](https://linkedin.com/in/isaac-harris-holt).
+
+That’s it for now though. Happy building!

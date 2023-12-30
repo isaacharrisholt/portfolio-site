@@ -62,7 +62,7 @@ async function downloadImage(url, slug, filename, extension) {
 
 async function processArticle(markdown, slug) {
   // Find images and extract url
-  const images = markdown.match(/!\[\]\(.*\)/g);
+  const images = markdown.match(/!\[\]\(.*\)/g) || [];
   const imageUrls = images.map(image => {
     const url = image.match(/\(.*\)/g)[0];
     return url.substring(1, url.length - 1);
@@ -109,7 +109,7 @@ async function main() {
   const article = await scrapeMedium(url);
   rl.close();
 
-  const slug = article.title.toLowerCase().replace(/[^\w\d\s]+/g, '').replace(/\s+/g, '-');
+  const slug = article.title.toLowerCase().replace(/[^\w\d\s-]+/g, '').trim().replace(/\s+/g, '-');
 
   const processed = await processArticle(article.markdown, slug);
 
