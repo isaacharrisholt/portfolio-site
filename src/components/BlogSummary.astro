@@ -1,21 +1,28 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
   slug: string;
   title: string;
   subtitle?: string;
+  image: ImageMetadata;
   date: Date;
   description?: string;
 }
 
-const { slug, title, subtitle, date, description } = Astro.props;
+const { slug, title, subtitle, image, date, description } = Astro.props;
 ---
 
-<div class="w-full flex flex-col gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white" transition:name={`post-${slug}`}>
-  <div class="flex flex-col">
-    <h2 class="hover:underline"><a href={slug} class="not-prose">{title}</a></h2>
-    {!!subtitle && <h3>{subtitle}</h3>}
-    <time datetime={date.toISOString()} class="text-surface-200">{date.toISOString().slice(0, 10)}</time>
+<div class="w-full flex flex-row items-start gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white" transition:name={`post-${slug}`}>
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col">
+      <h2 class="hover:underline"><a href={slug} class="not-prose" transition:name={`post-title-${slug}`}>{title}</a></h2>
+      {!!subtitle && <h3 transition:name={`post-subtitle-${slug}`}>{subtitle}</h3>}
+      <time datetime={date.toISOString()} class="text-surface-200" transition:name={`post-time-${slug}`}>{date.toISOString().slice(0, 10)}</time>
+    </div>
+    {!!description && <p>{description}</p>}
+    <a href={slug}>Read more...</a>
   </div>
-  {!!description && <p>{description}</p>}
-  <a href={slug}>Read more...</a>
+  <Image src={image} alt="" width={200} class="!m-0 rounded-lg" transition:name={`post-image-${slug}`}>
 </div>

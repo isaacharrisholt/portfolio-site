@@ -9,9 +9,10 @@ const tags = defineCollection({
 
 const posts = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     subtitle: z.string().optional(),
+    image: image(),
     date: z.date(),
     description: z.string().optional(),
     tags: z.array(reference('tags')),

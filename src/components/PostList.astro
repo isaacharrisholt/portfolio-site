@@ -33,12 +33,12 @@ const { title, posts, tag: tagName } = Astro.props
     {posts.map((post, i) => {
       if (i < posts.length - 1) {
         return (
-          <BlogSummary slug={post.slug} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
+          <BlogSummary slug={post.slug} image={post.data.image} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
           <hr />
         )
       }
       return (
-        <BlogSummary slug={post.slug} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
+        <BlogSummary slug={post.slug} image={post.data.image} title={post.data.title} subtitle={post.data.subtitle} date={post.data.date} description={post.data.description} />
       )
     })}
   </div>
