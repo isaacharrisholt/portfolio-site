@@ -1,8 +1,9 @@
 ---
-title: "Python: To OOP or to FP?"
-subtitle: "That is the question"
+title: 'Python: To OOP or to FP?'
+subtitle: 'That is the question'
 date: 2022-11-21
 ---
+
 import { Image } from 'astro:assets'
 import image0 from '../../assets/images/python-to-oop-or-to-fp/image-0.jpg'
 
@@ -36,62 +37,55 @@ The program used to demonstrate is very simple — it creates two animals (a dog
 
 ## OOP example
 
-from abc import ABC, abstractmethod  
-  
-  
+from abc import ABC, abstractmethod
+
 class Logger(ABC):  
-    @abstractmethod  
-    def log(self, message: str):  
-        ...  
-  
-  
+ @abstractmethod  
+ def log(self, message: str):  
+ ...
+
 class MyLogger(Logger):  
-    def \_\_init\_\_(self, name: str):  
-        self.name = name  
-  
-    def log(self, message: str):  
-        print(f'{self.name}: {message}')  
-  
-  
+ def \_\_init\_\_(self, name: str):  
+ self.name = name
+
+    def log(self, message: str):
+        print(f'{self.name}: {message}')
+
 class Animal:  
-    def \_\_init\_\_(self, name: str, logger: Logger):  
-        self.name = name  
-        self.logger = logger  
-  
-    def speak(self):  
-        self.logger.log('Speaking')  
-        ...  
-  
-  
+ def \_\_init\_\_(self, name: str, logger: Logger):  
+ self.name = name  
+ self.logger = logger
+
+    def speak(self):
+        self.logger.log('Speaking')
+        ...
+
 class Dog(Animal):  
-    def speak(self):  
-        self.logger.log('Woof!')  
-        ...  
-  
-    def run(self):  
-        self.logger.log('Running')  
-        ...  
-  
-  
+ def speak(self):  
+ self.logger.log('Woof!')  
+ ...
+
+    def run(self):
+        self.logger.log('Running')
+        ...
+
 class Fish(Animal):  
-    ...  
-  
-  
+ ...
+
 class App:  
-    @staticmethod  
-    def run():  
-        fido = Dog(name='Fido', logger=MyLogger('Fido'))  
-        goldie = Fish(name='Goldie', logger=MyLogger('Goldie'))  
-  
-        fido.speak()  
-        fido.run()  
-  
-        goldie.speak()  
-  
-  
+ @staticmethod  
+ def run():  
+ fido = Dog(name='Fido', logger=MyLogger('Fido'))  
+ goldie = Fish(name='Goldie', logger=MyLogger('Goldie'))
+
+        fido.speak()
+        fido.run()
+
+        goldie.speak()
+
 if \_\_name\_\_ == '\_\_main\_\_':  
-    App.run()  
-  
+ App.run()
+
 \# Fido: Woof!  
 \# Fido: Running  
 \# Goldie: Speaking
@@ -179,53 +173,47 @@ So, what would happen if we were to combine a bit of OOP with a bit of FP? I’m
 
 from dataclasses import dataclass  
 from functools import partial  
-from typing import Callable  
-  
-Logger = Callable\[\[str\], None\]  
-  
-  
+from typing import Callable
+
+Logger = Callable\[\[str\], None\]
+
 def log(message: str, name: str):  
-    print(f'{name}: {message}')  
-  
-  
+ print(f'{name}: {message}')
+
 @dataclass  
 class Animal:  
-    name: str  
-    log: Logger  
-  
-    def speak(self):  
-        self.log('Speaking')  
-  
-  
+ name: str  
+ log: Logger
+
+    def speak(self):
+        self.log('Speaking')
+
 @dataclass  
 class Dog(Animal):  
-    breed: str = 'Labrador'  
-  
-    def speak(self):  
-        self.log('Woof!')  
-  
-    def run(self):  
-        self.log('Running')  
-  
-  
+ breed: str = 'Labrador'
+
+    def speak(self):
+        self.log('Woof!')
+
+    def run(self):
+        self.log('Running')
+
 @dataclass  
 class Fish(Animal):  
-    ...  
-  
-  
+ ...
+
 def main():  
-    fido = Dog('Fido', partial(log, name='Fido'))  
-    goldie = Fish('Goldie', partial(log, name='Goldie'))  
-  
-    fido.speak()  
-    fido.run()  
-  
-    goldie.speak()  
-  
-  
+ fido = Dog('Fido', partial(log, name='Fido'))  
+ goldie = Fish('Goldie', partial(log, name='Goldie'))
+
+    fido.speak()
+    fido.run()
+
+    goldie.speak()
+
 if \_\_name\_\_ == '\_\_main\_\_':  
-    main()  
-  
+ main()
+
 \# Fido: Woof!  
 \# Fido: Running  
 \# Goldie: Speaking
@@ -247,34 +235,31 @@ FastAPI allows you to define your API routes as functions, wrapping each one wit
 Below is an example of how this might be used. Again, it’s a simple example, but it’s fairly representative of what you might see in production.
 
 from fastapi import FastAPI  
-from pydantic import BaseModel  
-  
-app = FastAPI()  
-  
-  
+from pydantic import BaseModel
+
+app = FastAPI()
+
 class Baz(BaseModel):  
-    qux: int  
-  
-  
+ qux: int
+
 class Foo(BaseModel):  
-    bar: str  
-    baz: Baz  
-  
-  
+ bar: str  
+ baz: Baz
+
 @app.get('/foo')  
-async def get\_foo(name: str, age: int) -> Foo:  
-    ...  \# Some logic here  
-    return Foo(  
-        bar=name,  
-        baz=Baz(qux=age),  
-    )  
-  
+async def get_foo(name: str, age: int) -> Foo:  
+ ... \# Some logic here  
+ return Foo(  
+ bar=name,  
+ baz=Baz(qux=age),  
+ )
+
 \# GET /foo?name=John&age=42  
 \# {  
-\#   "bar": "John",  
-\#   "baz": {  
-\#     "qux": 42  
-\#   }  
+\# "bar": "John",  
+\# "baz": {  
+\# "qux": 42  
+\# }  
 \# }
 
 As you can see, FastAPI uses Pydantic’s ability to convert nested objects to JSON to create a JSON response for our endpoint. The `app.get` decorator has also registered our `get_foo` function with the `app` object, allowing us to make `GET` requests to the `/foo` endpoint.

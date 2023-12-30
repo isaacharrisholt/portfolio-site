@@ -1,8 +1,9 @@
 ---
-title: "How to Make Your Python Packages Really Fast with Rust"
-subtitle: "Goodbye, slow code"
+title: 'How to Make Your Python Packages Really Fast with Rust'
+subtitle: 'Goodbye, slow code'
 date: 2023-05-31
 ---
+
 import { Image } from 'astro:assets'
 import image0 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-0.jpg'
 import image1 from '../../assets/images/how-to-make-your-python-packages-really-fast-with-rust/image-1.png'
@@ -55,13 +56,13 @@ Here’s an overview of the resulting file structure.
 
 fibbers/  
 ├── .github/  
-│   └── workflows/  
-│       └── CI.yml  
+│ └── workflows/  
+│ └── CI.yml  
 ├── .gitignore  
 ├── Cargo.toml  
 ├── pyproject.toml  
 └── src/  
-    └── lib.rs
+ └── lib.rs
 
 ## Writing the Rust
 
@@ -121,9 +122,9 @@ However, we do have a problem with our Rust implementation. If we try to get the
 
 Rust experiences integer overflow. Image by author.
 
-This is because, unlike Python, Rust has fixed-size integers, and a 32-bit integer isn’t large enough to hold our 50th Fibonacci number.  
-  
-We can get around this by changing the type in our Rust function from `u32` to `u64`, but that will use more memory and might not be supported on every machine. We could also solve it by using a crate like [num\_bigint](https://docs.rs/num-bigint/latest/num_bigint/), but that’s outside the scope of this article.
+This is because, unlike Python, Rust has fixed-size integers, and a 32-bit integer isn’t large enough to hold our 50th Fibonacci number.
+
+We can get around this by changing the type in our Rust function from `u32` to `u64`, but that will use more memory and might not be supported on every machine. We could also solve it by using a crate like [num_bigint](https://docs.rs/num-bigint/latest/num_bigint/), but that’s outside the scope of this article.
 
 Another small limitation is that there’s some overhead to using the PyO3 bindings. You can see that here where I’m just getting the 1st Fibonacci number, and Python is actually faster than Rust thanks to this overhead.
 
@@ -139,9 +140,9 @@ I hope you’ve found this article helpful, and that it’s encouraged you to tr
 
 If you’d like to see more complete examples of Python packages written in Rust, please check out the following examples:
 
-*   [isaacharrisholt/uuidt](https://github.com/isaacharrisholt/uuidt)
-*   [pydantic/pydantic-core](https://github.com/pydantic/pydantic-core)
-*   [pola-rs/polars](https://github.com/pola-rs/polars/)
+- [isaacharrisholt/uuidt](https://github.com/isaacharrisholt/uuidt)
+- [pydantic/pydantic-core](https://github.com/pydantic/pydantic-core)
+- [pola-rs/polars](https://github.com/pola-rs/polars/)
 
 This article was based on the script for this video of mine, so if you’re more of a visual learner, or would like quick reference material, feel free to check it out:
 
@@ -154,8 +155,6 @@ Or check out the code on GitHub:
 ### Everyone knows that program speed isn't Python's strong point. That's why so many number-crunching data science…
 
 github.com
-
-
 
 ](https://github.com/isaacharrisholt/youtube/tree/main/010-creating-python-packages-with-rust?source=post_page-----91a9bebacbc2--------------------------------)
 
