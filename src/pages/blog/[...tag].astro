@@ -19,7 +19,7 @@ const allPosts = (await getCollection('posts', ({ data }) => data.tags.map((tag)
 ---
 
 <PostList
-  title={`Blog: #${entry.data.name}`}
+  title={`Blog: ${entry.data.name}`}
   tag={entry.id}
   posts={allPosts}
 />
