@@ -1,14 +1,12 @@
 ---
 title: "Simplifying Dagster Codebases with Dagstd"
-subtitle: "Parsing QIF Files to Retrieve Financial Data with Python"
+subtitle: "Boilerplate no more."
 date: 2022-06-19
 ---
 import { Image } from 'astro:assets'
-import image0 from '../../assets/images/simplifying-dagster-codebases-with-dagstd/image-0.jpg'
+import octopus from '../../assets/images/simplifying-dagster-codebases-with-dagstd/image-0.jpg'
 
-Boilerplate no more.
-
-<Image src={image0} alt="TODO" />
+<Image src={octopus} alt="" />
 
 Photo by
 [Diane Picchiottino](https://unsplash.com/@diane_soko?utm_source=medium&utm_medium=referral)
@@ -37,7 +35,7 @@ Dagstd is a set of common ops and functions for use with Dagster, and it also in
 Sphinx Autodoc extension to allow ops to be picked up and documented automatically,
 which has saved me so much time in the long run.
 
-# Dagstd Ops
+### Dagstd Ops
 
 At the moment (as of v0.1.1), Dagstd contains:
 
@@ -49,37 +47,124 @@ At the moment (as of v0.1.1), Dagstd contains:
 
 Dagstd is, of course, installable via `pip`:
 
+```bash
 pip install dagstd
+```
 
 It was built with `dagster==0.14.17`, but should work with later versions too.
 
 Here’s an example of a pure-Dagster graph that downloads a daily ZIP file and extracts a
 known file name. Note: the `download_large_file` op has been omitted for brevity.
 
+```python
+import zipfile
+
+from datetime import datetime
+
+from dagster import op, job
+
+
+@op
+def get_todays_date() -> str:
+    return datetime.today().strftime()
+
+
+@op
+def five() -> int:
+    return 5
+
+
+@op
+def get_download_file_url(date: str) -> str:
+    return f'https://example.com/{date}.csv'
+
+
+@op
+def get_nth_file_name(n: int) -> str:
+    return f'file_{n:02}.txt'
+
+
+@op
+def extract_file_from_zip(context, zip_path: str, file_name: str) -> str:
+    with zipfile.ZipFile(zip_path) as zip_file:
+        with(f'/tmp/{file_name}', 'wb') as f:
+            f.write(zip_file.read(file_name))
+        context.log.info(f'Extracted {file_name} from {zip_path}')
+        return f'/tmp/{file_name}'
+
+
+@job
+def process_data():
+    date = get_todays_date()
+    url = get_download_file_url(date)
+    zip_path = download_large_file(url)
+
+    file_name = get_nth_file_name(five())
+    file_path = extract_file_from_zip(zip_path, file_name)
+```
+
 And here’s the same graph, with the same functionality, but with Dagstd ops.
+
+```python
+import zipfile
+
+from datetime import datetime
+
+from dagster import op, job
+from dagstd.constants import Constant, Five
+from dagstd.operations import fmt
+
+
+@op
+def get_todays_date_string() -> str:
+    return datetime.today().strftime("%Y-%m-%d")
+
+
+@op
+def extract_file_from_zip(context, zip_path: str, file_name: str) -> str:
+    with zipfile.ZipFile(zip_path) as zip_file:
+        with(f'/tmp/{file_name}', 'wb') as f:
+            f.write(zip_file.read(file_name))
+        context.log.info(f'Extracted {file_name} from {zip_path}')
+        return f'/tmp/{file_name}'
+
+
+@job
+def process_data():
+    date = get_todays_date_string()
+    url = fmt(Constant('https://example.com/{}.csv'), [date])
+    zip_path = download_large_file(url)
+
+    file_name = fmt(Constant('file_{}.txt'), [Five()])
+    file_path = extract_file_from_zip(zip_path, file_name)
+```
 
 This is a small example, so the savings probably aren’t huge, but it serves how much
 boilerplate can be avoided when using Dagstd.
 
-# Sphinx Autodoc Plugin
+### Sphinx Autodoc Plugin
 
 Dagstd includes a Sphinx autodoc plugin that can be used to generate documentation for
 Dagster ops. To use the autodoc plugin, add the following to your `conf.py` file:
 
-extensions = \[  
+```python
+extensions = [  
  ...  
  'dagstd.sphinx.parser',  
-\]
+]
+```
 
 By default, this will prefix all op documentation with `(op)`. To change this, add the
 following to your `conf.py` file:
 
+```python
 dagstd_op_prefix = 'My Op'
+```
 
 You can see an example of this in action in the
 [Dagstd documentation](https://dagstd.readthedocs.io/en/latest/readme.html).
 
-# Contribute
+### Contribute
 
 Dagstd is brand new, and I’m not an expert in Dagster either, so there are definitely
 some more common ops that I could include in the library! If you’ve got any that you
@@ -99,17 +184,7 @@ I hope that at least a few of you will find this package useful, and I’d love 
 your feedback! In the meantime, why not simplify your financial data workflows even
 further by taking a look at my other open-source Python package, Quiffen? It’s a great
 tool for working with Quicken Interchange Format (QIF) files. You can read more about it
-here:
-
-[
-
-## Parsing QIF Files to Retrieve Financial Data with Python
-
-### A Basic Overview of the Quiffen Package and Why It’s So Useful
-
-towardsdatascience.com
-
-](https://towardsdatascience.com/parsing-qif-files-to-retrieve-financial-data-with-python-f599cc0d8c03?source=post_page-----b1c271f0aed5--------------------------------)
+[here](/parsing-qif-files-to-retrieve-financial-data-with-python).
 
 If you want to get in touch, you can either email me at
 [isaac@isaacharrisholt.com](mailto:isaac@isaacharrisholt.com) or via
