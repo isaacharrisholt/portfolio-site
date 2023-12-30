@@ -9,7 +9,15 @@ import svelte from '@astrojs/svelte'
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
-  adapter: vercel(),
+  adapter: vercel({
+    speedInsights: {
+      enabled: true,
+    },
+    webAnalytics: {
+      enabled: true,
+    },
+    imageService: true,
+  }),
   integrations: [tailwind(), mdx(), sitemap(), svelte()],
   site: 'https://ihh.dev',
   redirects: {
