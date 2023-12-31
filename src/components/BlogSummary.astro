@@ -1,23 +1,44 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets'
+import type { CollectionEntry } from 'astro:content'
 
 interface Props {
   post: CollectionEntry<'posts'>
 }
 
-const {post: {slug, data: { title, subtitle, image, date, description }}} = Astro.props;
+const {
+  post: {
+    slug,
+    data: { title, subtitle, image, date, description },
+  },
+} = Astro.props
 ---
 
-<div class="w-full flex flex-col-reverse sm:flex-row items-start gap-4 justify-between no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white" transition:name={`post-${slug}`}>
+<div
+  class="flex w-full flex-col-reverse items-start justify-between gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white sm:flex-row"
+  transition:name={`post-${slug}`}
+>
   <div class="flex flex-col gap-4">
     <div class="flex flex-col">
-      <h2 class="hover:underline"><a href={`/${slug}`} class="not-prose" transition:name={`post-title-${slug}`}>{title}</a></h2>
+      <h2 class="hover:underline">
+        <a href={`/${slug}`} class="not-prose" transition:name={`post-title-${slug}`}
+          >{title}</a>
+      </h2>
       {!!subtitle && <h3 transition:name={`post-subtitle-${slug}`}>{subtitle}</h3>}
-      <time datetime={date.toISOString()} class="text-surface-200" transition:name={`post-time-${slug}`}>{date.toISOString().slice(0, 10)}</time>
+      <time
+        datetime={date.toISOString()}
+        class="text-surface-200"
+        transition:name={`post-time-${slug}`}>{date.toISOString().slice(0, 10)}</time
+      >
     </div>
     {!!description && <p>{description}</p>}
     <a href={`/${slug}`}>Read more...</a>
   </div>
-  <Image src={image} alt="" width={200} class="!m-0 rounded-lg max-sm:self-center" transition:name={`post-image-${slug}`}>
+  <Image
+    src={image}
+    alt=""
+    width={200}
+    class="!m-0 rounded-lg max-sm:self-center"
+    transition:name={`post-image-${slug}`}
+  />
 </div>

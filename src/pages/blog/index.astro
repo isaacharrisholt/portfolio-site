@@ -1,10 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
-import PostList from '../../components/PostList.astro';
+import { getCollection } from 'astro:content'
+import PostList from '../../components/PostList.astro'
 
 const allPosts = (await getCollection('posts')).sort((a, b) => {
-  return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
-});
+  return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+})
 ---
 
 <PostList title="Blog" posts={allPosts} />

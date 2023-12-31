@@ -1,25 +1,25 @@
 ---
 import { getCollection } from 'astro:content'
-import PostList from '../../components/PostList.astro';
+import PostList from '../../components/PostList.astro'
 
-const { entry} = Astro.props
+const { entry } = Astro.props
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('tags')
   console.log(blogEntries)
   return blogEntries.map((entry) => ({
     params: { tag: entry.id },
-    props: { entry}
+    props: { entry },
   }))
 }
 
-const allPosts = (await getCollection('posts', ({ data }) => data.tags.map((tag) => tag.id).includes(entry.id))).sort((a, b) => {
-  return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
-});
+const allPosts = (
+  await getCollection('posts', ({ data }) =>
+    data.tags.map((tag) => tag.id).includes(entry.id),
+  )
+).sort((a, b) => {
+  return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+})
 ---
 
-<PostList
-  title={`Blog: ${entry.data.name}`}
-  tag={entry.id}
-  posts={allPosts}
-/>
+<PostList title={`Blog: ${entry.data.name}`} tag={entry.id} posts={allPosts} />

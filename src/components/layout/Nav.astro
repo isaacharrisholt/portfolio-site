@@ -1,38 +1,42 @@
 ---
-  const navLinks: Array<{
-    name: string
-    url: string
-    target?: string
-  }> = [
-    {
-      name: 'Blog',
-      url: '/blog',
-    },
-    // {
-    //   name: 'Contact',
-    //   url: '/contact',
-    // },
-    {
-      name: 'CV',
-      url: '/cv',
-      target: '_blank',
-    }
-  ]
-  const path = new URL(Astro.request.url).pathname
+const navLinks: Array<{
+  name: string
+  url: string
+  target?: string
+}> = [
+  {
+    name: 'Blog',
+    url: '/blog',
+  },
+  // {
+  //   name: 'Contact',
+  //   url: '/contact',
+  // },
+  {
+    name: 'CV',
+    url: '/cv',
+    target: '_blank',
+  },
+]
+const path = new URL(Astro.request.url).pathname
 ---
 
-<nav class="grid col-span-full grid-cols-subgrid max-md:place-items-center w-full">
+<nav class="col-span-full grid w-full grid-cols-subgrid max-md:place-items-center">
   <a href="/" class="w-fit text-2xl font-bold" transition:name="nav-logo">
     Isaac <span class="whitespace-nowrap">Harris-Holt</span>
   </a>
-  <ul class="flex flex-row items-center gap-4 md:gap-8 lg:gap-16 font-semibold justify-center" transition:name="nav-links">
+  <ul
+    class="flex flex-row items-center justify-center gap-4 font-semibold md:gap-8 lg:gap-16"
+    transition:name="nav-links"
+  >
     {
-      navLinks.map((link) => 
+      navLinks.map((link) => (
         <li class="link">
           <a href={link.url} target={link.target}>
             {link.name}
           </a>
-        </li>)
+        </li>
+      ))
     }
   </ul>
   <div class="md:justify-self-end" transition:name="nav-socials">&lt;Socials /&gt;</div>
@@ -73,7 +77,9 @@
     display: block;
     width: 0;
     height: 2px;
-    animation: slideOut 0.3s ease-in-out 1 forwards, hasHovered 1ms paused;
+    animation:
+      slideOut 0.3s ease-in-out 1 forwards,
+      hasHovered 1ms paused;
     @apply bg-accent-blue;
   }
 
@@ -81,7 +87,9 @@
     content: '';
     display: block;
     height: 2px;
-    animation: slideIn 0.3s ease-in-out 1 forwards, hasHovered 1ms;
+    animation:
+      slideIn 0.3s ease-in-out 1 forwards,
+      hasHovered 1ms;
     @apply bg-accent-blue;
   }
 </style>
