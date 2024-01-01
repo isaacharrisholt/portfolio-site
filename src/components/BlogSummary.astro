@@ -22,7 +22,8 @@ const {
     <div class="flex flex-col">
       <h2 class="hover:underline">
         <a href={`/${slug}`} class="not-prose" transition:name={`post-title-${slug}`}
-          >{title}</a>
+          >{title}</a
+        >
       </h2>
       {!!subtitle && <h3 transition:name={`post-subtitle-${slug}`}>{subtitle}</h3>}
       <time
