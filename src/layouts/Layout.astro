@@ -1,5 +1,6 @@
 ---
 import Nav from '../components/layout/Nav.astro'
+import Footer from '../components/layout/Footer.astro'
 import { ViewTransitions } from 'astro:transitions'
 
 interface Props {
@@ -23,15 +24,16 @@ const { title } = Astro.props
   </head>
 
   <body
-    class="grid grid-cols-default-layout gap-4 p-4 font-mono text-white md:gap-8 md:p-8"
+    class="grid min-h-screen grid-cols-default-layout grid-rows-[auto_auto_1fr_auto] gap-4 p-4 font-mono text-white md:gap-8 md:p-8"
   >
     <Nav />
-    <div></div>
+    <div class="col-span-full"></div>
     <main
       class="prose prose-sm w-full max-w-none col-start-full-start col-end-full-end md:prose-base md:col-start-content-start md:col-end-content-end"
     >
       <slot />
     </main>
+    <Footer />
     <style is:global>
       code {
         font-family:
