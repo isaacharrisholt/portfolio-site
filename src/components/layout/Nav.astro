@@ -1,4 +1,6 @@
 ---
+import ViewSource from '../ViewSource.astro'
+
 const navLinks: Array<{
   name: string
   url: string
@@ -39,7 +41,7 @@ const path = new URL(Astro.request.url).pathname
       ))
     }
   </ul>
-  <div class="md:justify-self-end" transition:name="nav-socials">&lt;Socials /&gt;</div>
+  <ViewSource transition:name="nav-view-source" class="place-self-end" />
 </nav>
 
 <style>

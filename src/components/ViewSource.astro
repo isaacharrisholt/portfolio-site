@@ -1,0 +1,44 @@
+---
+import { Github } from 'lucide-astro'
+import fs from 'fs'
+
+interface Props {
+  class?: string
+}
+
+const baseGithubUrl = 'https://github.com/isaacharrisholt/portfolio-site/blob/main'
+
+const pathname = Astro.url.pathname.replace(/\/$/, '')
+
+let resourceUrl = ''
+const patterns = [
+  '/src/pages{}.astro',
+  '/src/pages{}/index.astro',
+  '/src/content/posts{}.md',
+  '/src/content/posts{}.mdx',
+]
+
+// Try to find the file in the patterns
+for (const pattern of patterns) {
+  const url = pattern.replace('{}', pathname)
+  if (fs.existsSync(`.${url}`)) {
+    resourceUrl = url
+    break
+  }
+}
+
+const githubUrl = `${baseGithubUrl}${resourceUrl}`
+---
+
+<a
+  href={githubUrl}
+  class:list={[
+    'flex w-fit flex-row items-center gap-2 hover:underline',
+    Astro.props.class,
+  ]}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <Github class="h-4 w-4" />
+  <span>View source</span>
+</a>
