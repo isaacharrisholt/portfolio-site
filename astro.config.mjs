@@ -19,7 +19,7 @@ export default defineConfig({
     imageService: true,
   }),
   integrations: [tailwind(), mdx(), sitemap(), svelte()],
-  site: 'https://ihh.dev',
+  site: 'https://www.ihh.dev',
   redirects: {
     '/cv': '/resume.pdf',
   },
