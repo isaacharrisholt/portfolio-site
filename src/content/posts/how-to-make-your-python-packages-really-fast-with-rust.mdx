@@ -252,10 +252,10 @@ If we run for the 20th and 30th fib numbers, we can see that Rust gets up to bei
 
 But what if I told you that we’re not even at maximum speed?
 
-You see, by default, `maturin develop`will build the dev version of your Rust crate,
+You see, by default, `maturin develop` will build the dev version of your Rust crate,
 which will forego many optimisations to reduce compile time, meaning the program isn’t
 running as fast as it could. If we head back into our `fibbers` directory and run
-`maturin develop`again, but this time with the `--release` flag, we’ll get the optimised
+`maturin develop` again, but this time with the `--release` flag, we’ll get the optimised
 production-ready version of our binary.
 
 <Image
