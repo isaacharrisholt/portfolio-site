@@ -4,7 +4,7 @@ import ViewSource from '../ViewSource.astro'
 const navLinks: Array<{
   name: string
   url: string
-  target?: string
+  target?: HTMLAnchorElement['target']
 }> = [
   {
     name: 'Blog',
@@ -17,6 +17,11 @@ const navLinks: Array<{
   {
     name: 'CV',
     url: '/cv',
+    target: '_blank',
+  },
+  {
+    name: 'Newsletter',
+    url: 'https://polar.sh/isaacharrisholt/subscriptions',
     target: '_blank',
   },
 ]
@@ -32,13 +37,25 @@ const path = new URL(Astro.request.url).pathname
     transition:name="nav-links"
   >
     {
-      navLinks.map((link) => (
-        <li class="link">
-          <a href={link.url} target={link.target}>
-            {link.name}
-          </a>
-        </li>
-      ))
+      navLinks.map((link) => {
+        if (link.url.startsWith('/')) {
+          return (
+            <li class="link">
+              <a href={link.url} target={link.target}>
+                {link.name}
+              </a>
+            </li>
+          )
+        }
+
+        return (
+          <li class="link">
+            <a href={link.url} target={link.target} rel="noopener noreferrer">
+              {link.name}
+            </a>
+          </li>
+        )
+      })
     }
   </ul>
   <ViewSource transition:name="nav-view-source" class="place-self-end" />
