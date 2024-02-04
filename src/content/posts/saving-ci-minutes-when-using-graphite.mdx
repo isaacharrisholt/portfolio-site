@@ -2,9 +2,10 @@
 title: 'Saving CI minutes when using Graphite'
 subtitle: 'Keep money in your wallet when adopting stacked PRs'
 date: 2024-02-03
-image: '../../assets/images/saving-ci-minutes-when-using-graphite/pancake-stack.jpg'
+image: '../../../public/images/saving-ci-minutes-when-using-graphite/pancake-stack.jpg'
 tags:
   - cicd
+polar_sync: true
 ---
 
 We've all been there. We arrive at our desk on Monday morning to find that our over-eager colleague has been working all weekend and completed their feature work early.
@@ -55,11 +56,11 @@ The other solution I'm able to come up with (and the one we chose to use) is to 
 
 Basically, Graphite PRs each point at the PR that came before.
 
-![A diagram showing stacked PRs](../../assets/images/saving-ci-minutes-when-using-graphite/graphite-stacked-prs.svg)
+![A diagram showing stacked PRs](../../../public/images/saving-ci-minutes-when-using-graphite/graphite-stacked-prs.svg)
 
 We can use this fact to only run our jobs if we're at the _top_ of the stack, thereby ignoring any PRs that have had further changes made to them.
 
-![A diagram showing stacked PRs with the top PRs highlighted](../../assets/images/saving-ci-minutes-when-using-graphite/graphite-stacked-prs-top-highlighted.svg)
+![A diagram showing stacked PRs with the top PRs highlighted](../../../public/images/saving-ci-minutes-when-using-graphite/graphite-stacked-prs-top-highlighted.svg)
 
 The example I'm going to show is for GitHub actions, but I'd imagine there are ways to do this in other CI/CD systems.
 
@@ -200,6 +201,6 @@ If you've found this useful, I'd love to know! Feedback is always welcome :)
 
 And if you're interested, our CI pipelines look like this:
 
-![A diagram showing the Pluto CI/CD pipeline plan](../../assets/images/saving-ci-minutes-when-using-graphite/ci-plan.png)
+![A diagram showing the Pluto CI/CD pipeline plan](../../../public/images/saving-ci-minutes-when-using-graphite/ci-plan.png)
 
 Fun, right?

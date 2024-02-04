@@ -16,6 +16,7 @@
     "@astrojs/svelte": "^5.0.3",
     "@astrojs/tailwind": "^5.1.0",
     "@astrojs/vercel": "^6.1.1",
+    "@polar-sh/sdk": "^0.2.0",
     "@savvywombat/tailwindcss-grid-named-lines": "^2.0.1",
     "@tailwindcss/typography": "^0.5.10",
     "astro": "^4.0.8",

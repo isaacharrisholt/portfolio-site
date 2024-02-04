@@ -17,6 +17,7 @@ const posts = defineCollection({
       date: z.date(),
       description: z.string().optional(),
       tags: z.array(reference('tags')),
+      polar_sync: z.boolean().optional(),
     }),
 })
 

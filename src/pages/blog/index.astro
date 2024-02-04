@@ -1,8 +1,16 @@
 ---
 import { getCollection } from 'astro:content'
 import PostList from '../../components/PostList.astro'
+import { uploadToPolar } from '../../polar'
 
-const allPosts = (await getCollection('posts')).sort((a, b) => {
+const blogEntries = await getCollection('posts')
+try {
+  import.meta.env.MODE === 'production' && (await uploadToPolar(blogEntries))
+} catch (e: any) {
+  console.error(await e.response.text())
+}
+
+const allPosts = blogEntries.sort((a, b) => {
   return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
 })
 ---
