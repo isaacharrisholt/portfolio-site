@@ -1,12 +1,35 @@
 import type { CollectionEntry } from 'astro:content'
-import { PolarAPI, Configuration } from '@polar-sh/sdk'
+import { PolarAPI, Configuration, type Article } from '@polar-sh/sdk'
 
-function getPolarClient() {
+export function getPolarClient() {
   return new PolarAPI(
     new Configuration({
       accessToken: import.meta.env.POLAR_SH_KEY,
     }),
   )
+}
+
+async function getArticles(client: PolarAPI) {
+  const articles: Article[] = []
+  let page = 1
+
+  while (true) {
+    const response = await client.articles.search({
+      organizationName: 'isaacharrisholt',
+      showUnpublished: true,
+      page,
+      platform: 'github',
+      limit: 100,
+    })
+    articles.push(...response.items!)
+    if (response.pagination?.max_page && page < response.pagination.max_page) {
+      page++
+    } else {
+      break
+    }
+  }
+
+  return articles
 }
 
 /**
@@ -30,21 +53,21 @@ export async function uploadToPolar(entries: CollectionEntry<'posts'>[]) {
   }
 
   const client = getPolarClient()
-  const articles = await client.articles.list()
+  const articles = await getArticles(client)
 
   // Check which articles already exist and which need to be created
   const articlesToUpdate = entriesToUpload.filter((entry) => {
-    return articles.items?.some((article) => article.slug === entry.slug)
+    return articles.some((article) => article.slug === entry.slug)
   })
   const articlesToCreate = entriesToUpload.filter((entry) => {
-    return !articles.items?.some((article) => article.slug === entry.slug)
+    return !articles.some((article) => article.slug === entry.slug)
   })
 
   console.log('Uploading to Polar')
   await Promise.all(
     articlesToUpdate.map(async (entry) => {
       console.log('Updating article', entry.slug)
-      const article = articles.items!.find((article) => article.slug === entry.slug)!
+      const article = articles.find((article) => article.slug === entry.slug)!
       return await client.articles.update({
         id: article.id,
         articleUpdate: {
