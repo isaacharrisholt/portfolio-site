@@ -16,6 +16,12 @@ function replaceImages(body: string) {
   return body.replaceAll('../../../public', 'https://ihh.dev')
 }
 
+function processBody(entry: CollectionEntry<'posts'>) {
+  let body = entry.body
+  body = `![](https://ihh.dev${entry.data.image.src})\n${body}`
+  return replaceImages(body)
+}
+
 export async function uploadToPolar(entries: CollectionEntry<'posts'>[]) {
   const entriesToUpload = entries.filter((entry) => !!entry.data.polar_sync)
   if (entriesToUpload.length === 0) {
@@ -43,7 +49,7 @@ export async function uploadToPolar(entries: CollectionEntry<'posts'>[]) {
         id: article.id,
         articleUpdate: {
           title: entry.data.title,
-          body: replaceImages(entry.body),
+          body: processBody(entry),
         },
       })
     }),
@@ -55,7 +61,7 @@ export async function uploadToPolar(entries: CollectionEntry<'posts'>[]) {
       const createResponse = await client.articles.create({
         articleCreate: {
           title: entry.data.title,
-          body: replaceImages(entry.body),
+          body: processBody(entry),
           published_at: entry.data.date.toISOString(),
           organization_id: import.meta.env.POLAR_SH_ORG_ID,
         },
