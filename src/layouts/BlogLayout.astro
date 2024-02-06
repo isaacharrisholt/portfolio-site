@@ -102,4 +102,13 @@ const {
   ;[...images].forEach((image) => {
     image.classList.add('!mx-auto')
   })
+
+  const links = document.querySelectorAll('a')
+  // Make sure that external links open in a new tab
+  ;[...links].forEach((link) => {
+    if (link.href.replaceAll(window.location.origin, '').startsWith('http')) {
+      link.target = '_blank'
+      link.rel = 'noopener noreferrer'
+    }
+  })
 </script>

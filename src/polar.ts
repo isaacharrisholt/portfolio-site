@@ -41,7 +41,7 @@ function replaceImages(body: string) {
 
 function processBody(entry: CollectionEntry<'posts'>) {
   let body = entry.body
-  body = `![](https://ihh.dev${entry.data.image.src})\n${body}`
+  body = `## ${entry.data.subtitle}\n\n![](https://ihh.dev${entry.data.image.src})\n${body}`
   return replaceImages(body)
 }
 
