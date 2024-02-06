@@ -73,6 +73,8 @@ export async function uploadToPolar(entries: CollectionEntry<'posts'>[]) {
         articleUpdate: {
           title: entry.data.title,
           body: processBody(entry),
+          published_at: entry.data.date.toISOString(),
+          set_published_at: true,
         },
       })
     }),
