@@ -6,7 +6,6 @@ const { entry } = Astro.props
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('tags')
-  console.log(blogEntries)
   return blogEntries.map((entry) => ({
     params: { tag: entry.id },
     props: { entry },
