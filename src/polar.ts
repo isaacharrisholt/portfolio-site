@@ -75,6 +75,7 @@ export async function uploadToPolar(entries: CollectionEntry<'posts'>[]) {
           body: processBody(entry),
           published_at: entry.data.date.toISOString(),
           set_published_at: true,
+          visibility: 'public',
         },
       })
     }),
@@ -97,6 +98,7 @@ export async function uploadToPolar(entries: CollectionEntry<'posts'>[]) {
         id: createResponse.id,
         articleUpdate: {
           slug: entry.slug,
+          visibility: 'public',
         },
       })
     }),
