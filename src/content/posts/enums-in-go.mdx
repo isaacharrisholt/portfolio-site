@@ -1,0 +1,373 @@
+---
+title: '4 ways to create enums in Go'
+subtitle: 'And when to use which'
+date: 2024-02-08
+image: '../../../public/images/enums-in-go/record-shop.jpg'
+tags:
+  - go
+polar_sync: true
+---
+
+I love Go. I think it's a fantastic language, and it's one of my favourite backend languages to write. We make extensive use of it at [Pluto](https://github.com/withpluto) for serverless functions, and it's always really easy to onboard new people into that part of the codebase.
+
+However, I'm also a really big fan of representing all possible states using types. I do this extensively with TypeScript - I'm a big string enum person - and I find it makes the code much easier to work with.
+
+Of course, it can make it harder to maintain as well, but that's why I hide most of my complex type systems in library code. 
+
+So I don't have to look at it.
+
+Anyway, back on topic. Go's type system, while really flexible, can be a little lacking when it comes to having really strong types. One of the obviously absent features is enums. There's no `enum` keyword in Go, and they're not natively supported by the language.
+
+However, there are a couple of ways we can create "fake" enums using Go, and I'd like to dive into four of those in this article.
+
+## `const` declarations
+
+You can create a set of constant values in Go using the `const` keyword in the global scope of a package. For example:
+
+```go
+package days
+
+const (
+    SUNDAY = "Sunday"
+    MONDAY = "Monday"
+    // etc.
+)
+```
+
+Then, to use your enum, you would use:
+
+```go
+import "my_project/days"
+
+days.SUNDAY // "Sunday"
+```
+
+However, this is currently just a `string`, so there's no way of restricting a function to just accepting a weekday. We can get around that by defining a custom `string` type:
+
+```go
+package days
+
+type Weekday string
+
+const (
+    SUNDAY Weekday = "Sunday"
+    MONDAY Weekday = "Monday"
+    // etc.
+)
+```
+
+Then we can create a function that accepts only `Weekday`s:
+
+```go
+import "my_project/days"
+
+func showWeekday(day days.Weekday) {
+    // ...
+}
+
+func main() {
+    showWeekday(days.SUNDAY) // Okay!
+    showWeekday("day off")   // Error!
+}
+```
+
+Looks good!
+
+Buuuuuuut there's still a problem. Since `Weekday` is just a wrapper around the `string` type, we can technically create a `Weekday` from any string 😬
+
+```go
+import "my_project/days"
+
+func showWeekday(day days.Weekday) {
+    // ...
+}
+
+func main() {
+    showWeekday(days.Weekday("day off"))  // Okay!
+}
+```
+
+Not ideal.
+
+Also, since `const` values are scoped to the package, you'd probably need to have a new package for every enum you want to define, which isn't ideal.
+
+### `const` enum summary
+
+Pros:
+
+1. Easy to set up
+2. Flexible - can be any constant type
+
+Cons:
+
+1. Not type safe
+2. Package sprawl
+
+
+## `iota`
+
+You can improve on using `const` declarations as enums with Go's built-in `iota` keyword. Create an enum with `iota` by assigning to a constant value:
+
+```go
+const (
+    EnumZero = iota
+    EnumOne  = iota
+)
+```
+
+By default, this will create two constants with untyped integer values. `EnumZero` will have the value `0` and `EnumOne` will be `1`.
+
+`iota` has a couple of nice features. Firstly, you only actually need to define an `iota` once - any other `const` values in the same block will automatically use `iota` unless otherwise specified:
+
+```go
+const (
+    EnumZero = iota // 0
+    EnumOne         // 1
+)
+```
+
+However, the really powerful thing about `iota` is that you don't have to just use incremental integers. You can assign a constant value to an expression using `iota` and it will be calculated with increasing values of `iota` for each constant member. You can also ignore values using a blank identifier (`_`):
+
+```go
+const (
+      _          = iota // ignore first value
+      KB float64 = 1 << (10 * iota)  // 1024
+      MB                             // 1048576
+      GB                             // etc.
+      TB
+      PB
+      EB
+      ZB
+      YB
+)
+```
+
+This makes `iota` excellent for bitwise flags:
+
+```go
+const (
+    Flag1 = 1 << iota // 0b00000001
+    Flag2             // 0b00000010
+    Flag3             // 0b00000100
+)
+```
+
+If you create a type, you can even use that and then assign custom methods:
+
+```go
+type Flag int
+
+const (
+    Flag1 Flag = 1 << iota
+    Flag2
+    Flag3
+)
+
+func (f Flag) Check(check int) bool {
+    return int(f)&check > 0
+}
+
+func main() {
+    Flag2.Check(0b00000110) // true
+}
+```
+
+That looks great! So what are the downsides?
+
+Well, for starters, since `iota` takes untyped integer values, your enums will only ever be numeric values. This is usually fine, but be sure to create a new type to make it harder for people to accidentally pass in random values, like with 'normal' `const` enums.
+
+Otherwise, `iota` has the same pitfalls as before: it's not type safe and it's still package scoped.
+
+### `iota` summary
+
+Pros:
+
+1. Easy to set up
+2. Very powerful automatic values
+
+Cons:
+
+1. Not type safe
+2. Package sprawl
+3. Can only take numeric values
+
+## Global structs
+
+If you fancy something a little less... constrained, there's always the option of using a struct as a namespace. Really all I mean by this is having a struct defined in the package scope, rather than in the scope of a function, and then using its members as a pseudo-enum.
+
+Here's a quick example:
+
+```go
+type Pokemon string
+
+var Pokedex = struct{
+    Bulbasaur  Pokemon
+    Charmander Pokemon
+    Squirtle   Pokemon
+}{
+    Bulbasaur:  "Bulbasaur",
+    Charmander: "Charmander",
+    Squirtle:   "Squirtle",
+}
+```
+
+This overcomes the 'one-enum-per-package' restriction I mentioned earlier, but at the cost of having to define each enum member twice. This method also falls foul of the same big issue that has plagued us on our whole journey so far: it's not totally type safe.
+
+```go
+func Catch(p Pokemon) {}
+
+Catch(Pokedex.Bulbasaur) // Ok!
+Catch(Pokemon("Frodo"))  // Wait, what?
+```
+
+Sadly this isn't an issue we can really avoid without a proper [tagged union](https://en.wikipedia.org/wiki/Tagged_union)-style enum, and none of the methods mentioned here today will really solve that.
+
+Another massive downside is that structs can't be declared `const` in Go, so I could _technically_ do this:
+
+```go
+Pokedex.Bulbasaur = "Zorua"
+```
+
+Still, this is probably my favourite method though (with the exception of `iota` when I need some sort of numeric series). I like the nice autocomplete, and the namespacing provided by wrapping the values in a struct - I can have multiple of these in one file and not get confused:
+
+```go
+var Gen1Starters = struct{
+    Bulbasaur  Pokemon
+    Charmander Pokemon
+    Squirtle   Pokemon
+}{
+  // ...
+}
+
+var Gen2Starters = struct{
+    Chikorita Pokemon
+    Cyndaquil Pokemon
+    Totodile  Pokemon
+}{
+  // ...
+}
+```
+
+Also, if you really want to, you can assign different types to your struct properties, and then use a generic function that accepts any of them:
+
+```go
+var NumNums = struct{
+    IntNum   int64
+    FloatNum float64
+}{
+    IntNum:   1,
+    FloatNum: 1.2,
+}
+
+func NomANumNum[T int64 | float64](numNum T) {
+    // ...
+}
+```
+
+Though that's probably not recommended.
+
+### Global struct summary
+
+Pros:
+
+1. More than one per file
+2. Nice autocomplete and easy to read
+
+Cons:
+
+1. Not `const`, so can be changed at runtime
+2. Still not type safe
+
+## Nested structs
+
+And now that we've seen my favourite, let's see my least favourite enum method in Go. It's my least favourite because it brings all of the worst problems of the above methods without actually solving any of the problems.
+
+Still, you might see this out in the wild, so I thought it would probably be worth bringing attention to it. It also has one benefit, so I would still use it in very specific situations.
+
+This method is what I call "nested structs", but only for lack of a better term. Essentially, instead of using a scalar value as our enum member, we use a struct. Let me show you what I mean:
+
+```go
+type Role struct {
+	slug            string
+    permissionLevel int
+}
+
+var (
+	Unknown   = Role{"", 0}
+	Guest     = Role{"guest", 1}
+	Member    = Role{"member", 2}
+	Moderator = Role{"moderator", 3}
+	Admin     = Role{"admin", 4}
+)
+```
+
+The main benefit here is being able to store multiple values per member. This comes in handy if you want to add methods to the `Role` type, or if you need to be able to have a couple of values passed around and don't want to have to check through all the enum members in a big `switch` statement.
+
+However, it still falls prey to just about every issue we've mentioned so far: it's not type safe, the values are variable, and it uses the package scope.
+
+The other thing to be careful with is the fact that, if someone did want to create their own, it's now even easier to create an invalid configuration. All I have to do is pass `Role{"guest", 4}` into a function and it's probably game over.
+
+### Nested struct summary
+
+Pros:
+
+- Multiple values per enum member
+
+Cons:
+
+- All of them
+
+## Bonus: codegen
+
+Code generation is a divisive topic. Some people really love the flexibility and power it provides, whereas others thing it's the most horrible thing to ever exist.
+
+However, in this scenario, I think it's actually pretty helpful. There's a useful package called [`go-enum`](https://github.com/abice/go-enum) that can create safer enums without having to write a whole load of code.
+
+They're not as user-friendly as the enums above, but they come with a host of extra functionality built-in that you're not then having to write yourself.
+
+The README explains it much better than I can, so I'd recommend taking a look [here](https://github.com/abice/go-enum).
+
+## What are the alternatives?
+
+I mentioned [tagged unions](https://en.wikipedia.org/wiki/Tagged_union) as the better method of creating enums earlier. This isn't something Go supports, but it's how both [Rust](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html) and [Zig](https://ziglang.org/documentation/master/#toc-Tagged-union) do their enums. I _really_ like Rust's enums. For those who don't know, tagged unions can hold arbitrary values, like this:
+
+```rust
+enum Command {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColour(i32, i32, i32),
+}
+```
+
+What's really special is that, if you want to determine which enum type your value is, Rust's `match` statement won't compile unless you handle _every_ case, meaning you won't add a new enum member and accidentally forget to handle it somewhere.
+
+The compiler will tell you off in a big way. For example, the following code wouldn't compile:
+
+```rust
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+    }
+}
+```
+
+Fun, right?
+
+---
+
+Well, that about wraps up this lil' adventure into Go enums. Which is your favourite? I'd be interested in finding out, so why not tweet it at me? I'm [@IsaacHarrisHolt](httpes://twitter.com/IsaacHarrisHolt) on TwitX.
+
+And why not subscribe on [Polar](https://polar.sh/isaacharrisholt) to get notified of future articles?
+
+Lovely to speak to y'all,
+
+Isaac
