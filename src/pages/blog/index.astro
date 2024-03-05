@@ -1,13 +1,49 @@
 ---
 import { getCollection } from 'astro:content'
 import PostList from '../../components/PostList.astro'
-import { uploadToPolar } from '../../polar'
+import { Polar } from '@polar-sh/astro'
 
 const blogEntries = await getCollection('posts')
-try {
-  import.meta.env.MODE === 'production' && (await uploadToPolar(blogEntries))
-} catch (e: any) {
-  console.error(await e.response.text())
+
+// Upload to Polar
+if (import.meta.env.MODE === 'production') {
+  console.log('uploading to Polar')
+  const polar = new Polar({ accessToken: import.meta.env.POLAR_SH_KEY })
+  const { data: uploaded, error: polarUploadError } = await polar
+    .upload(blogEntries, {
+      organizationName: 'isaacharrisholt',
+    })
+    .filter(({ entry }) => !!entry.data.polar_sync)
+    // Process images
+    .transform(({ article, entry }) => {
+      // Add featured image and subtitle
+      article.body =
+        `## ${entry.data.subtitle}\n\n![](https://ihh.dev${entry.data.image.src})` +
+        `\n${article.body}`
+
+      // Replace local images with prod URLs
+      article.body = article.body.replaceAll('../../../public', 'https://ihh.dev')
+      return article
+    })
+    // Process remaining metadata
+    .transform(({ article, entry, existing }) => {
+      return {
+        ...article,
+        title: entry.data.title,
+        published_at: entry.data.date.toISOString(),
+        set_published_at: entry.data.date.toISOString() !== existing?.published_at,
+        visibility: 'public',
+        slug: entry.slug,
+      }
+    })
+
+  if (polarUploadError) {
+    console.error('failed to upload to polar', polarUploadError)
+    throw polarUploadError
+  }
+
+  const totalArticles = uploaded.created.length + uploaded.updated.length
+  console.log(`uploaded ${totalArticles} articles to Polar`)
 }
 
 const allPosts = blogEntries.sort((a, b) => {
