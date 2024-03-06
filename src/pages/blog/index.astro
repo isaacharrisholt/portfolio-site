@@ -13,13 +13,16 @@ if (import.meta.env.MODE === 'production') {
     .upload(blogEntries, {
       organizationName: 'isaacharrisholt',
     })
-    .filter(({ entry }) => !!entry.data.polar_sync)
+    .filter(({ entry }) => !!entry.data.polar)
     // Process images
     .transform(({ article, entry }) => {
       // Add featured image and subtitle
-      article.body =
-        `## ${entry.data.subtitle}\n\n![](https://ihh.dev${entry.data.image.src})` +
-        `\n${article.body}`
+      if (entry.data.polar?.include_image) {
+        article.body = `![](https://ihh.dev${entry.data.image.src})\n${article.body}`
+      }
+      if (entry.data.subtitle && entry.data.polar?.include_subtitle) {
+        article.body = `## ${entry.data.subtitle}\n\n${article.body}`
+      }
 
       // Replace local images with prod URLs
       article.body = article.body.replaceAll('../../../public', 'https://ihh.dev')
@@ -27,12 +30,16 @@ if (import.meta.env.MODE === 'production') {
     })
     // Process remaining metadata
     .transform(({ article, entry, existing }) => {
+      const polar_data = entry.data.polar
       return {
         ...article,
         title: entry.data.title,
         published_at: entry.data.date.toISOString(),
         set_published_at: entry.data.date.toISOString() !== existing?.published_at,
-        visibility: 'public',
+        visibility: polar_data?.visibility || 'public',
+        notify_subscribers: polar_data?.notify_subscribers || false,
+        paid_subscribers_only: polar_data?.paid_subscribers_only || false,
+        is_pinned: polar_data?.is_pinned || false,
         slug: entry.slug,
       }
     })
