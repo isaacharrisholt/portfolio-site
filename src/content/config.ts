@@ -18,10 +18,15 @@ const posts = defineCollection({
       date: z.date(),
       description: z.string().optional(),
       tags: z.array(reference('tags')),
-      polar: z.intersection(polarArticleSchema, z.object({
-        include_subtitle: z.boolean().optional(),
-        include_image: z.boolean().optional(),
-      })).optional(),
+      polar: z
+        .intersection(
+          polarArticleSchema,
+          z.object({
+            include_subtitle: z.boolean().optional(),
+            include_image: z.boolean().optional(),
+          }),
+        )
+        .optional(),
     }),
 })
 

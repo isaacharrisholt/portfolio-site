@@ -59,7 +59,7 @@ That being said, initiatives such as [MicroPython](https://micropython.org/) hav
 
 ### Mobile apps
 
-Python has been a server-side language for a long time. You can't go a week without seeing an open source project whose REST API is Flask or FastAPI, and Instagram is built on Django. But Python on the client? That's a relatively new invention. Still, we're starting to see the rise of Python not only for creating user interfaces on the desktop, but also in our app stores. 
+Python has been a server-side language for a long time. You can't go a week without seeing an open source project whose REST API is Flask or FastAPI, and Instagram is built on Django. But Python on the client? That's a relatively new invention. Still, we're starting to see the rise of Python not only for creating user interfaces on the desktop, but also in our app stores.
 
 Cross-platform Python GUI libraries like [BeeWare](https://beeware.org) and [Kivy](kivy.org) are under rapid development, and adoption is growing daily. Can they compete with native apps? No, not really. The feature set is limited and it's often difficult to achieve exactly the result you want, but it's not impossible to get something working and on the app store.
 
