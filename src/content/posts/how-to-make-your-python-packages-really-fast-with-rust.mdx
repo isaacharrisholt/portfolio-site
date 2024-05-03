@@ -8,17 +8,6 @@ tags:
   - rust
 ---
 
-import { Image } from 'astro:assets'
-import maturinInit from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-1.png'
-import maturinDevelop from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-2.png'
-import tenthFib from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-3.png'
-import twentiethFib from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-4.png'
-import thirtiethFib from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-5.png'
-import maturinDevelopRelease from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-6.png'
-import thirtiethFibRelease from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-7.png'
-import fiftiethFib from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-8.png'
-import firstFib from '../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-9.png'
-
 Photo by
 [Chris Liverani](https://unsplash.com/@chrisliverani?utm_source=medium&utm_medium=referral)
 on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral)
@@ -92,10 +81,7 @@ Next, create a directory for your package. I’ve called mine `fibbers`. The fin
 step is to run `maturin init` from your new directory. At this point, you’ll be prompted
 to select which Rust bindings to use. Select `pyo3`.
 
-<Image
-  src={maturinInit}
-  alt="A screenshot of a terminal showing the maturin init command."
-/>
+![A screenshot of a terminal showing the maturin init command.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-1.png)
 
 Image by author.
 
@@ -189,10 +175,7 @@ To install our `fibbers` package, all we have to do is run `maturin develop`in o
 terminal. This will download and compile our Rust package and install it into our
 virtual environment.
 
-<Image
-  src={maturinDevelop}
-  alt="A screenshot of a terminal showing the maturin develop command."
-/>
+![A screenshot of a terminal showing the maturin develop command.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-2.png)
 
 Image by author.
 
@@ -235,18 +218,18 @@ If we run this now for the 10th Fibonacci number, you can see that our Rust func
 about 5 times faster than Python, despite the fact we’re using an identical
 implementation!
 
-<Image src={tenthFib} alt="Results for the 10th Fibonacci number." />
+![Results for the 10th Fibonacci number.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-3.png)
 
 Image by author.
 
 If we run for the 20th and 30th fib numbers, we can see that Rust gets up to being about
 15 times faster than Python.
 
-<Image src={twentiethFib} alt="Results for the 20th Fibonacci number." />
+![Results for the 20th Fibonacci number.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-4.png)
 
 20th fib number results. Image by author.
 
-<Image src={thirtiethFib} alt="Results for the 30th Fibonacci number." />
+![Results for the 30th Fibonacci number.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-5.png)
 
 30th fib number results. Image by author.
 
@@ -258,18 +241,12 @@ running as fast as it could. If we head back into our `fibbers` directory and ru
 `maturin develop` again, but this time with the `--release` flag, we’ll get the optimised
 production-ready version of our binary.
 
-<Image
-  src={maturinDevelopRelease}
-  alt="A screenshot of a terminal showing the maturin develop --release command."
-/>
+![A screenshot of a terminal showing the maturin develop --release command.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-6.png)
 
 If we now benchmark our 30th fib number, we see that Rust now gives us a whopping _40
 times_ speed improvement over Python!
 
-<Image
-  src={thirtiethFibRelease}
-  alt="Results for the 30th Fibonacci number, optimised."
-/>
+![Results for the 30th Fibonacci number, optimised.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-7.png)
 
 30th fib number, optimised. Image by author.
 
@@ -279,10 +256,7 @@ However, we do have a problem with our Rust implementation. If we try to get the
 Fibonacci number using `fibbers.fib()`, you’ll see that we actually hit an overflow
 error and get a different answer to Python.
 
-<Image
-  src={fiftiethFib}
-  alt="Rust experiencing integer overflow on the 50th fib number."
-/>
+![Rust experiencing integer overflow on the 50th fib number.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-8.png)
 
 Rust experiences integer overflow. Image by author.
 
@@ -299,7 +273,7 @@ Another small limitation is that there’s some overhead to using the PyO3 bindi
 can see that here where I’m just getting the 1st Fibonacci number, and Python is
 actually faster than Rust thanks to this overhead.
 
-<Image src={firstFib} alt="Results for the 1st Fibonacci number." />
+![Results for the 1st Fibonacci number.](../../../public/images/how-to-make-your-python-packages-really-fast-with-rust/image-9.png)
 
 Python is faster for n=1. Image by author.
 
