@@ -6,7 +6,8 @@ import { Polar } from '@polar-sh/astro'
 const blogEntries = await getCollection('posts')
 
 // Upload to Polar
-if (import.meta.env.MODE === 'production') {
+if (import.meta.env.MODE === 'production' && false) {
+  // TODO: Enable once SDK is updated
   console.log('uploading to Polar')
   const polar = new Polar({ accessToken: import.meta.env.POLAR_SH_KEY })
   const { data: uploaded, error: polarUploadError } = await polar
