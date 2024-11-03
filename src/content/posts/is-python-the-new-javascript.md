@@ -5,9 +5,6 @@ date: 2024-02-12
 image: '../../../public/images/is-python-the-new-javascript/snake-with-laptop.webp'
 tags:
   - sidetracks
-polar:
-  include_subtitle: true
-  include_image: true
 ---
 
 > Anything that can be written in JavaScript, will eventually be written in JavaScript.

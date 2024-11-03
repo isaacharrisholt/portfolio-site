@@ -5,10 +5,9 @@ date: 2024-03-06
 image: '../../../public/images/astro-polar/astronaut-toys.jpg'
 tags:
   - web
-polar:
-  include_subtitle: true
-  include_image: true
 ---
+
+> Note: Polar is removing articles from their platform, so much of this post is no longer relevant.
 
 Polar is on a mission to fix open source funding. Their platform and tools empower software engineers to more easily generate a meaningful income from the work that they do. It's a great project that I've started supporting with content and contributions in my free time! It's a content platform aimed at devs. What more could I want?
 

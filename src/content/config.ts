@@ -1,5 +1,4 @@
 import { z, defineCollection, reference } from 'astro:content'
-import { polarArticleSchema } from '@polar-sh/astro'
 
 const tags = defineCollection({
   type: 'data',
@@ -18,15 +17,6 @@ const posts = defineCollection({
       date: z.date(),
       description: z.string().optional(),
       tags: z.array(reference('tags')),
-      polar: z
-        .intersection(
-          polarArticleSchema,
-          z.object({
-            include_subtitle: z.boolean().optional(),
-            include_image: z.boolean().optional(),
-          }),
-        )
-        .optional(),
     }),
 })
 
