@@ -8,7 +8,7 @@ interface Props {
 
 const {
   post: {
-    slug,
+    id,
     data: { title, subtitle, image, date, description },
   },
 } = Astro.props
@@ -16,30 +16,30 @@ const {
 
 <div
   class="flex w-full flex-col-reverse items-start justify-between gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white sm:flex-row"
-  transition:name={`post-${slug}`}
+  transition:name={`post-${id}`}
 >
   <div class="flex flex-col gap-4">
     <div class="flex flex-col">
       <h2 class="hover:underline">
-        <a href={`/${slug}`} class="not-prose" transition:name={`post-title-${slug}`}
+        <a href={`/${id}`} class="not-prose" transition:name={`post-title-${id}`}
           >{title}</a
         >
       </h2>
-      {!!subtitle && <h3 transition:name={`post-subtitle-${slug}`}>{subtitle}</h3>}
+      {!!subtitle && <h3 transition:name={`post-subtitle-${id}`}>{subtitle}</h3>}
       <time
         datetime={date.toISOString()}
         class="text-surface-200"
-        transition:name={`post-time-${slug}`}>{date.toISOString().slice(0, 10)}</time
+        transition:name={`post-time-${id}`}>{date.toISOString().slice(0, 10)}</time
       >
     </div>
     {!!description && <p>{description}</p>}
-    <a href={`/${slug}`}>Read more...</a>
+    <a href={`/${id}`}>Read more...</a>
   </div>
   <Image
     src={image}
     alt=""
     width={200}
     class="!m-0 rounded-lg max-sm:self-center"
-    transition:name={`post-image-${slug}`}
+    transition:name={`post-image-${id}`}
   />
 </div>

@@ -1,7 +1,7 @@
 ---
+import { Image } from 'astro:assets'
 import type { CollectionEntry } from 'astro:content'
 import Layout from './Layout.astro'
-import { Image } from 'astro:assets'
 
 interface Props {
   post: CollectionEntry<'posts'>
@@ -9,7 +9,7 @@ interface Props {
 const {
   post: {
     data: { title, subtitle, image, date, description },
-    slug,
+    id,
   },
 } = Astro.props
 ---
@@ -29,11 +29,7 @@ const {
     class="col-span-full col-start-full-start col-end-full-end hover:prose-headings:underline hover:prose-h1:no-underline hover:prose-th:no-underline md:col-start-content-start md:col-end-content-end"
   >
     <header>
-      <h1
-        class="!m-0 text-accent-blue"
-        id="title"
-        transition:name={`post-title-${slug}`}
-      >
+      <h1 class="!m-0 text-accent-blue" id="title" transition:name={`post-title-${id}`}>
         {title}
       </h1>
       {
@@ -41,18 +37,18 @@ const {
           <h2
             class="!m-0 hover:!no-underline"
             id="subtitle"
-            transition:name={`post-subtitle-${slug}`}
+            transition:name={`post-subtitle-${id}`}
           >
             {subtitle}
           </h2>
         )
       }
-      <p class="!mt-0" transition:name={`post-time-${slug}`}>
+      <p class="!mt-0" transition:name={`post-time-${id}`}>
         <time datetime={date.toISOString()}>{date.toISOString().split('T')[0]}</time>
       </p>
     </header>
 
-    <Image src={image} alt="" transition:name={`post-image-${slug}`} />
+    <Image src={image} alt="" transition:name={`post-image-${id}`} loading="eager" />
 
     <slot />
   </article>

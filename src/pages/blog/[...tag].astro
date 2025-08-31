@@ -1,8 +1,8 @@
 ---
-import { getCollection } from 'astro:content'
+import { getCollection, getEntry } from 'astro:content'
 import PostList from '../../components/PostList.astro'
 
-const { entry } = Astro.props
+export const prerender = true
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('tags')
@@ -10,6 +10,12 @@ export async function getStaticPaths() {
     params: { tag: entry.id },
     props: { entry },
   }))
+}
+
+const entry = await getEntry('tags', Astro.params.tag)
+
+if (!entry) {
+  return Astro.redirect('/blog')
 }
 
 const allPosts = (
