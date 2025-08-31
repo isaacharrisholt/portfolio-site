@@ -1,6 +1,5 @@
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
-import svelte from '@astrojs/svelte'
 import tailwind from '@astrojs/tailwind'
 import vercel from '@astrojs/vercel'
 import { defineConfig } from 'astro/config'
@@ -21,7 +20,7 @@ export default defineConfig({
     },
     imageService: true,
   }),
-  integrations: [tailwind(), mdx(), sitemap(), svelte()],
+  integrations: [tailwind(), mdx(), sitemap()],
   site: 'https://www.ihh.dev',
   redirects: {
     '/cv': '/resume.pdf',
