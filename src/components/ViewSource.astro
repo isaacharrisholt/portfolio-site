@@ -33,12 +33,12 @@ const githubUrl = `${baseGithubUrl}${resourceUrl}`
 <a
   href={githubUrl}
   class:list={[
-    'flex w-fit flex-row items-center gap-2 hover:underline',
+    'flex w-fit flex-row items-center gap-2 whitespace-nowrap hover:underline',
     Astro.props.class,
   ]}
   target="_blank"
   rel="noopener noreferrer"
 >
-  <Github size={20} />
+  <Github class="size-5 min-h-5 min-w-5" />
   <span>View source</span>
 </a>

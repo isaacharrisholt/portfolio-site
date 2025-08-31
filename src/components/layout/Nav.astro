@@ -19,21 +19,21 @@ const navLinks: Array<{
     url: '/cv',
     target: '_blank',
   },
-  {
-    name: 'Newsletter',
-    url: 'https://polar.sh/isaacharrisholt/subscriptions',
-    target: '_blank',
-  },
+  // {
+  //   name: 'Newsletter',
+  //   url: 'https://polar.sh/isaacharrisholt/subscriptions',
+  //   target: '_blank',
+  // },
 ]
 const path = new URL(Astro.request.url).pathname
 ---
 
-<nav class="col-span-full grid w-full grid-cols-subgrid max-md:place-items-center">
+<nav class="col-span-full grid w-full grid-cols-2 gap-2 lg:grid-cols-subgrid">
   <a href="/" class="w-fit text-2xl font-bold" transition:name="nav-logo">
     Isaac <span class="whitespace-nowrap">Harris-Holt</span>
   </a>
   <ul
-    class="flex flex-row items-center justify-center gap-4 font-semibold md:gap-8 lg:gap-16"
+    class="flex flex-row items-center justify-start gap-4 font-semibold max-lg:row-start-2 md:gap-8 lg:justify-center lg:gap-16"
     transition:name="nav-links"
   >
     {
