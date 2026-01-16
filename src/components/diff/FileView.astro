@@ -1,0 +1,48 @@
+---
+import type { FileViewSection } from '../../lib/diff'
+
+interface Props {
+  sections: FileViewSection[]
+}
+
+const { sections } = Astro.props
+---
+
+<div class="space-y-6">
+  {
+    sections.map((section) => {
+      let lineNum = 1
+      return (
+        <div>
+          <div class="mb-2 text-sm text-accent-blue">{section.filename}</div>
+          <div class="border-l-2 border-surface-400 pl-4">
+            {section.lines.map((line) => {
+              const num = lineNum++
+              return (
+                <div class="flex text-sm leading-relaxed">
+                  <span class="mr-4 w-6 shrink-0 select-none text-right text-surface-300">
+                    {num}
+                  </span>
+                  {line.link ? (
+                    <a
+                      href={line.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-white hover:text-accent-blue"
+                    >
+                      {line.content}
+                    </a>
+                  ) : (
+                    <span class={line.content ? 'text-white' : 'text-surface-400'}>
+                      {line.content || '\u00A0'}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )
+    })
+  }
+</div>

@@ -1,0 +1,176 @@
+---
+import Layout from '../layouts/Layout.astro'
+import FileView from '../components/diff/FileView.astro'
+import DiffEntry from '../components/diff/DiffEntry.astro'
+import {
+  processChangelog,
+  toFileViewSections,
+  toDiffEntries,
+  type DiffPageData,
+} from '../lib/diff'
+
+// Initial state - the starting point before any changes
+const pageData: DiffPageData = {
+  initialCommit: {
+    hash: '0000000',
+    date: 'January 2024',
+    message: 'Initial commit',
+  },
+  initial: {
+    'work/current.md': [
+      { text: '# Work' },
+      { text: '' },
+      { text: 'Founding Full-Stack Engineer @ Pluto Labs' },
+      { text: '' },
+      { text: 'Building full-stack web apps for shared ownership residents' },
+    ],
+    'projects/side.md': [
+      { text: '# Side Projects' },
+      { text: '' },
+      { text: 'YouTube content', link: 'https://youtube.com/@IsaacHarrisHolt' },
+      { text: 'Writing on this blog' },
+      { text: 'Open source contributions' },
+    ],
+    'learning/current.md': [
+      { text: '# Learning' },
+      { text: '' },
+      { text: 'Distributed systems' },
+      { text: 'AI/ML tooling and applications' },
+    ],
+    'life/personal.md': [
+      { text: '# Personal' },
+      { text: '' },
+      { text: 'Based in London, UK' },
+      { text: '' },
+      { text: 'Reading: currently between books' },
+      { text: 'Playing: not much' },
+    ],
+  },
+  changelog: [
+    {
+      hash: '890abcd',
+      date: 'March 2024',
+      message: 'Started learning Gleam',
+      changes: {
+        'learning/current.md': [
+          {
+            add: [{ text: 'Gleam language', link: 'https://gleam.run' }],
+          },
+        ],
+        'projects/side.md': [
+          {
+            add: [
+              {
+                text: 'Pevensie (Gleam backend framework)',
+                link: 'https://github.com/pevensie/pevensie',
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      hash: '67890ab',
+      date: 'November 2024',
+      message: 'Joined Rover as CTO',
+      changes: {
+        'work/current.md': [
+          {
+            remove: [
+              { text: 'Founding Full-Stack Engineer @ Pluto Labs' },
+              { text: '' },
+              { text: 'Building full-stack web apps for shared ownership residents' },
+            ],
+            add: [
+              { text: 'CTO @ Rover', link: 'https://getrover.com' },
+              { text: '' },
+              { text: 'Building the reliability copilot for engineering teams' },
+              { text: 'Gleam, Go, Rust, TypeScript' },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      hash: 'bcdef12',
+      date: 'December 2025',
+      message: 'Joined Medfin as Head of Engineering',
+      changes: {
+        'work/current.md': [
+          {
+            remove: [
+              { text: 'CTO @ Rover', link: 'https://getrover.com' },
+              { text: '' },
+              { text: 'Building the reliability copilot for engineering teams' },
+              { text: 'Gleam, Go, Rust, TypeScript' },
+            ],
+            add: [
+              { text: 'Head of Engineering @ Medfin', link: 'https://medfin.ai' },
+              { text: '' },
+              { text: 'Building the financial OS for UK dentistry' },
+            ],
+          },
+        ],
+        'life/personal.md': [
+          {
+            remove: [{ text: 'Reading: currently between books' }],
+            add: [
+              {
+                text: 'Reading: Discworld (all of it)',
+                link: 'https://en.wikipedia.org/wiki/Discworld',
+              },
+            ],
+          },
+        ],
+        'learning/current.md': [
+          {
+            add: [{ text: 'Japanese (slowly)' }],
+          },
+        ],
+      },
+    },
+  ],
+}
+
+const { currentState, processedEntries } = processChangelog(pageData)
+const currentSetup = toFileViewSections(currentState)
+const changelog = toDiffEntries(processedEntries).reverse()
+
+// Get the most recent changelog date for the "Updated" field
+const lastUpdated =
+  pageData.changelog.length > 0
+    ? pageData.changelog[pageData.changelog.length - 1].date
+    : (pageData.initialCommit?.date ?? 'Unknown')
+---
+
+<Layout title="Now | Isaac Harris-Holt">
+  <div class="col-start-content col-end-content">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-accent-blue md:text-4xl">
+        <span class="text-surface-300">#</span> Now
+      </h1>
+      <p class="mt-2 text-surface-200">What I'm currently focused on.</p>
+      <p class="mt-1 text-sm text-surface-300">
+        Updated {lastUpdated} · <a
+          href="https://nownownow.com/about"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent-blue hover:underline">What is this?</a
+        >
+      </p>
+    </header>
+
+    <section class="mb-12">
+      <FileView sections={currentSetup} />
+    </section>
+
+    <section>
+      <h2 class="mb-6 text-xl font-bold text-white">
+        <span class="text-surface-300">##</span> Changelog
+      </h2>
+      <div class="space-y-6">
+        {changelog.map((entry) => <DiffEntry {...entry} />)}
+      </div>
+    </section>
+  </div>
+</Layout>
