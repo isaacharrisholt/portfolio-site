@@ -1,0 +1,190 @@
+---
+import Layout from '../layouts/Layout.astro'
+import FileView from '../components/diff/FileView.astro'
+import DiffEntry from '../components/diff/DiffEntry.astro'
+import {
+  processChangelog,
+  toFileViewSections,
+  toDiffEntries,
+  type DiffPageData,
+} from '../lib/diff'
+
+// Initial state - the starting point before any changes
+const pageData: DiffPageData = {
+  initialCommit: {
+    hash: '0000000',
+    date: 'January 2025',
+    message: 'Initial commit',
+  },
+  initial: {
+    'hardware/workstation.md': [
+      { text: '# Workstation' },
+      { text: '' },
+      { text: 'MacBook Pro 14" M4 Pro (2024)' },
+      { text: '24GB RAM' },
+      { text: '' },
+      { text: '# Desk' },
+      { text: '' },
+      {
+        text: 'Corsair Platform:6 Creator Edition',
+        link: 'https://www.corsair.com/uk/en/p/creator-furniture/cs-9200001-uk/platform-6-creator-edition-desk-cs-9200001-uk',
+      },
+    ],
+    'hardware/peripherals.md': [
+      { text: '# Input' },
+      { text: '' },
+      {
+        text: 'ZSA Moonlander (MX Browns, Colemak-DH)',
+        link: 'https://www.zsa.io/moonlander',
+      },
+      { text: 'Logitech MX Master 3S' },
+      { text: 'Elgato Stream Deck MK.2' },
+    ],
+    'hardware/audio.md': [
+      { text: '# Audio' },
+      { text: '' },
+      { text: 'BEACN Mic', link: 'https://beacn.com/products/beacn-mic' },
+      { text: 'Sony WF-1000XM5' },
+      { text: 'Grado SR60x' },
+    ],
+    'hardware/video.md': [
+      { text: '# Video' },
+      { text: '' },
+      { text: 'Panasonic Lumix S5IIX' },
+      { text: 'Elgato Prompter' },
+      { text: 'Elgato Key Lights' },
+    ],
+    'hardware/personal.md': [
+      { text: '# Personal' },
+      { text: '' },
+      { text: 'Google Pixel 9 Pro XL' },
+      { text: 'Pixel Watch 3' },
+      { text: 'iPad' },
+      { text: 'Amazon Kindle Paperwhite' },
+      { text: '' },
+      { text: '# Gaming' },
+      { text: '' },
+      { text: 'Custom PC (RTX 3080, Ryzen 9 3900X, 32GB)' },
+      { text: 'Nintendo Switch' },
+      { text: '' },
+      { text: '# Sleep' },
+      { text: '' },
+      {
+        text: 'Eight Sleep Pod 5 Core',
+        link: 'https://www.eightsleep.com/uk/pod-cover/',
+      },
+    ],
+    'software/editor.md': [
+      { text: '# Editor' },
+      { text: '' },
+      { text: 'Zed (JetBrains Mono, Ayu Dark)', link: 'https://zed.dev' },
+      { text: 'Neovim (LazyVim)', link: 'https://www.lazyvim.org/' },
+    ],
+    'software/terminal.md': [
+      { text: '# Terminal' },
+      { text: '' },
+      { text: 'Ghostty', link: 'https://ghostty.org' },
+      { text: 'Fish shell', link: 'https://fishshell.com' },
+      { text: 'Starship prompt', link: 'https://starship.rs' },
+    ],
+    'software/cli.md': [
+      { text: '# CLI' },
+      { text: '' },
+      { text: 'mise (runtime manager)', link: 'https://mise.jdx.dev/' },
+      { text: 'Graphite (stacked PRs)', link: 'https://graphite.dev' },
+      { text: 'ripgrep, bat, fzf, zoxide' },
+      { text: 'lazydocker, pgcli, difftastic, tokei' },
+    ],
+    'software/apps.md': [
+      { text: '# Applications' },
+      { text: '' },
+      { text: 'Arc Browser', link: 'https://arc.net' },
+      { text: 'Raycast', link: 'https://raycast.com' },
+      { text: '1Password' },
+      { text: 'Linear', link: 'https://linear.app' },
+      { text: 'Obsidian', link: 'https://obsidian.md' },
+      { text: 'OrbStack', link: 'https://orbstack.dev' },
+      { text: '' },
+      { text: '# AI' },
+      { text: '' },
+      { text: 'Claude Code + Conductor', link: 'https://conductor.build' },
+      { text: 'OpenCode', link: 'https://opencode.ai' },
+      { text: 'T3 Chat', link: 'https://t3.chat' },
+      { text: '' },
+      { text: '# Video Production' },
+      { text: '' },
+      { text: 'OBS Studio' },
+      { text: 'DaVinci Resolve' },
+    ],
+  },
+  changelog: [
+    {
+      hash: 'a1b2c3d',
+      date: 'January 10, 2026',
+      message: 'New work laptop, added Wispr Flow',
+      changes: {
+        'hardware/workstation.md': [
+          {
+            add: [
+              { text: '' },
+              { text: '# Work Laptop' },
+              { text: '' },
+              { text: 'MacBook Pro 14" M4 Pro (2024)' },
+              { text: '48GB RAM' },
+            ],
+          },
+        ],
+        'software/apps.md': [
+          {
+            add: [{ text: 'Wispr Flow', link: 'https://wisprflow.com' }],
+            insertAfter: 'T3 Chat',
+          },
+        ],
+      },
+    },
+    {
+      hash: 'b2c3d4e',
+      date: 'January 16, 2026',
+      message: 'Added eza and fd',
+      changes: {
+        'software/cli.md': [
+          {
+            remove: [{ text: 'ripgrep, bat, fzf, zoxide' }],
+            add: [{ text: 'ripgrep, bat, fzf, zoxide, eza, fd' }],
+          },
+        ],
+      },
+    },
+  ],
+}
+
+const { currentState, processedEntries } = processChangelog(pageData)
+const currentSetup = toFileViewSections(currentState)
+const changelog = toDiffEntries(processedEntries).reverse()
+---
+
+<Layout title="Uses | Isaac Harris-Holt">
+  <div class="col-start-content col-end-content">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-accent-blue md:text-4xl">
+        <span class="text-surface-300">#</span> Uses
+      </h1>
+      <p class="mt-2 text-surface-200">
+        The tools, hardware, and software I use daily.
+      </p>
+    </header>
+
+    <section class="mb-12">
+      <FileView sections={currentSetup} />
+    </section>
+
+    <section>
+      <h2 class="mb-6 text-xl font-bold text-white">
+        <span class="text-surface-300">##</span> Changelog
+      </h2>
+      <div class="space-y-6">
+        {changelog.map((entry) => <DiffEntry {...entry} />)}
+      </div>
+    </section>
+  </div>
+</Layout>

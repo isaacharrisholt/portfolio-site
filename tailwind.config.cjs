@@ -27,6 +27,11 @@ module.exports = {
         primary: '#1a1c22',
         'accent-blue': '#50c5d9',
         'accent-red': '#fb5f66',
+        'diff-green': '#4ade80',
+        'diff-red': '#f87171',
+        'diff-green-bg': 'rgba(74, 222, 128, 0.25)',
+        'diff-red-bg': 'rgba(248, 113, 113, 0.25)',
+        'commit-hash': '#f59e0b',
       },
       typography: ({ theme }) => ({
         DEFAULT: {

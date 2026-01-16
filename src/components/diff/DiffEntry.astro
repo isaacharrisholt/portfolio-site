@@ -1,0 +1,111 @@
+---
+import WordDiffLine from './WordDiffLine.astro'
+import type { DiffEntryLine, DiffEntryData } from '../../lib/diff'
+
+interface Props extends DiffEntryData {}
+
+const { hash, date, message, description, hunks } = Astro.props
+const shortHash = hash.slice(0, 7)
+
+// Helper to find where to insert separators (between - and + sections)
+function getSeparatorIndices(lines: DiffEntryLine[]): Set<number> {
+  const separators = new Set<number>()
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i - 1].type === '-' && lines[i].type === '+') {
+      separators.add(i)
+    }
+  }
+  return separators
+}
+
+function getLineTextClass(type: '+' | '-' | ' '): string {
+  switch (type) {
+    case '+':
+      return 'text-diff-green'
+    case '-':
+      return 'text-diff-red'
+    default:
+      return 'text-surface-200'
+  }
+}
+---
+
+<article class="border-l-2 border-surface-400 py-2 pl-4">
+  <!-- Commit header -->
+  <div class="mb-3">
+    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+      <span class="text-commit-hash">{shortHash}</span>
+      <span class="text-surface-300">{date}</span>
+    </div>
+    <div class="mt-1 text-white">{message}</div>
+    {
+      description && (
+        <div class="mt-1 whitespace-pre-line text-sm text-surface-200">
+          {description}
+        </div>
+      )
+    }
+  </div>
+
+  <!-- Diff hunks -->
+  <div class="space-y-3 text-sm">
+    {
+      hunks.map((hunk) => {
+        const separators = getSeparatorIndices(hunk.lines)
+        return (
+          <div>
+            <div class="mb-1 text-xs text-surface-300">{hunk.file}</div>
+            <div class="leading-relaxed">
+              {hunk.lines.map((line, index) => {
+                const separator = separators.has(index) ? (
+                  <div class="my-1 border-t border-dashed border-surface-500" />
+                ) : null
+
+                // Word-level diff line
+                if (line.segments && line.type !== ' ') {
+                  return (
+                    <>
+                      {separator}
+                      <WordDiffLine
+                        type={line.type as '+' | '-'}
+                        segments={line.segments}
+                        link={line.link}
+                      />
+                    </>
+                  )
+                }
+
+                // Regular line (context or legacy)
+                const textClass = getLineTextClass(line.type)
+                const prefix = line.type === ' ' ? '\u00A0' : line.type
+
+                return (
+                  <>
+                    {separator}
+                    <div class="flex">
+                      <span class={`w-4 shrink-0 select-none ${textClass}`}>
+                        {prefix}
+                      </span>
+                      {line.link ? (
+                        <a
+                          href={line.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class={`${textClass} hover:underline`}
+                        >
+                          {line.content}
+                        </a>
+                      ) : (
+                        <span class={textClass}>{line.content}</span>
+                      )}
+                    </div>
+                  </>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })
+    }
+  </div>
+</article>

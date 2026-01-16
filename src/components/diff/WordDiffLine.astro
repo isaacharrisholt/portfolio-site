@@ -1,0 +1,46 @@
+---
+import type { WordSegment } from '../../lib/diff'
+
+interface Props {
+  type: '+' | '-'
+  segments: WordSegment[]
+  link?: string
+}
+
+const { type, segments, link } = Astro.props
+
+const textClass = type === '+' ? 'text-diff-green' : 'text-diff-red'
+const bgClass = type === '+' ? 'bg-diff-green-bg' : 'bg-diff-red-bg'
+---
+
+<div class="flex">
+  <span class={`w-4 shrink-0 select-none ${textClass}`}>{type}</span>
+  {
+    link ? (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        class={`${textClass} hover:underline`}
+      >
+        {segments.map((seg) =>
+          seg.changed ? (
+            <span class={bgClass}>{seg.text}</span>
+          ) : (
+            <span>{seg.text}</span>
+          ),
+        )}
+      </a>
+    ) : (
+      <span class={textClass}>
+        {segments.map((seg) =>
+          seg.changed ? (
+            <span class={bgClass}>{seg.text}</span>
+          ) : (
+            <span>{seg.text}</span>
+          ),
+        )}
+      </span>
+    )
+  }
+</div>
