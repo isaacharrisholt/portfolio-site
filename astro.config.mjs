@@ -4,6 +4,8 @@ import tailwind from '@astrojs/tailwind'
 import vercel from '@astrojs/vercel'
 import { defineConfig } from 'astro/config'
 
+import svelte from '@astrojs/svelte'
+
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
@@ -20,9 +22,6 @@ export default defineConfig({
     },
     imageService: true,
   }),
-  integrations: [tailwind(), mdx(), sitemap()],
+  integrations: [tailwind(), mdx(), sitemap(), svelte()],
   site: 'https://www.ihh.dev',
-  redirects: {
-    '/cv': '/resume.pdf',
-  },
 })

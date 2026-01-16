@@ -1,0 +1,335 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+interface Role {
+  company: string
+  title: string
+  period: string
+  description: string
+  highlights: string[]
+  tech: string[]
+  link?: string
+}
+
+interface Project {
+  name: string
+  description: string
+  tech: string[]
+  link?: string
+}
+
+const roles: Role[] = [
+  {
+    company: 'Medfin',
+    title: 'Head of Engineering',
+    period: 'Dec 2025 — Present',
+    description: 'Building the financial OS for UK dentistry',
+    highlights: [],
+    tech: [],
+    link: 'https://medfin.ai',
+  },
+  {
+    company: 'Rover',
+    title: 'CTO',
+    period: 'Nov 2024 — Dec 2025',
+    description: 'Building the reliability copilot for engineering teams',
+    highlights: [],
+    tech: ['Gleam', 'Go', 'Rust', 'TypeScript'],
+    link: 'https://getrover.com',
+  },
+  {
+    company: 'Pluto Labs',
+    title: 'Founding Full-Stack Engineer',
+    period: 'Mar 2023 — Nov 2024',
+    description: 'Solo engineer at affordable housing startup',
+    highlights: [
+      'Built multiple full-stack apps for shared ownership residents',
+      'Led product projects from inception to completion',
+      'Designed client dashboards for hands-free reporting',
+      'Optimised performance at database and application layers',
+    ],
+    tech: ['TypeScript', 'Go', 'PostgreSQL', 'Python'],
+    link: 'https://stairpay.com',
+  },
+  {
+    company: 'Urban Jungle Insurance',
+    title: 'Software Engineer',
+    period: 'Feb 2022 — Mar 2023',
+    description: 'Data-focused engineer at InsurTech disruptor',
+    highlights: [
+      'Architected Kubernetes deployment of events-based microservices',
+      'Engineered orchestrated data pipelines with Dagster',
+      'Reduced report generation from 11hrs to 30s (Python → SQL/dbt)',
+      'Improved database microservice efficiency by 80%',
+    ],
+    tech: ['Python', 'SQL', 'Docker', 'Kubernetes', 'AWS', 'GCP'],
+    link: 'https://myurbanjungle.com',
+  },
+]
+
+const projects: Project[] = [
+  {
+    name: 'Pevensie',
+    description:
+      'Gleam packages — Redis client, job queues, resource pooling, actor pools, password hashing',
+    tech: ['Gleam'],
+    link: 'https://github.com/Pevensie',
+  },
+  {
+    name: 'YouTube Channel',
+    description: 'Programming content for mid-senior developers (~13k subs)',
+    tech: [],
+    link: 'https://youtube.com/@IsaacHarrisHolt',
+  },
+  {
+    name: 'Supawright',
+    description: 'Database E2E test harness using graph algorithms',
+    tech: ['TypeScript', 'PostgreSQL', 'Playwright'],
+    link: 'https://github.com/isaacharrisholt/supawright',
+  },
+]
+
+interface Talk {
+  title: string
+  event: string
+  date: string
+  link?: string
+}
+
+const talks: Talk[] = [
+  {
+    title: 'Your Backend is too Complicated',
+    event: 'Lambda Days',
+    date: 'Jun 2025',
+    link: 'https://www.youtube.com/watch?v=2WUMb0q1FPk',
+  },
+  {
+    title: 'Jumping on the Bandwagon: How I Ended Up Writing Gleam for a Living',
+    event: 'Code BEAM Stockholm',
+    date: 'May 2025',
+    link: 'https://www.youtube.com/watch?v=BfPRcanTWXA',
+  },
+]
+
+const skills = {
+  fluent: ['JavaScript', 'TypeScript', 'Python', 'SQL', 'Git', 'Docker'],
+  proficient: ['Go', 'Gleam', 'Rust'],
+  familiar: ['C++', 'Erlang'],
+}
+---
+
+<Layout title="CV | Isaac Harris-Holt">
+  <div class="col-start-content col-end-content space-y-12">
+    <header>
+      <h1 class="text-3xl font-bold text-accent-blue md:text-4xl">
+        <span class="text-surface-300">#</span> CV
+      </h1>
+      <p class="mt-2 text-surface-200">
+        Software engineer, content creator, startup enthusiast.
+      </p>
+      <p class="mt-1 text-sm text-surface-300">London, UK</p>
+    </header>
+
+    <!-- Career -->
+    <section>
+      <h2 class="mb-5 text-lg font-bold text-white">
+        <span class="text-surface-300">##</span> Career
+      </h2>
+
+      <div class="flex flex-col">
+        {
+          roles.map((role, i) => {
+            const hasDetails = role.highlights.length > 0 || role.tech.length > 0
+            return (
+              <div class="group flex gap-4">
+                <div class="flex flex-col items-center pt-1.5">
+                  <div class="size-2 shrink-0 rounded-full bg-surface-400 transition-colors group-hover:bg-accent-blue group-has-[details[open]]:bg-accent-blue" />
+                  {i < roles.length - 1 && (
+                    <div class="min-h-6 w-px grow bg-surface-400" />
+                  )}
+                </div>
+
+                <div class="flex-1 pb-6">
+                  {hasDetails ? (
+                    <details>
+                      <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <div class="mb-1">
+                          <div class="flex flex-wrap items-baseline justify-between gap-2">
+                            {role.link ? (
+                              <a
+                                href={role.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="font-semibold text-white hover:text-accent-blue"
+                                onclick="event.stopPropagation()"
+                              >
+                                {role.company}
+                              </a>
+                            ) : (
+                              <span class="font-semibold text-white">
+                                {role.company}
+                              </span>
+                            )}
+                            <span class="text-[0.8125rem] text-surface-300">
+                              {role.period}
+                            </span>
+                          </div>
+                          <div class="text-sm text-surface-200">{role.title}</div>
+                        </div>
+                        <p class="mt-1 text-[0.8125rem] text-surface-200">
+                          {role.description}
+                        </p>
+                        <span class="mt-2 block text-xs text-surface-300 transition-colors before:content-['+'] group-hover:text-accent-blue [details[open]_&]:before:content-['−']" />
+                      </summary>
+
+                      <div class="mt-3 border-t border-surface-400 pt-3">
+                        {role.highlights.length > 0 && (
+                          <ul class="mb-2 flex flex-col gap-1">
+                            {role.highlights.map((h) => (
+                              <li class="relative pl-4 text-[0.8125rem] text-surface-100 before:absolute before:left-0 before:text-surface-300 before:content-['·']">
+                                {h}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {role.tech.length > 0 && (
+                          <div class="text-xs text-accent-blue">
+                            {role.tech.join(', ')}
+                          </div>
+                        )}
+                      </div>
+                    </details>
+                  ) : (
+                    <div>
+                      <div class="mb-1">
+                        <div class="flex flex-wrap items-baseline justify-between gap-2">
+                          {role.link ? (
+                            <a
+                              href={role.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="font-semibold text-white hover:text-accent-blue"
+                            >
+                              {role.company}
+                            </a>
+                          ) : (
+                            <span class="font-semibold text-white">{role.company}</span>
+                          )}
+                          <span class="text-[0.8125rem] text-surface-300">
+                            {role.period}
+                          </span>
+                        </div>
+                        <div class="text-sm text-surface-200">{role.title}</div>
+                      </div>
+                      <p class="mt-1 text-[0.8125rem] text-surface-200">
+                        {role.description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          })
+        }
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section>
+      <h2 class="mb-5 text-lg font-bold text-white">
+        <span class="text-surface-300">##</span> Education
+      </h2>
+
+      <div class="border-l border-surface-400 pl-4">
+        <div class="flex flex-wrap justify-between gap-x-4 gap-y-0">
+          <span class="font-semibold text-white">Imperial College London</span>
+          <span class="text-[0.8125rem] text-surface-300">Oct 2020 — Feb 2022</span>
+        </div>
+        <div class="text-sm text-surface-200">
+          Chemical Engineering, MEng · First Class (Year 1)
+        </div>
+        <div class="mt-1 text-[0.8125rem] text-surface-300">
+          Left to pursue software engineering
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section>
+      <h2 class="mb-5 text-lg font-bold text-white">
+        <span class="text-surface-300">##</span> Projects
+      </h2>
+
+      <div class="flex flex-col gap-3">
+        {
+          projects.map((project) => (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex flex-wrap gap-x-2 gap-y-1 border-l border-surface-400 pl-4 no-underline transition-colors hover:border-accent-blue"
+            >
+              <span class="font-semibold text-white group-hover:text-accent-blue">
+                {project.name}
+              </span>
+              <span class="w-full text-[0.8125rem] text-surface-200">
+                {project.description}
+              </span>
+              {project.tech.length > 0 && (
+                <span class="text-xs text-surface-300">{project.tech.join(', ')}</span>
+              )}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Talks -->
+    <section>
+      <h2 class="mb-5 text-lg font-bold text-white">
+        <span class="text-surface-300">##</span> Talks
+      </h2>
+
+      <div class="flex flex-col gap-3">
+        {
+          talks.map((talk) => (
+            <a
+              href={talk.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex flex-wrap gap-x-2 gap-y-1 border-l border-surface-400 pl-4 no-underline transition-colors hover:border-accent-blue"
+            >
+              <span class="font-semibold text-white group-hover:text-accent-blue">
+                {talk.title}
+              </span>
+              <span class="w-full text-[0.8125rem] text-surface-200">{talk.event}</span>
+              <span class="text-xs text-surface-300">{talk.date}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section>
+      <h2 class="mb-5 text-lg font-bold text-white">
+        <span class="text-surface-300">##</span> Skills
+      </h2>
+
+      <div class="flex flex-col gap-2 border-l border-surface-400 pl-4 text-sm">
+        <div class="flex gap-4">
+          <span class="min-w-20 text-surface-300">Fluent</span>
+          <span class="text-surface-100">{skills.fluent.join(', ')}</span>
+        </div>
+        <div class="flex gap-4">
+          <span class="min-w-20 text-surface-300">Proficient</span>
+          <span class="text-surface-100">{skills.proficient.join(', ')}</span>
+        </div>
+        <div class="flex gap-4">
+          <span class="min-w-20 text-surface-300">Familiar</span>
+          <span class="text-surface-300">{skills.familiar.join(', ')}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
