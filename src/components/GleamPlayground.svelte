@@ -69,6 +69,7 @@ pub fn main() {
   let warnings = $state([])
   let isCompiling = $state(false)
   let isReady = $state(false)
+  let hasCompiled = $state(false)
   let pageData = $state(null)
 
   let worker = $state(null)
@@ -212,6 +213,7 @@ pub fn main() {
         pageData = p
         output = programOutput
       }
+      hasCompiled = true
     }
 
     worker.onerror = (e) => {
@@ -268,7 +270,7 @@ pub fn main() {
           {/each}
         </nav>
       </div>
-    {:else if !isReady}
+    {:else if !isReady || !hasCompiled}
       <div
         class="flex flex-col items-center justify-center gap-4 py-16 text-surface-300"
       >
