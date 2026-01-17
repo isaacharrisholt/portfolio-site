@@ -5,9 +5,10 @@ import Nav from '../components/layout/Nav.astro'
 
 interface Props {
   title: string
+  fullWidth?: boolean
 }
 
-const { title } = Astro.props
+const { title, fullWidth = false } = Astro.props
 ---
 
 <!doctype html>
@@ -29,7 +30,12 @@ const { title } = Astro.props
     <Nav />
     <div class="col-span-full"></div>
     <main
-      class="prose prose-sm w-full max-w-none col-start-full-start col-end-full-end md:prose-base md:col-start-content-start md:col-end-content-end"
+      class:list={[
+        'prose prose-sm w-full max-w-none md:prose-base',
+        fullWidth
+          ? 'col-start-content-start col-end-content-end'
+          : 'col-start-full-start col-end-full-end md:col-start-content-start md:col-end-content-end',
+      ]}
     >
       <slot />
     </main>

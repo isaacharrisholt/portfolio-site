@@ -20,6 +20,7 @@
     "@savvywombat/tailwindcss-grid-named-lines": "^2.0.1",
     "@tailwindcss/typography": "^0.5.13",
     "astro": "5.13.5",
+    "codeflask": "^1.4.1",
     "diff": "^8.0.3",
     "lucide-astro": "^0.414.0",
     "sharp": "^0.33.4",
@@ -28,9 +29,11 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@types/codeflask": "^1.4.6",
     "@types/diff": "^8.0.0",
     "prettier": "^3.3.3",
     "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-svelte": "^3.4.1",
     "prettier-plugin-tailwindcss": "^0.6.5"
   }
 }

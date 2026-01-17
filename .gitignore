@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # Vercel
 .vercel
+
+# Gleam setup temp files
+.gleam-temp/
