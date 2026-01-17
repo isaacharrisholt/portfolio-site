@@ -1,32 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import GleamPlayground from '../components/GleamPlayground.svelte'
 ---
 
-<Layout title="Hi, I'm Isaac">
-  <div
-    class="grid h-full place-items-center text-center row-start-site-start row-end-site-end prose-headings:m-0"
-  >
-    <div class="flex h-full flex-col items-center justify-center gap-8">
-      <h1>Hey, I'm Isaac</h1>
-      <h2>
-        Currently Head of Engineering at <a
-          href="https://medfin.ai"
-          rel="external"
-          target="_blank">Medfin</a
-        ><br />and content creator on <a
-          href="https://youtube.com/IsaacHarrisHolt"
-          rel="external"
-          target="_blank">YouTube</a
-        >
-      </h2>
-      <!-- <h3>🚧 Site is under construction 🚧</h3> -->
-      <ol class="text-left">
-        <li>Blog stuff <a href="/blog">here</a></li>
-        <li>What I'm doing <a href="/now">now</a></li>
-        <li>What I <a href="/uses">use</a></li>
-        <!-- <li>Contact me <a href="/contact">here</a></li> -->
-        <li>CV <a href="/cv" target="_blank">here</a></li>
-      </ol>
-    </div>
+<Layout title="Hi, I'm Isaac" fullWidth>
+  <div class="not-prose py-8">
+    <GleamPlayground client:load />
   </div>
 </Layout>

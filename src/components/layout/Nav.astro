@@ -40,8 +40,12 @@ const path = new URL(Astro.request.url).pathname
     Isaac <span class="whitespace-nowrap">Harris-Holt</span>
   </a>
   <ul
-    class="flex flex-row items-center justify-start gap-4 font-semibold max-lg:row-start-2 md:gap-8 lg:justify-center lg:gap-16"
+    class:list={[
+      'flex flex-row items-center justify-start gap-4 font-semibold max-lg:row-start-2 md:gap-8 lg:justify-center lg:gap-16',
+      Astro.url.pathname === '/' && 'pointer-events-none opacity-0',
+    ]}
     transition:name="nav-links"
+    aria-hidden={Astro.url.pathname === '/'}
   >
     {
       navLinks.map((link) => {
