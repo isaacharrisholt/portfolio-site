@@ -196,7 +196,7 @@ pub fn main() {
 
       if (result.ready) {
         isReady = true
-        compile()
+        debouncedCompile()
         return
       }
 
