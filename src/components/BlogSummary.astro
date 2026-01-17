@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets'
+import { Image, getImage } from 'astro:assets'
 import type { CollectionEntry } from 'astro:content'
 
 interface Props {
@@ -12,11 +12,15 @@ const {
     data: { title, subtitle, image, date, description },
   },
 } = Astro.props
+
+// Get the optimised full-size image URL to preload on hover
+const fullSizeImage = await getImage({ src: image })
 ---
 
 <div
-  class="flex w-full flex-col-reverse items-start justify-between gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white sm:flex-row"
+  class="blog-summary flex w-full flex-col-reverse items-start justify-between gap-4 no-underline prose-headings:m-0 prose-p:m-0 prose-p:text-white sm:flex-row"
   transition:name={`post-${id}`}
+  data-full-image={fullSizeImage.src}
 >
   <div class="flex flex-col gap-4">
     <div class="flex flex-col">
@@ -38,8 +42,35 @@ const {
   <Image
     src={image}
     alt=""
-    width={800}
-    class="!m-0 w-[200px] rounded-lg max-sm:self-center"
+    width={200}
+    class="!m-0 rounded-lg max-sm:self-center"
     transition:name={`post-image-${id}`}
   />
 </div>
+
+<script>
+  function setupImagePreload() {
+    const summaries = document.querySelectorAll('.blog-summary[data-full-image]')
+
+    summaries.forEach((summary) => {
+      const fullImageUrl = summary.getAttribute('data-full-image')
+      if (!fullImageUrl) return
+
+      let preloaded = false
+
+      summary.addEventListener('mouseenter', () => {
+        if (preloaded) return
+        preloaded = true
+
+        const link = document.createElement('link')
+        link.rel = 'preload'
+        link.as = 'image'
+        link.href = fullImageUrl
+        document.head.appendChild(link)
+      })
+    })
+  }
+
+  setupImagePreload()
+  document.addEventListener('astro:after-swap', setupImagePreload)
+</script>

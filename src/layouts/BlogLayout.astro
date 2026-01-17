@@ -48,13 +48,7 @@ const {
       </p>
     </header>
 
-    <Image
-      src={image}
-      alt=""
-      width={800}
-      transition:name={`post-image-${id}`}
-      loading="eager"
-    />
+    <Image src={image} alt="" transition:name={`post-image-${id}`} loading="eager" />
 
     <slot />
   </article>
