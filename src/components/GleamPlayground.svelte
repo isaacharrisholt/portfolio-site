@@ -301,7 +301,7 @@ pub fn main() {
         rel="noopener noreferrer">Gleam</a
       > code below to see the hero update.
     </div>
-    <div class="min-h-72 overflow-y-auto relative">
+    <div class="min-h-72 overflow-y-auto overscroll-none relative">
       <div class="editor-container font-mono" bind:this={editorElement}></div>
     </div>
 
@@ -350,6 +350,7 @@ pub fn main() {
 
   .editor-container :global(.codeflask__flatten) {
     padding: 0;
+    overscroll-behavior: none;
   }
 
   /* Syntax highlighting */
